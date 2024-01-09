@@ -1,3 +1,5 @@
+figure;
+
 currs = out.simout.current.Data;
 heats = out.simout.q_gen.Data;
 
@@ -21,3 +23,12 @@ yline(0);
 
 xlabel("Current (mA)");
 ylabel("q_{gen} (mW)");
+
+set(gca,'units','centimeters')
+pos = get(gca,'Position');
+ti = get(gca,'TightInset');
+set(gcf, 'PaperUnits','centimeters');
+set(gcf, 'PaperSize', [pos(3)+ti(1)+ti(3) pos(4)+ti(2)+ti(4)]);
+set(gcf, 'PaperPositionMode', 'manual');
+set(gcf, 'PaperPosition',[0 0 pos(3)+ti(1)+ti(3) pos(4)+ti(2)+ti(4)]);
+saveas(gcf, "img_raw/q_gen_experiment", "png");
