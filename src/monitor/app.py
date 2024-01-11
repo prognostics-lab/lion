@@ -3,17 +3,15 @@ import datetime
 
 import serial
 
-from logger import LOGGER, setup_logger
+from monitor.logger import LOGGER, setup_logger
 
 
 def parse_line(line):
     return line.split(",")
 
 
-def start(out_dir, port, baud_rate=9600, timeout=5, *, log_dir=False, debug=False, skip_header=False):
-    setup_logger(log_dir=log_dir, debug=debug, verbose=True)
-
-    LOGGER.info("Starting communication to port '%s'", port)
+def start(out_dir, port, baud_rate=9600, timeout=5, *, skip_header=False):
+    LOGGER.info("Starting communication to port '%s', br%i", port, baud_rate)
     ser = serial.Serial(port, baud_rate, timeout=timeout)
 
     LOGGER.info("Opening csv file '%s'", out_dir)
@@ -24,16 +22,21 @@ def start(out_dir, port, baud_rate=9600, timeout=5, *, log_dir=False, debug=Fals
 
         LOGGER.info("Entering communication loop")
         while ser.is_open:
-            line = ser.readline()
+            try:
+                line = ser.readline()
 
-            if not line:
-                LOGGER.info("Ending communication to port '%s'", port)
-                break
-            else:
-                LOGGER.debug(line)
-                timestamp = datetime.datetime.now(datetime.UTC)
-                unix = int((timestamp - datetime.datetime(1970, 1, 1, tzinfo=datetime.UTC)).total_seconds())
-                writer.writerow([timestamp, unix, *parse_line(line)])
+                if not line:
+                    LOGGER.info("Ending communication to port '%s'", port)
+                    break
+                else:
+                    LOGGER.debug(line)
+                    timestamp = datetime.datetime.now(datetime.UTC)
+                    unix = int((timestamp - datetime.datetime(1970, 1, 1, tzinfo=datetime.UTC)).total_seconds())
 
-
-start("asdfsadf.csv", "COM1", debug=True)
+                    parsed = parse_line(line)
+                    if len(parsed) != 2:
+                        LOGGER.warning("Found invalid line: '%s'", line)
+                        continue
+                    writer.writerow([timestamp, unix, *parsed])
+            except:
+                ser.close()
