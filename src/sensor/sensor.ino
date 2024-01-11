@@ -75,4 +75,5 @@ void loop() {
   Serial.print(resistance);
   Serial.print(",");
   Serial.println(temperature);
+  delay(1000);
 }
