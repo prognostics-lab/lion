@@ -2,7 +2,7 @@ import logging
 import os
 from datetime import datetime
 
-from console import ShellColors
+from monitor.console import ShellColors
 
 
 LOGGER = logging.Logger("monitor")
