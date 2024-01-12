@@ -25,7 +25,7 @@ def start(out_dir, port, baud_rate=9600, timeout=5, *, skip_header=False):
     with open(out_dir, "w", newline="") as file:
         writer = csv.writer(file)
         if not skip_header:
-            writer.writerow(["timestamp", "unix_time", "resistance", "temperature"])
+            writer.writerow(["timestamp", "unix_time", "resistance", "temperature_celsius"])
 
         LOGGER.info("Entering communication loop")
         while ser.is_open:
