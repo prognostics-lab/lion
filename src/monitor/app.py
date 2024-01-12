@@ -13,7 +13,7 @@ def parse_line(line):
     if decoded.endswith("\r"):
         decoded = decoded[:-1]
     decoded = decoded.split(",")
-    decoded[1] = decoded[1] - 273
+    decoded[1] = str(int(decoded[1]) - 273)
     return decoded
 
 
