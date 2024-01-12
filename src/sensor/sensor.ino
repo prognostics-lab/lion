@@ -59,7 +59,8 @@ unsigned int calculate_temperature(double resistance) {
 }
 
 double calculate_resistance(int analog_voltage) {
-  return RESISTOR_FIXED * (VOLTAGE_IN / (double)analog_voltage - 1.0);
+  // return RESISTOR_FIXED * (VOLTAGE_IN / (double)analog_voltage - 1.0);
+  return RESISTOR_FIXED / (VOLTAGE_IN / (double)analog_voltage - 1.0);
 }
 
 /* Data loop */
