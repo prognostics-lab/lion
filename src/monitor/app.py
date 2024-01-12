@@ -7,7 +7,7 @@ from monitor.logger import LOGGER, setup_logger
 
 
 def parse_line(line):
-    return line.split(",")
+    return str(line).split(",")
 
 
 def start(out_dir, port, baud_rate=9600, timeout=5, *, skip_header=False):
@@ -38,5 +38,6 @@ def start(out_dir, port, baud_rate=9600, timeout=5, *, skip_header=False):
                         LOGGER.warning("Found invalid line: '%s'", line)
                         continue
                     writer.writerow([timestamp, unix, *parsed])
-            except:
+            except Exception as e:
+                LOGGER.warning("Found exception '%s'", e)
                 ser.close()
