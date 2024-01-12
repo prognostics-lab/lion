@@ -7,7 +7,12 @@ from monitor.logger import LOGGER, setup_logger
 
 
 def parse_line(line):
-    return str(line).split(",")
+    decoded = line.decode()
+    if decoded.endswith("\n"):
+        decoded = decoded[:-1]
+    if decoded.endswith("\r"):
+        decoded = decoded[:-1]
+    return decoded.split(",")
 
 
 def start(out_dir, port, baud_rate=9600, timeout=5, *, skip_header=False):
