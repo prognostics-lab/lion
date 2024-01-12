@@ -12,7 +12,9 @@ def parse_line(line):
         decoded = decoded[:-1]
     if decoded.endswith("\r"):
         decoded = decoded[:-1]
-    return decoded.split(",")
+    decoded = decoded.split(",")
+    decoded[1] = decoded[1] - 273
+    return decoded
 
 
 def start(out_dir, port, baud_rate=9600, timeout=5, *, skip_header=False):
