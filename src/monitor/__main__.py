@@ -3,7 +3,7 @@ import os
 import pathlib
 
 from monitor.app import start
-from monitor.logger import setup_logger
+from monitor.logger import setup_logger, LOGGER
 
 
 src_path = pathlib.Path.joinpath(pathlib.Path(__file__).parent.parent, "src")
@@ -24,6 +24,13 @@ parser.add_argument(
     "--baud",
     help="baud rate",
     default=9600,
+)
+parser.add_argument(
+    "-n",
+    "--names",
+    help="names for all the measurements",
+    nargs="+",
+    default=None,
 )
 parser.add_argument(
     "-t",
@@ -47,6 +54,7 @@ parser.add_argument(
 
 cmd_args = parser.parse_args()
 setup_logger(quiet=cmd_args.quiet, debug=cmd_args.debug, verbose=True)
+LOGGER.debug(cmd_args)
 
 # Start the program
-start(cmd_args.out, cmd_args.port, int(cmd_args.baud), float(cmd_args.timeout))
+start(cmd_args.out, cmd_args.port, int(cmd_args.baud), float(cmd_args.timeout), measurement_names=cmd_args.names)

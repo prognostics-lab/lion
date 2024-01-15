@@ -6,7 +6,7 @@ import serial
 from monitor.logger import LOGGER
 
 
-MEASUREMENTS = [
+DEFAULT_MEASUREMENTS = [
     "sf1",
     "sf2",
     "air1",
@@ -23,12 +23,16 @@ def parse_line(line):
     return decoded.split(",")
 
 
-def start(out_dir, port, baud_rate=9600, timeout=5, *, skip_header=False):
+def start(out_dir, port, baud_rate=9600, timeout=5, measurement_names=None, *, skip_header=False):
     LOGGER.info("Starting communication to port '%s', br%i", port, baud_rate)
     ser = serial.Serial(port, baud_rate, timeout=timeout)
 
     names = []
-    for name in MEASUREMENTS:
+    if measurement_names is None:
+        measurements = DEFAULT_MEASUREMENTS
+    else:
+        measurements = measurement_names
+    for name in measurements:
         names.extend([f"res_{name}", f"temp_{name}"])
 
     LOGGER.info("Opening csv file '%s'", out_dir)
