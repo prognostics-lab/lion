@@ -3,7 +3,15 @@ import datetime
 
 import serial
 
-from monitor.logger import LOGGER, setup_logger
+from monitor.logger import LOGGER
+
+
+MEASUREMENTS = [
+    "sf1",
+    "sf2",
+    "air1",
+    "air2",
+]
 
 
 def parse_line(line):
@@ -19,6 +27,10 @@ def start(out_dir, port, baud_rate=9600, timeout=5, *, skip_header=False):
     LOGGER.info("Starting communication to port '%s', br%i", port, baud_rate)
     ser = serial.Serial(port, baud_rate, timeout=timeout)
 
+    names = []
+    for name in MEASUREMENTS:
+        names.extend([f"res_{name}", f"temp_{name}"])
+
     LOGGER.info("Opening csv file '%s'", out_dir)
     with open(out_dir, "w", newline="") as file:
         writer = csv.writer(file)
@@ -27,14 +39,7 @@ def start(out_dir, port, baud_rate=9600, timeout=5, *, skip_header=False):
                 "timestamp_utc",
                 "unix_time_utc",
                 "cell",
-                "res_sf1",
-                "temp_sf1",
-                "res_sf2",
-                "temp_sf2",
-                "res_air1",
-                "temp_air1",
-                "res_air2",
-                "temp_air2",
+                *names,
             ])
 
         LOGGER.info("Entering communication loop")
@@ -48,7 +53,8 @@ def start(out_dir, port, baud_rate=9600, timeout=5, *, skip_header=False):
                 else:
                     LOGGER.debug(line)
                     timestamp = datetime.datetime.now(datetime.UTC)
-                    unix = int((timestamp - datetime.datetime(1970, 1, 1, tzinfo=datetime.UTC)).total_seconds())
+                    unix = int((timestamp - datetime.datetime(1970,
+                               1, 1, tzinfo=datetime.UTC)).total_seconds())
 
                     try:
                         parsed = parse_line(line)
