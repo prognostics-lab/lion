@@ -1,4 +1,10 @@
 #define GND_PIN A0
+
+// User parameters
+const int NUM_CELLS = 1;
+const int PINS_PER_CELL = 4;
+
+// Fixed parameters
 const double RESISTOR_FIXED = 100000.0;
 const double VOLTAGE_IN = 1023.0;
 const double RT_LUT[] = {
@@ -35,10 +41,8 @@ const double RT_LUT[] = {
     3186.0,
 };
 const int RT_LUT_LEN = 181;
-const unsigned int RT_LUT_MIN = -55 + 273;
-
-const int NUM_CELLS = 1;
-const int PINS_PER_CELL = 4;
+// const int RT_LUT_MIN = -55 + 273;
+const int RT_LUT_MIN = -55;
 
 // Discharges capacitor inside ADC, should be used in between sequential reads
 void reset_adc() {
@@ -55,8 +59,8 @@ unsigned int find_index(double resistance) {
   return idx;
 }
 
-unsigned int calculate_temperature(double resistance) {
-  unsigned int idx = find_index(resistance);
+int calculate_temperature(double resistance) {
+  int idx = (int)find_index(resistance);
   if (idx == 0)
     return RT_LUT_MIN;
 
@@ -85,7 +89,7 @@ void loop() {
     for (int j = 0; j < PINS_PER_CELL; j++) {
       int analog_voltage = analogRead(pin);
       double resistance = calculate_resistance(analog_voltage);
-      unsigned int temperature = calculate_temperature(resistance); // in Kelvin
+      int temperature = calculate_temperature(resistance); // in Kelvin
       Serial.print(resistance);
       Serial.print(",");
       Serial.print(temperature);
