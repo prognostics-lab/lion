@@ -1,4 +1,4 @@
-#define NTC_PORT A0
+#define GND_PIN A0
 const double RESISTOR_FIXED = 100000.0;
 const double VOLTAGE_IN = 1023.0;
 const double RT_LUT[] = {
@@ -37,6 +37,15 @@ const double RT_LUT[] = {
 const int RT_LUT_LEN = 181;
 const unsigned int RT_LUT_MIN = -55 + 273;
 
+const int NUM_CELLS = 1;
+const int PINS_PER_CELL = 4;
+
+// Discharges capacitor inside ADC, should be used in between sequential reads
+void reset_adc() {
+  // The pin GND_PIN should be externally connected to ground
+  (void)analogRead(GND_PIN);
+}
+
 unsigned int find_index(double resistance) {
   const double *lut = RT_LUT;
   int idx = 0;
@@ -59,7 +68,6 @@ unsigned int calculate_temperature(double resistance) {
 }
 
 double calculate_resistance(int analog_voltage) {
-  // return RESISTOR_FIXED * (VOLTAGE_IN / (double)analog_voltage - 1.0);
   return RESISTOR_FIXED / (VOLTAGE_IN / (double)analog_voltage - 1.0);
 }
 
@@ -70,11 +78,24 @@ void setup() {
 }
 
 void loop() {
-  int analog_voltage = analogRead(NTC_PORT);
-  double resistance = calculate_resistance(analog_voltage);
-  unsigned int temperature = calculate_temperature(resistance); // in Kelvin
-  Serial.print(resistance);
-  Serial.print(",");
-  Serial.println(temperature);
+  int pin = A1;
+  for (int i = 0; i < NUM_CELLS; i++) {
+    Serial.print(i);
+    Serial.print(",");
+    for (int j = 0; j < PINS_PER_CELL; j++) {
+      int analog_voltage = analogRead(pin);
+      double resistance = calculate_resistance(analog_voltage);
+      unsigned int temperature = calculate_temperature(resistance); // in Kelvin
+      Serial.print(resistance);
+      Serial.print(",");
+      Serial.print(temperature);
+      if (j != PINS_PER_CELL - 1) {
+        Serial.print(",");
+      }
+      reset_adc();
+      pin++;
+    }
+    Serial.println();
+  }
   delay(1000);
 }
