@@ -12,9 +12,7 @@ def parse_line(line):
         decoded = decoded[:-1]
     if decoded.endswith("\r"):
         decoded = decoded[:-1]
-    decoded = decoded.split(",")
-    decoded[1] = str(int(decoded[1]) - 273)
-    return decoded
+    return decoded.split(",")
 
 
 def start(out_dir, port, baud_rate=9600, timeout=5, *, skip_header=False):
@@ -25,7 +23,19 @@ def start(out_dir, port, baud_rate=9600, timeout=5, *, skip_header=False):
     with open(out_dir, "w", newline="") as file:
         writer = csv.writer(file)
         if not skip_header:
-            writer.writerow(["timestamp", "unix_time", "resistance", "temperature_celsius"])
+            writer.writerow([
+                "timestamp_utc",
+                "unix_time_utc",
+                "cell",
+                "res_sf1",
+                "temp_sf1",
+                "res_sf2",
+                "temp_sf2",
+                "res_air1",
+                "temp_air1",
+                "res_air2",
+                "temp_air2",
+            ])
 
         LOGGER.info("Entering communication loop")
         while ser.is_open:
@@ -40,8 +50,9 @@ def start(out_dir, port, baud_rate=9600, timeout=5, *, skip_header=False):
                     timestamp = datetime.datetime.now(datetime.UTC)
                     unix = int((timestamp - datetime.datetime(1970, 1, 1, tzinfo=datetime.UTC)).total_seconds())
 
-                    parsed = parse_line(line)
-                    if len(parsed) != 2:
+                    try:
+                        parsed = parse_line(line)
+                    except ValueError:
                         LOGGER.warning("Found invalid line: '%s'", line)
                         continue
                     writer.writerow([timestamp, unix, *parsed])
