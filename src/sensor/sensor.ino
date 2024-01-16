@@ -92,7 +92,7 @@ void loop() {
     for (int j = 0; j < PINS_PER_CELL; j++) {
       int analog_voltage = analogRead(pin);
       double resistance = calculate_resistance(analog_voltage);
-      int temperature = calculate_temperature(resistance); // in Kelvin
+      int temperature = calculate_temperature(resistance); // in celsius
       Serial.print(resistance);
       Serial.print(",");
       Serial.print(temperature);
