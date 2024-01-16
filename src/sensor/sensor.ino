@@ -3,6 +3,8 @@
 // User parameters
 const int NUM_CELLS = 1;
 const int PINS_PER_CELL = 4;
+const int SENSOR_DELAY_MILS = 10;
+const int LOOP_DELAY_MILS = 1000;
 
 // Fixed parameters
 const double RESISTOR_FIXED = 100000.0;
@@ -48,6 +50,7 @@ const int RT_LUT_MIN = -55;
 void reset_adc() {
   // The pin GND_PIN should be externally connected to ground
   (void)analogRead(GND_PIN);
+  delay(SENSOR_DELAY_MILS);
 }
 
 unsigned int find_index(double resistance) {
@@ -101,5 +104,5 @@ void loop() {
     }
     Serial.println();
   }
-  delay(1000);
+  delay(LOOP_DELAY_MILS);
 }
