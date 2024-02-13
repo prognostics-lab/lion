@@ -2,8 +2,8 @@ from collections import namedtuple
 
 import numpy as np
 
-from thermal_model.models.ehc import EHC_PARAMS, entropy_change
-from thermal_model.models.thermal import THERMAL_PARAMS
+from thermal_model.models.ehc import EHC_PARAMS, entropy_change, EHC
+from thermal_model.models.thermal import THERMAL_PARAMS, SOC
 
 
 OcvParams = namedtuple("OcvParams", "v0 vl alpha beta gamma")
@@ -38,21 +38,22 @@ def calculate_ocv_temperature(soc, temperature, ocv_params=OCV_PARAMS, ehc_param
     return calculate_ocv(soc, ocv_params) + (temperature - th_params.t_ref) * entropy_change(soc, ehc_params)
 
 
-class BurgosOCV:
+class BurgosOcv:
     """Class for calculation of OCV using Burgos' model"""
 
-    def __init__(self, ocv_params=OCV_PARAMS, ehc_model=None):
+    def __init__(self, ocv_params=OCV_PARAMS, ehc_model=None, thermal_model=None):
         self.params = ocv_params
         self.ehc = ehc_model
+        self.soc = thermal_model
 
     def evaluate(self, soc, temperature=None):
-        if temperature is None or self.ehc is None:
+        if temperature is None or self.ehc is None or self.soc is None:
             return calculate_ocv(soc, self.params)
         else:
-            return calculate_ocv_temperature(soc, temperature, self.params, self.ehc.params)
+            return calculate_ocv_temperature(soc, temperature, self.params, self.ehc.params, self.soc.params)
 
     def grad(self, soc):
         return calculate_ocv_grad(soc, self.params)
 
 
-BURGOS_OCV = BurgosOCV(OCV_PARAMS)
+BURGOS_OCV = BurgosOcv(OCV_PARAMS, EHC, SOC)
