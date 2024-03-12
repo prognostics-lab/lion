@@ -13,7 +13,7 @@ from collections import namedtuple
 import pathlib
 
 # fmt: off
-src_path = pathlib.Path.joinpath(pathlib.Path(os.getcwd()), "src")
+src_path = pathlib.Path.joinpath(pathlib.Path(os.getcwd()).parent, "src")
 print(f"Appending '{src_path}' to path")
 sys.path.append(str(src_path))
 from thermal_model import models
@@ -37,7 +37,7 @@ TargetNLParams = namedtuple("TargetNLParams", "cp cair rair rin rout k")
 Data = namedtuple("Data", "t y u x0")
 
 
-DATA_DIR = os.path.join("data_raw", "240209_temptest_C6B2")
+DATA_DIR = os.path.join("240209_temptest_C6B2")
 TEMP_IMG_DIR = os.path.join("img_raw")
 IMG_DIR = os.path.join("img_raw")
 SAVE_FMT = "pdf"
