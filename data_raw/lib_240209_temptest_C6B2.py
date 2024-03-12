@@ -3,7 +3,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from IPython.display import display
 from scipy import signal, interpolate
-import winsound
 
 import os
 import time
@@ -17,19 +16,23 @@ src_path = pathlib.Path.joinpath(pathlib.Path(os.getcwd()).parent, "src")
 print(f"Appending '{src_path}' to path")
 sys.path.append(str(src_path))
 from thermal_model import models
-# fmt: on
 
+if os.name == "nt":
+    import winsound
 
 def alert():
-    winsound.Beep(1440, 100)
-    winsound.Beep(1440, 100)
-    winsound.Beep(1440, 100)
-    winsound.Beep(1440, 100)
-    winsound.Beep(1440, 1000)
-    winsound.Beep(1440, 100)
-    winsound.Beep(1440, 100)
-    winsound.Beep(1440, 100)
-    winsound.Beep(1440, 100)
+    if os.name == "nt":
+        winsound.Beep(1440, 100)
+        winsound.Beep(1440, 100)
+        winsound.Beep(1440, 100)
+        winsound.Beep(1440, 100)
+        winsound.Beep(1440, 1000)
+        winsound.Beep(1440, 100)
+        winsound.Beep(1440, 100)
+        winsound.Beep(1440, 100)
+        winsound.Beep(1440, 100)
+
+# fmt: on
 
 
 TargetParams = namedtuple("TargetParams", "cp cair rair rin rout")
