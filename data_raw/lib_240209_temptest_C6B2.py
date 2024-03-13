@@ -220,18 +220,22 @@ def main():
                 label="$T^{{MMSEE}}_{{sur}}$, resampled", alpha=0.5)
         ax.plot(cap_time_segs[i] / 3600, temp_sur_segs[i],
                 label="$T^{{MMSEE}}_{{sur}}$, resampled and filtered", alpha=0.5)
+        ax.grid(alpha=0.25)
     for i, ax in enumerate(axs[1]):
         ax.plot(cap_time_segs[i] / 3600, temp_air_rs_segs[i],
                 label="$T^{{MMSEE}}_{{air}}$, resampled", alpha=0.5)
         ax.plot(cap_time_segs[i] / 3600, temp_air_segs[i],
                 label="$T^{{MMSEE}}_{{air}}$, resampled and filtered", alpha=0.5)
+        ax.grid(alpha=0.25)
     for i, ax in enumerate(axs[2]):
         ax.plot(cap_time_segs[i] / 3600, chamber_pv_rs_segs[i],
                 label="$T^{{MMSEE}}_{{pv}}$, resampled", alpha=0.5)
         ax.plot(cap_time_segs[i] / 3600, chamber_pv_segs[i],
                 label="$T^{{MMSEE}}_{{pv}}$, resampled and filtered", alpha=0.5)
+        ax.grid(alpha=0.25)
     axs[0][0].set_ylabel("Surface temperature (°C)")
     axs[1][0].set_ylabel("Air temperature (°C)")
+    axs[2][0].set_ylabel("Chamber temperature (°C)")
     fig.tight_layout()
 
     # Temperatures and different system features
