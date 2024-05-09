@@ -8,7 +8,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 from scipy import optimize
-from tabulate import tabulate
 
 # fmt: off
 src_path = pathlib.Path.joinpath(pathlib.Path(os.getcwd()), "src")
