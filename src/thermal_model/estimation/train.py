@@ -10,8 +10,7 @@ _EPSILON = 1e-9
 
 
 def lti_from_data(y, u, t, x0, chamber_std, cell_std, initial_guess=None,
-                  system_kwargs=None, optimizer_kwargs=None,
-                  optimizer_fn=optimize.minimize) -> tuple[
+                  system_kwargs=None, optimizer_kwargs=None) -> tuple[
                       tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray],
                       TargetParams
 ]:
@@ -37,6 +36,10 @@ def lti_from_data(y, u, t, x0, chamber_std, cell_std, initial_guess=None,
         optimizer_kwargs["options"] = {
             "disp": True,
         }
+    if "fn" not in optimizer_kwargs:
+        optimizer_fn = optimize.minimize
+    else:
+        optimizer_fn = optimizer_kwargs["fn"]
 
     params = optimizer_fn(
         lambda p: error_fn(TargetParams(*p)),
