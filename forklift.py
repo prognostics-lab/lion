@@ -36,6 +36,13 @@ parser.add_argument(
     type=int,
 )
 parser.add_argument(
+    "-b", "--base",
+    choices=["r", "a", "rpt", "age"],
+    default=None,
+    metavar="base",
+    help="base dataframe to use",
+)
+parser.add_argument(
     "-t", "--rtrain",
     type=int,
     help="round to use for training",
@@ -86,19 +93,22 @@ def convert_size(size_bytes):
 
 def get_data(df, amb_temp):
     # Data extractable from dataset
+    LOGGER.debug("Extracting known values")
     surf = df["Temperature"].to_numpy()
     t = np.arange(len(surf)) + 1
     curr = df["Current"].to_numpy()
     amb = amb_temp * np.ones(len(surf))
 
     # Secondary data
+    LOGGER.debug("Calculating secondary data")
     resistance = (df["Voltage"] / df["Current"])
     internal_resistance = resistance[resistance != np.inf].max()
-    soc = np.array([curr[:i].sum() / (3600 * 180) for i, _ in enumerate(curr)])
+    soc = curr.cumsum() / (3600 * 180)
     soc = soc - soc.min()
     qgen = generated_heat_from_current(curr, surf, soc, internal_resistance)
 
     # Data assembly
+    LOGGER.debug("Assembling outputs")
     y = surf
     u = np.array([
         amb,
@@ -112,7 +122,7 @@ def optimizer_callback(intermediate_result):
     print(f"\rTarget function: {intermediate_result.fun}             ", end="")
 
 
-def main(savefig, showfig, img_fmt, cell, r_train, r_eval):
+def main(savefig, showfig, img_fmt, cell, r_train, r_eval, base_str=None):
     if img_fmt:
         img_fmt = "pdf"
     else:
@@ -126,16 +136,25 @@ def main(savefig, showfig, img_fmt, cell, r_train, r_eval):
     }
     constant_ambient_temperature = AMB_TEMPS[cell]
 
-    rpt = pd.read_csv(os.path.join(FORK_DIR, f"cell{cell}_rpt.csv"))
-    age = pd.read_csv(os.path.join(FORK_DIR, f"cell{cell}_age.csv"))
+    if base_str is None:
+        LOGGER.warning("Base was not specified, using 'age'")
+        base_str = "age"
 
-    print(f"RPT: {convert_size(rpt.memory_usage(deep=True).sum())}")
-    print(f"AGE: {convert_size(age.memory_usage(deep=True).sum())}")
+    match base_str.lower():
+        case "rpt":
+            LOGGER.info("Reading RPT")
+            base = pd.read_csv(os.path.join(FORK_DIR, f"cell{cell}_rpt.csv"))
+            LOGGER.info(f"RPT: {convert_size(base.memory_usage(deep=True).sum())}")
+        case "age":
+            LOGGER.info("Reading age")
+            base = pd.read_csv(os.path.join(FORK_DIR, f"cell{cell}_age.csv"))
+            LOGGER.info(f"AGE: {convert_size(base.memory_usage(deep=True).sum())}")
 
-    base = age
+    LOGGER.debug("Choosing desired rounds")
     df_train = base[base["Round"] == r_train]
     df_eval = base[base["Round"] == r_eval]
 
+    LOGGER.info("Generating data")
     y_train, u_train, t_train, x0_train = get_data(
         df_train, amb_temp=constant_ambient_temperature)
     y_eval, u_eval, t_eval, x0_eval = get_data(
@@ -143,96 +162,114 @@ def main(savefig, showfig, img_fmt, cell, r_train, r_eval):
 
     ### Minimization ###
     LOGGER.info("Starting minimization\n")
-    (A, B, C, _), params = lti_from_data(y_train, u_train, t_train, x0_train, 0, 0,
-                                         optimizer_fn=optimize.minimize,
-                                         system_kwargs={
-                                             "outputs": "sf",
-                                         }, optimizer_kwargs={
-                                             "method": "Nelder-Mead",
-                                             "callback": optimizer_callback,
-                                         },
-                                         )
-    print("\n")
-    print(f"Final parameters: {params}")
-    print(f"A = \n{A}")
-    print(f"B = \n{B}")
-    print(f"C = \n{C}")
+    (A, B, C, _), params = lti_from_data(
+        y_train,
+        u_train,
+        t_train,
+        x0_train,
+        1e-1,
+        0,
+        system_kwargs={
+            "outputs": "sf",
+        }, optimizer_kwargs={
+            # "method": "Nelder-Mead",
+            # "callback": optimizer_callback,
+            # "fn": optimize.minimize,
+            "method": "trf",
+            "verbose": 2,
+            "fn": optimize.least_squares,
+        },
+    )
+    LOGGER.info("\n")
+    LOGGER.info(f"Final parameters: {params}")
+    LOGGER.info(f"A = \n{A}")
+    LOGGER.info(f"B = \n{B}")
+    LOGGER.info(f"C = \n{C}")
 
-    print(f"Continous poles: {np.linalg.eig(A)[0]}")
+    LOGGER.info(f"Continous poles: {np.linalg.eig(A)[0]}")
 
     if np.linalg.matrix_rank(np.vstack([C, C @ A])) != 2:
-        LOGGER.warn("!!! SYSTEM IS NOT OBSERVABLE !!!")
+        LOGGER.warning("!!! SYSTEM IS NOT OBSERVABLE !!!")
 
     ### Evaluation ###
+    LOGGER.info(f"Evaluating estimation")
     evaluate = generate_evaluation(
         y_eval, u_eval, t_eval, x0_eval, outputs="sf")
     expected, obtained, error, x = evaluate(params)
-    # expected, obtained, error, x = evaluate(BEST_PARAMS)
     error_square = error ** 2
     try:
         mse = np.diag(error.conjugate().T @ error) / len(error)
     except ValueError:
         mse = error.conjugate().T @ error / len(error)
-    print(f"MSE: {mse}")
+    LOGGER.info(f"MSE: {mse}")
 
-    fig, ((ax1, ax2, ax3), (ax4, ax5, ax6)) = plt.subplots(
-        2, 3, figsize=(15, 10), sharex=True)
+    if savefig or showfig:
+        LOGGER.info(f"Generating plots")
+        fig, ((ax1, ax2, ax3), (ax4, ax5, ax6)) = plt.subplots(
+            2, 3, figsize=(15, 10), sharex=True)
 
-    ax1.plot(t_eval / 3600, expected, label="Expected", linestyle="--")
-    ax1.plot(t_eval / 3600, obtained, label="Obtained")
-    # ax2.plot(t_eval / 3600, expected, label="Expected", linestyle="--")
-    # ax2.plot(t_eval / 3600, obtained[:, 1], label="Obtained")
-    ax3.plot(t_eval / 3600, x[:, 0], label="Internal temperature")
-    ax3.plot(t_eval / 3600, x[:, 1], label="Air temperature")
+        ax1.plot(t_eval / 3600, expected, label="Expected", linestyle="--")
+        ax1.plot(t_eval / 3600, obtained, label="Obtained")
+        # ax2.plot(t_eval / 3600, expected, label="Expected", linestyle="--")
+        # ax2.plot(t_eval / 3600, obtained[:, 1], label="Obtained")
+        ax3.plot(t_eval / 3600, x[:, 0], label="Internal temperature")
+        ax3.plot(t_eval / 3600, x[:, 1], label="Air temperature")
 
-    ax4.plot(t_eval / 3600, u_eval[:, 1], label="Generated heat")
-    ax5.plot(t_eval / 3600, u_eval[:, 0], label="Ambient temperature")
-    ax6.plot(t_eval / 3600, error_square, label="Error, surface")
+        ax4.plot(t_eval / 3600, u_eval[:, 1], label="Generated heat")
+        ax5.plot(t_eval / 3600, u_eval[:, 0], label="Ambient temperature")
+        ax6.plot(t_eval / 3600, error_square, label="Error, surface")
 
-    ax1.set_xlabel("Time (h)")
-    ax1.set_ylabel("Surface temperature (°C)")
-    # ax2.set_xlabel("Time (h)")
-    # ax2.set_ylabel("Air temperature (°C)")
-    ax3.set_xlabel("Time (h)")
-    ax3.set_ylabel("States (°C)")
-    ax4.set_xlabel("Time (h)")
-    ax4.set_ylabel("Heat (W)")
-    ax5.set_xlabel("Time (h)")
-    ax5.set_ylabel("Ambient temperature (°C)")
-    ax6.set_xlabel("Time (h)")
-    ax6.set_ylabel("$\\left(y - \\hat y\\right)^2$")
+        ax1.set_xlabel("Time (h)")
+        ax1.set_ylabel("Surface temperature (°C)")
+        # ax2.set_xlabel("Time (h)")
+        # ax2.set_ylabel("Air temperature (°C)")
+        ax3.set_xlabel("Time (h)")
+        ax3.set_ylabel("States (°C)")
+        ax4.set_xlabel("Time (h)")
+        ax4.set_ylabel("Heat (W)")
+        ax5.set_xlabel("Time (h)")
+        ax5.set_ylabel("Ambient temperature (°C)")
+        ax6.set_xlabel("Time (h)")
+        ax6.set_ylabel("$\\left(y - \\hat y\\right)^2$")
 
-    ax1.set_title("Surface")
-    ax2.set_title("Air")
-    ax3.set_title("States")
-    ax6.set_title("Error")
-    ax4.set_title("Generated heat")
-    ax5.set_title("Ambient temperature")
+        ax1.set_title("Surface")
+        ax2.set_title("Air")
+        ax3.set_title("States")
+        ax6.set_title("Error")
+        ax4.set_title("Generated heat")
+        ax5.set_title("Ambient temperature")
 
-    ax1.legend()
-    # ax2.legend()
-    ax3.legend()
-    ax6.legend()
-    ax1.grid(alpha=0.25)
-    ax2.grid(alpha=0.25)
-    ax3.grid(alpha=0.25)
-    ax4.grid(alpha=0.25)
-    ax5.grid(alpha=0.25)
-    ax6.grid(alpha=0.25)
+        ax1.legend()
+        # ax2.legend()
+        ax3.legend()
+        ax6.legend()
+        ax1.grid(alpha=0.25)
+        ax2.grid(alpha=0.25)
+        ax3.grid(alpha=0.25)
+        ax4.grid(alpha=0.25)
+        ax5.grid(alpha=0.25)
+        ax6.grid(alpha=0.25)
 
-    ax6.set_yscale("log")
+        ax6.set_yscale("log")
 
-    fig.tight_layout()
-    if savefig:
-        fig.savefig(os.path.join(
-            FORK_IMG_DIR,
-            f"eval_curves.{img_fmt}"), bbox_inches="tight")
-    if showfig:
-        plt.show()
+        fig.tight_layout()
+        if savefig:
+            fig.savefig(os.path.join(
+                FORK_IMG_DIR,
+                f"eval_curves.{img_fmt}"), bbox_inches="tight")
+        if showfig:
+            plt.show()
 
 
 if __name__ == "__main__":
     args = parser.parse_args()
     setup_logger(debug=args.debug, verbose=args.verbose)
-    main(args.savefig, args.showfig, args.pdf,
-         args.cell, args.rtrain, args.reval)
+    main(
+        args.savefig,
+        args.showfig,
+        args.pdf,
+        args.cell,
+        args.rtrain,
+        args.reval,
+        args.base,
+    )
