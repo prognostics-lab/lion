@@ -37,10 +37,12 @@ parser.add_argument(
 )
 parser.add_argument(
     "-t", "--rtrain",
+    type=int,
     help="round to use for training",
 )
 parser.add_argument(
     "-e", "--reval",
+    type=int,
     help="round to use for evaluation",
 )
 parser.add_argument(
