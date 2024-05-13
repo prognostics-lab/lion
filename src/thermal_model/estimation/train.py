@@ -6,11 +6,11 @@ from thermal_model.estimation.models import generate_l2_error, target_lti_parame
 
 _GOOD_DEFAULT_PARAMS = TargetParams(cp=2288.8086878520617, cair=40.68543129463231,
                                     rair=0.05622811486407936, rin=0.29153746960754423, rout=0.09544187302807855)
+_EPSILON = 1e-9
 
 
 def lti_from_data(y, u, t, x0, chamber_std, cell_std, initial_guess=None,
-                  system_kwargs=None, optimizer_kwargs=None,
-                  optimizer_fn=optimize.minimize) -> tuple[
+                  system_kwargs=None, optimizer_kwargs=None) -> tuple[
                       tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray],
                       TargetParams
 ]:
@@ -25,7 +25,7 @@ def lti_from_data(y, u, t, x0, chamber_std, cell_std, initial_guess=None,
         y, u, t, x0, chamber_std, cell_std, **system_kwargs)
 
     if "bounds" not in optimizer_kwargs:
-        optimizer_kwargs["bounds"] = optimize.Bounds(0, np.inf)
+        optimizer_kwargs["bounds"] = (_EPSILON, np.inf)
     if "jac" not in optimizer_kwargs:
         optimizer_kwargs["jac"] = "3-point"
     if "hess" not in optimizer_kwargs:
@@ -37,10 +37,19 @@ def lti_from_data(y, u, t, x0, chamber_std, cell_std, initial_guess=None,
             "disp": True,
         }
 
-    params = optimize.minimize(
+    if "fn" not in optimizer_kwargs:
+        optimizer_fn = optimize.minimize
+    else:
+        optimizer_fn = optimizer_kwargs.pop("fn")
+
+    params = optimizer_fn(
         lambda p: error_fn(TargetParams(*p)),
         np.array([*initial_guess]),
-        **optimizer_kwargs,
+        **{
+            key: val
+            for key, val in optimizer_kwargs.items()
+            if key in optimizer_fn.__code__.co_varnames
+        }
     )
     final_params = TargetParams(*params.x)
     if "outputs" in system_kwargs:
