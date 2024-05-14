@@ -3,39 +3,41 @@
 csv_dir = "data/240209_temptest_C6B2/TestData.csv";
 opts = detectImportOptions(csv_dir);
 opts = setvaropts(opts, "Seconds", "InputFormat", "MM/dd/uuuu HH:mm:ss.SSS");
-table = readtable(csv_dir, opts);
+csv_table = readtable(csv_dir, opts);
 
 % Determine relevant parameters
-SEGMENT = 3;
+SEGMENT = 4;
 TIME_LIMIT = 50;
 
 % Extract data
-time = table(:, "Seconds") - table(1, "Seconds");
+time = csv_table(:, "Seconds") - csv_table(1, "Seconds");
 time = seconds(time.(1));
-current = table(:, "Current").(1);
-voltage = table(:, "Voltage").(1);
+current = csv_table(:, "Current").(1);
+voltage = csv_table(:, "Voltage").(1);
 [time, power] = get_segment(time, current, voltage, SEGMENT, TIME_LIMIT);
+amb_temp = 298 + 0 * sin(2 * pi * 0.0001 * time);
 
-%- Generated data -%
-% end_time = 10000;
-% SAMPLES_PER_SECOND = 100;
-% time = linspace(0, end_time, SAMPLES_PER_SECOND * end_time);
-% power = 100 * sin(2 * pi * 0.001 * time);
-
-%% Generate power profile timeseries
+% Generate timeseries
 power_profile = timeseries(power, time);
+amb_profile = timeseries(amb_temp, time);
 end_time = time(end);
 
 %% Set simulation parameters and run simulation
 % Parameters
 mdl = "sanity_check_sim";
-% open_system(mdl);
-simin = Simulink.SimulationInput(mdl);
-simin = setModelParameter(simin, ...
-    StopTime=string(end_time));
+REAL_PARAMS = dictionary("cp", 40, ...
+    "cair", 100, ...
+    "rin", 0.1, ...
+    "rout", 0.1, ...
+    "rair", 0.001, ...
+    "in_temp", 298, ...
+    "air_temp", 298);
+out = evaluate_model(end_time, mdl, REAL_PARAMS, 0.2);
 
-% Run simulation
-out = sim(simin);
+out_table = table(out.tout, out.simout.sf_temp.Data, out.simout.air_temp.Data, ...
+    out.simout.q_gen.Data, out.ambient.Data, ...
+    VariableNames=["time", "sf_temp", "air_temp", "q_gen", "amb_temp"]);
+writetable(out_table, "tests/sanity_check/sim.csv");
 
 %% Helper functions
 function [time, power] = get_segment(table_time, table_current, table_voltage, segment, time_limit)
@@ -59,4 +61,31 @@ time = time - time(1);
 current = table_current(segment_id == segment);
 voltage = table_voltage(segment_id == segment);
 power = current .* voltage;
+end
+
+
+function out = evaluate_model(end_time, mdl, params, initial_soc)
+cp = params("cp");
+cair = params("cair");
+rin = params("rin");
+rout = params("rout");
+rair = params("rair");
+in_temp = params("in_temp");
+air_temp = params("air_temp");
+simin = Simulink.SimulationInput(mdl);
+set_param(mdl, "SimulationCommand", "update");
+simin = setModelParameter(simin, ...
+    StopTime=string(end_time));
+simin = setBlockParameter(simin, ...
+    strcat(mdl, "/Battery"), "th_cp", string(cp), ...
+    strcat(mdl, "/Battery"), "th_cair", string(cair), ...
+    strcat(mdl, "/Battery"), "th_rin", string(rin), ...
+    strcat(mdl, "/Battery"), "th_rout", string(rout), ...
+    strcat(mdl, "/Battery"), "th_rair", string(rair), ...
+    strcat(mdl, "/Battery"), "initial_in_temp", string(in_temp), ...
+    strcat(mdl, "/Battery"), "initial_air_temp", string(air_temp), ...
+    strcat(mdl, "/Battery"), "initial_soc", string(initial_soc));
+
+% Run simulation
+out = sim(simin);
 end
