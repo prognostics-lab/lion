@@ -25,7 +25,7 @@ def lti_from_data(y, u, t, x0, chamber_std, cell_std, initial_guess=None,
         y, u, t, x0, chamber_std, cell_std, **system_kwargs)
 
     if "bounds" not in optimizer_kwargs:
-        optimizer_kwargs["bounds"] = (_EPSILON, np.inf)
+        optimizer_kwargs["bounds"] = optimize.Bounds(_EPSILON, np.inf)
     if "jac" not in optimizer_kwargs:
         optimizer_kwargs["jac"] = "3-point"
     if "hess" not in optimizer_kwargs:
