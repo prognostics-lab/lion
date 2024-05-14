@@ -1,27 +1,33 @@
 %% Data loading
-% Load csv file
-csv_dir = "data/240209_temptest_C6B2/TestData.csv";
-opts = detectImportOptions(csv_dir);
-opts = setvaropts(opts, "Seconds", "InputFormat", "MM/dd/uuuu HH:mm:ss.SSS");
-csv_table = readtable(csv_dir, opts);
+% % Load csv file
+% csv_dir = "data/240209_temptest_C6B2/TestData.csv";
+% opts = detectImportOptions(csv_dir);
+% opts = setvaropts(opts, "Seconds", "InputFormat", "MM/dd/uuuu HH:mm:ss.SSS");
+% csv_table = readtable(csv_dir, opts);
+% 
+% % Determine relevant parameters
+% SEGMENT = 4;
+% TIME_LIMIT = 50;
+% 
+% % Extract data
+% time = csv_table(:, "Seconds") - csv_table(1, "Seconds");
+% time = seconds(time.(1));
+% current = csv_table(:, "Current").(1);
+% voltage = csv_table(:, "Voltage").(1);
+% [time, power] = get_segment(time, current, voltage, SEGMENT, TIME_LIMIT);
+% amb_temp = 298 + 0 * sin(2 * pi * 0.0001 * time);
 
-% Determine relevant parameters
-SEGMENT = 4;
-TIME_LIMIT = 50;
 
-% Extract data
-time = csv_table(:, "Seconds") - csv_table(1, "Seconds");
-time = seconds(time.(1));
-current = csv_table(:, "Current").(1);
-voltage = csv_table(:, "Voltage").(1);
-[time, power] = get_segment(time, current, voltage, SEGMENT, TIME_LIMIT);
-amb_temp = 298 + 0 * sin(2 * pi * 0.0001 * time);
+time = linspace(0, 10000, 100000);
+power = 10 * sin(2 * pi * 0.001 * time);
+amb_temp = 298 + 0 * sin(2 * pi * 0.0001 * time)';
 
-% Generate timeseries
+
+%% Generate timeseries
 power_profile = timeseries(power, time);
 amb_profile = timeseries(amb_temp, time);
-% time_delta = time(2) - time(1);
-time_delta = 1;
+time_delta = time(2) - time(1);
+% time_delta = 1;
 end_time = time(end);
 
 %% Set simulation parameters and run simulation
@@ -87,6 +93,7 @@ rout = params("rout");
 rair = params("rair");
 in_temp = params("in_temp");
 air_temp = params("air_temp");
+open_system(mdl);
 simin = Simulink.SimulationInput(mdl);
 set_param(mdl, "SimulationCommand", "update");
 simin = setModelParameter(simin, ...
