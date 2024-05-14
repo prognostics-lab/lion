@@ -18,9 +18,14 @@
 % amb_temp = 298 + 0 * sin(2 * pi * 0.0001 * time);
 
 
-time = linspace(0, 10000, 100000);
-power = 10 * sin(2 * pi * 0.001 * time);
-amb_temp = 298 + 0 * sin(2 * pi * 0.0001 * time)';
+% Artificially generate data
+time = linspace(0, 10000, 100000)';
+SEGMENTS = 10;
+time_mod = (time(end) - time(1)) / SEGMENTS;
+power = 10 * sin(2 * pi * (0.000005 .* mod(time, time_mod) + 0) .* mod(time, time_mod));
+% amb_temp = 298 + 0 * sin(2 * pi * 0.0001 * time);
+AMB_TEMP_DELTA = SEGMENTS / 2;
+amb_temp = 298 + floor(2 * AMB_TEMP_DELTA * time / time(end)) - AMB_TEMP_DELTA;
 
 
 %% Generate timeseries
