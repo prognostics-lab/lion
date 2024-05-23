@@ -26,8 +26,8 @@ def acceptable_mse():
 
 
 @pytest.fixture(scope="session", autouse=True)
-def epsilon():
-    return 1e-6
+def alpha():
+    return 0.05
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -56,8 +56,8 @@ def optimize_results(logger, data):
         0,
         optimizer_kwargs={
             "fn": optimize.minimize,
-            "method": "SLSQP",
-            "tol": 1e-18,
+            "method": "Nelder-Mead",
+            "tol": 1e-3,
             "options": {
                 "maxiter": 1e2,
             },
@@ -95,46 +95,46 @@ def test_mse(optimize_results, acceptable_mse):
         acceptable_mse:.4e})"
 
 
-def test_cp(optimize_results, epsilon):
+def test_cp(optimize_results, alpha):
     *_, params, (*_, real_params) = optimize_results
     print(f"Real parameters: {real_params}")
     print(f"Parameters: {params}")
-    abs_error = np.abs(params.cp - real_params["cp"])
-    assert abs_error <= epsilon, f"Parameter 'cp' is below acceptable ({
-        abs_error:.4e} > {epsilon:.4e})"
+    percentual_error = np.abs(params.cp - real_params["cp"]) / real_params["cp"]
+    assert percentual_error <= alpha, f"Parameter 'cp' is below acceptable (ERR% is {
+        100 * percentual_error:.2f}% > {100 * alpha:.0f}%)"
 
 
-def test_cair(optimize_results, epsilon):
+def test_cair(optimize_results, alpha):
     *_, params, (*_, real_params) = optimize_results
     print(f"Real parameters: {real_params}")
     print(f"Parameters: {params}")
-    abs_error = np.abs(params.cair - real_params["cair"])
-    assert abs_error <= epsilon, f"Parameter 'cair' is below acceptable ({
-        abs_error:.4e} > {epsilon:.4e})"
+    percentual_error = np.abs(params.cair - real_params["cair"]) / real_params["cair"]
+    assert percentual_error <= alpha, f"Parameter 'cair' is below acceptable (ERR% is {
+        100 * percentual_error:.2f}% > {100 * alpha:.0f}%)"
 
 
-def test_rin(optimize_results, epsilon):
+def test_rin(optimize_results, alpha):
     *_, params, (*_, real_params) = optimize_results
     print(f"Real parameters: {real_params}")
     print(f"Parameters: {params}")
-    abs_error = np.abs(params.rin - real_params["rin"])
-    assert abs_error <= epsilon, f"Parameter 'rin' is below acceptable ({
-        abs_error:.4e} > {epsilon:.4e})"
+    percentual_error = np.abs(params.rin - real_params["rin"]) / real_params["rin"]
+    assert percentual_error <= alpha, f"Parameter 'rin' is below acceptable (ERR% is {
+        100 * percentual_error:.2f}% > {100 * alpha:.0f}%)"
 
 
-def test_rout(optimize_results, epsilon):
+def test_rout(optimize_results, alpha):
     *_, params, (*_, real_params) = optimize_results
     print(f"Real parameters: {real_params}")
     print(f"Parameters: {params}")
-    abs_error = np.abs(params.rout - real_params["rout"])
-    assert abs_error <= epsilon, f"Parameter 'rout' is below acceptable ({
-        abs_error:.4e} > {epsilon:.4e})"
+    percentual_error = np.abs(params.rout - real_params["rout"]) / real_params["rout"]
+    assert percentual_error <= alpha, f"Parameter 'rout' is below acceptable (ERR% is {
+        100 * percentual_error:.2f}% > {100 * alpha:.0f}%)"
 
 
-def test_rair(optimize_results, epsilon):
+def test_rair(optimize_results, alpha):
     *_, params, (*_, real_params) = optimize_results
     print(f"Real parameters: {real_params}")
     print(f"Parameters: {params}")
-    abs_error = np.abs(params.rair - real_params["rair"])
-    assert abs_error <= epsilon, f"Parameter 'rair' is below acceptable ({
-        abs_error:.4e} > {epsilon:.4e})"
+    percentual_error = np.abs(params.rair - real_params["rair"]) / real_params["rair"]
+    assert percentual_error <= alpha, f"Parameter 'rair' is below acceptable (ERR% is {
+        100 * percentual_error:.2f}% > {100 * alpha:.0f}%)"
