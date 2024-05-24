@@ -172,12 +172,12 @@ def main(savefig, showfig, img_fmt, cell, r_train, r_eval, base_str=None):
         system_kwargs={
             "outputs": "sf",
         }, optimizer_kwargs={
-            # "method": "Nelder-Mead",
-            # "callback": optimizer_callback,
-            # "fn": optimize.minimize,
-            "method": "trf",
-            "verbose": 2,
-            "fn": optimize.least_squares,
+            "method": "Nelder-Mead",
+            "callback": optimizer_callback,
+            "fn": optimize.minimize,
+            #"method": "trf",
+            #"verbose": 2,
+            #"fn": optimize.least_squares,
         },
     )
     LOGGER.info("\n")
