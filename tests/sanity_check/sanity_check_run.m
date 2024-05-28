@@ -19,10 +19,12 @@
 
 
 % Artificially generate data
-time = linspace(0, 10000, 100000)';
-SEGMENTS = 10;
+time = linspace(0, 1000, 100000)';
+SEGMENTS = 5;
 time_mod = (time(end) - time(1)) / SEGMENTS;
-power = 10 * sin(2 * pi * (0.000005 .* mod(time, time_mod) + 0) .* mod(time, time_mod));
+% power = 20 * sin(2 * pi * (0.000005 .* mod(time, time_mod) + 0) .* mod(time, time_mod));
+% power = 20 * chirp(time, 0, time(end), 0.1);
+power = 20 * sin(2 * pi * 0.05 * time);
 % amb_temp = 298 + 0 * sin(2 * pi * 0.0001 * time);
 AMB_TEMP_DELTA = SEGMENTS / 2;
 amb_temp = 298 + floor(2 * AMB_TEMP_DELTA * time / time(end)) - AMB_TEMP_DELTA;
@@ -58,7 +60,7 @@ fid = fopen("tests/sanity_check/params.json", "w");
 fprintf(fid, "%s", encoded);
 fclose(fid);
 
-out = evaluate_model(time_delta, end_time, mdl, REAL_PARAMS, 0.2);
+out = evaluate_model(time_delta, end_time, mdl, REAL_PARAMS, 0.3);
 
 out_table = table(out.tout, out.simout.sf_temp.Data, out.simout.air_temp.Data, ...
     out.simout.q_gen.Data, out.ambient.Data, ...
