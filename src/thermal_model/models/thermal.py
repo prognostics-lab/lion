@@ -15,7 +15,7 @@ def calculate_soc_coeff(temperature, params=THERMAL_PARAMS):
 
 
 def calculate_soc_with_temperature(soc, temperature, params=THERMAL_PARAMS):
-    return 1 + (soc - 1) / calculate_soc_coeff(temperature, params.t_ref, params.a, params.b)
+    return 1 + (soc - 1) / calculate_soc_coeff(temperature, params)
 
 
 # def calculate_entropy_change(temperature, soc, th_params=THERMAL_PARAMS, ocv_params=OCV_PARAMS):
