@@ -91,7 +91,7 @@ def target_response(u, t, x0, params: TargetParams, **kwargs):
     out = sys.output(u, t, x0)
     y = out[1]
     x = out[2]
-    return y, x
+    return y
 
 
 def target_response_noisy_nl(u, t, x0, params: TargetNLParams, chamber_std, cell_std, **kwargs):
@@ -107,43 +107,43 @@ def target_response_nl(u, t, x0, params: TargetNLParams, **kwargs):
     out = sys.output(u, t, x0)
     y = out[1] + params.k
     x = out[2]
-    return y, x
+    return y
 
 
-def generate_l1_error(expected, u, t, x0, chamber_std, cell_std, **kwargs):
-    def _generate_system(params: TargetParams) -> float:
-        obtained = target_response_noisy(u, t, x0, params, chamber_std, cell_std, **kwargs)
-        error = expected - obtained
-        return np.abs(error).sum() / len(t)
-    return _generate_system
+# def generate_l1_error(expected, u, t, x0, chamber_std, cell_std, **kwargs):
+#     def _generate_system(params: TargetParams) -> float:
+#         obtained = target_response_noisy(u, t, x0, params, chamber_std, cell_std, **kwargs)
+#         error = expected - obtained
+#         return np.abs(error).sum() / len(t)
+#     return _generate_system
 
 
-def generate_l2_error(expected, u, t, x0, chamber_std, cell_std, **kwargs):
-    def _generate_system(params: TargetParams) -> float:
-        obtained = target_response_noisy(u, t, x0, params, chamber_std, cell_std, **kwargs)
-        error = expected - obtained
-        try:
-            mse = np.diag(error.conjugate().T @ error).sum() / len(t)
-        except ValueError:
-            mse = error.conjugate().T @ error / len(t)
-        return mse
-    return _generate_system
+# def generate_l2_error(expected, u, t, x0, chamber_std, cell_std, **kwargs):
+#     def _generate_system(params: TargetParams) -> float:
+#         obtained = target_response_noisy(u, t, x0, params, chamber_std, cell_std, **kwargs)
+#         error = expected - obtained
+#         try:
+#             mse = np.diag(error.conjugate().T @ error).sum() / len(t)
+#         except ValueError:
+#             mse = error.conjugate().T @ error / len(t)
+#         return mse
+#     return _generate_system
 
 
-def generate_l1_error_nl(expected, u, t, x0, chamber_std, cell_std, **kwargs):
-    def _generate_system(params: TargetNLParams) -> float:
-        obtained = target_response_noisy_nl(u, t, x0, params, chamber_std, cell_std, **kwargs)
-        error = expected - obtained
-        return np.abs(error).sum() / len(t)
-    return _generate_system
+# def generate_l1_error_nl(expected, u, t, x0, chamber_std, cell_std, **kwargs):
+#     def _generate_system(params: TargetNLParams) -> float:
+#         obtained = target_response_noisy_nl(u, t, x0, params, chamber_std, cell_std, **kwargs)
+#         error = expected - obtained
+#         return np.abs(error).sum() / len(t)
+#     return _generate_system
 
 
-def generate_l2_error_nl(expected, u, t, x0, chamber_std, cell_std, **kwargs):
-    def _generate_system(params: TargetNLParams) -> float:
-        obtained = target_response_noisy_nl(u, t, x0, params, chamber_std, cell_std, **kwargs)
-        error = expected - obtained
-        return np.diag(error.conjugate().T @ error).sum() / len(t)
-    return _generate_system
+# def generate_l2_error_nl(expected, u, t, x0, chamber_std, cell_std, **kwargs):
+#     def _generate_system(params: TargetNLParams) -> float:
+#         obtained = target_response_noisy_nl(u, t, x0, params, chamber_std, cell_std, **kwargs)
+#         error = expected - obtained
+#         return np.diag(error.conjugate().T @ error).sum() / len(t)
+#     return _generate_system
 
 
 def generate_evaluation(expected, u, t, x0, **kwargs):

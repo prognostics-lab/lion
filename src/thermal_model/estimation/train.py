@@ -2,14 +2,15 @@ from scipy import optimize
 import numpy as np
 
 from thermal_model.estimation.params import TargetParams
-from thermal_model.estimation.models import generate_l2_error, target_lti_parameters, get_lti_params_fn
+from thermal_model.estimation.models import target_lti_parameters, get_lti_params_fn
+from thermal_model.estimation import error
 
 _GOOD_DEFAULT_PARAMS = TargetParams(cp=2288.8086878520617, cair=40.68543129463231,
                                     rair=0.05622811486407936, rin=0.29153746960754423, rout=0.09544187302807855)
 _EPSILON = 1e-9
 
 
-def lti_from_data(y, u, t, x0, chamber_std, cell_std, initial_guess=None,
+def lti_from_data(y, u, t, x0, initial_guess=None,
                   system_kwargs=None, optimizer_kwargs=None) -> tuple[
                       tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray],
                       TargetParams
@@ -20,9 +21,6 @@ def lti_from_data(y, u, t, x0, chamber_std, cell_std, initial_guess=None,
         system_kwargs = {}
     if optimizer_kwargs is None:
         optimizer_kwargs = {}
-
-    error_fn = generate_l2_error(
-        y, u, t, x0, chamber_std, cell_std, **system_kwargs)
 
     if "bounds" not in optimizer_kwargs:
         optimizer_kwargs["bounds"] = optimize.Bounds(_EPSILON, np.inf)
@@ -41,6 +39,14 @@ def lti_from_data(y, u, t, x0, chamber_std, cell_std, initial_guess=None,
         optimizer_fn = optimize.minimize
     else:
         optimizer_fn = optimizer_kwargs.pop("fn")
+
+    if "err" not in optimizer_kwargs:
+        error_functional = error.l2
+    else:
+        error_functional = optimizer_kwargs.pop("err")
+
+    error_fn = error_functional(
+        y, u, t, x0, **system_kwargs)
 
     params = optimizer_fn(
         lambda p: error_fn(TargetParams(*p)),
