@@ -1,1 +1,1 @@
-{"cp":40,"cair":100,"rin":0.1,"rout":0.1,"rair":0.001,"in_temp":298,"air_temp":298}
+{"cp":40,"cair":1E-9,"rin":0.1,"rout":10,"rair":1E-9,"in_temp":298,"air_temp":298}

@@ -1,3 +1,26 @@
+%% Set simulation parameters
+% Parameters
+mdl = "sanity_check_sim";
+REAL_PARAMS = dictionary("cp", 40, ...
+    "cair", 1e-9, ...
+    "rin", 0.1, ...
+    "rout", 10, ...
+    "rair", 1e-9, ...
+    "in_temp", 298, ...
+    "air_temp", 298);
+
+% Write parameters to file
+encoded = jsonencode(struct("cp", REAL_PARAMS("cp"), ...
+    "cair", REAL_PARAMS("cair"), ...
+    "rin", REAL_PARAMS("rin"), ...
+    "rout", REAL_PARAMS("rout"), ...
+    "rair", REAL_PARAMS("rair"), ...
+    "in_temp", REAL_PARAMS("in_temp"), ...
+    "air_temp", REAL_PARAMS("air_temp")));
+fid = fopen("tests/sanity_check/params.json", "w");
+fprintf(fid, "%s", encoded);
+fclose(fid);
+
 %% Data loading
 % % Load csv file
 % csv_dir = "data/240209_temptest_C6B2/TestData.csv";
@@ -18,50 +41,33 @@
 % amb_temp = 298 + 0 * sin(2 * pi * 0.0001 * time);
 
 
-% Artificially generate data
-time = linspace(0, 1000, 100000)';
-SEGMENTS = 5;
+% % Artificially generate data
+time = linspace(0, 100000, 1000000)';
+end_time = time(end);
+SEGMENTS = 10;
 time_mod = (time(end) - time(1)) / SEGMENTS;
-% power = 20 * sin(2 * pi * (0.000005 .* mod(time, time_mod) + 0) .* mod(time, time_mod));
+power = 20 * sin(2 * pi * (0.000005 .* mod(time, time_mod) + 0) .* mod(time, time_mod));
 % power = 20 * chirp(time, 0, time(end), 0.1);
-power = 20 * sin(2 * pi * 0.05 * time);
+% power = 0.1;
 % amb_temp = 298 + 0 * sin(2 * pi * 0.0001 * time);
 AMB_TEMP_DELTA = SEGMENTS / 2;
 amb_temp = 298 + floor(2 * AMB_TEMP_DELTA * time / time(end)) - AMB_TEMP_DELTA;
+% amb_temp = 298;
 
+
+% Experiment for parameter estimation
+% time = linspace(0, 10000, 100000)';
+% power = 0.2 * ones(size(time));
+% amb_temp = 273 * ones(size(time));
 
 %% Generate timeseries
 power_profile = timeseries(power, time);
 amb_profile = timeseries(amb_temp, time);
 time_delta = time(2) - time(1);
-% time_delta = 1;
 end_time = time(end);
 
 %% Set simulation parameters and run simulation
-% Parameters
-mdl = "sanity_check_sim";
-REAL_PARAMS = dictionary("cp", 40, ...
-    "cair", 100, ...
-    "rin", 0.1, ...
-    "rout", 0.1, ...
-    "rair", 0.001, ...
-    "in_temp", 298, ...
-    "air_temp", 298);
-
-% Write parameters to file
-encoded = jsonencode(struct("cp", REAL_PARAMS("cp"), ...
-    "cair", REAL_PARAMS("cair"), ...
-    "rin", REAL_PARAMS("rin"), ...
-    "rout", REAL_PARAMS("rout"), ...
-    "rair", REAL_PARAMS("rair"), ...
-    "in_temp", REAL_PARAMS("in_temp"), ...
-    "air_temp", REAL_PARAMS("air_temp")));
-fid = fopen("tests/sanity_check/params.json", "w");
-fprintf(fid, "%s", encoded);
-fclose(fid);
-
-out = evaluate_model(time_delta, end_time, mdl, REAL_PARAMS, 0.3);
-
+out = evaluate_model(time_delta, end_time, mdl, REAL_PARAMS, 0.1);
 out_table = table(out.tout, out.simout.sf_temp.Data, out.simout.air_temp.Data, ...
     out.simout.q_gen.Data, out.ambient.Data, ...
     VariableNames=["time", "sf_temp", "air_temp", "q_gen", "amb_temp"]);
@@ -119,4 +125,9 @@ simin = setBlockParameter(simin, ...
 
 % Run simulation
 out = sim(simin);
+end
+
+
+function rout = find_rout(out)
+rout = (out.simout.sf_temp.Data(end) - out.ambient.Data(end)) / out.simout.q_gen.Data(end);
 end
