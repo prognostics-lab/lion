@@ -64,35 +64,32 @@ def get_rout(logger, exp1_data):
 
 @pytest.fixture(scope="session", autouse=True)
 def optimize_results(logger, get_rout, exp2_data):
-    y, u, t, x0, _ = exp2_data
+    y, u, t, x0, _real_params = exp2_data
 
     (A, B, C, _), params = lti_from_data(
         y,
         u,
         t,
         x0,
-        initial_guess=TargetParams(cp=10, cair=10, rin=10, rout=get_rout, rair=10),
+        initial_guess=TargetParams(cp=10, cair=_real_params["cair"], rin=10, rout=get_rout, rair=_real_params["rair"]),
+        fixed_params={"cair": _real_params["cair"], "rout": get_rout, "rair": _real_params["rair"]},
         optimizer_kwargs={
             "fn": optimize.minimize,
             "method": "Nelder-Mead",
             "tol": 1e-3,
             "options": {
+                "disp": True,
                 "maxiter": 1e2,
             },
-            "err": error.l2,
+            "err": error.likelihood_no_model_noise,
 
             # "fn": optimize.least_squares,
             # "method": "trf",
             # "verbose": 2,
             # "bounds": (_EPSILON, np.inf),
-
-            # "fn": optimize.minimize,
-            # "method": "BFGS",
-            # "tol": 1e-3,
-            # "options": {
-            #     "maxiter": 1e2,
-            # },
-            # "err": error.l2,
+        },
+        system_kwargs={
+            "sensor_cov": (1000**2) * np.eye(2),
         },
     )
     logger.info("\n")
