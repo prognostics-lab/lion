@@ -1,7 +1,7 @@
 from scipy import optimize
 import numpy as np
 
-from thermal_model.estimation.params import TargetParams
+from thermal_model.estimation.params import TargetParams, params_prefilled
 from thermal_model.estimation.models import target_lti_parameters, get_lti_params_fn
 from thermal_model.estimation import error
 
@@ -10,11 +10,13 @@ _GOOD_DEFAULT_PARAMS = TargetParams(cp=2288.8086878520617, cair=40.6854312946323
 _EPSILON = 1e-9
 
 
-def lti_from_data(y, u, t, x0, initial_guess=None,
+def lti_from_data(y, u, t, x0, initial_guess=None, *, fixed_params=None,
                   system_kwargs=None, optimizer_kwargs=None) -> tuple[
                       tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray],
                       TargetParams
 ]:
+    if fixed_params is None:
+        fixed_params = {}
     if initial_guess is None:
         initial_guess = _GOOD_DEFAULT_PARAMS
     if system_kwargs is None:
@@ -49,7 +51,7 @@ def lti_from_data(y, u, t, x0, initial_guess=None,
         y, u, t, x0, **system_kwargs)
 
     params = optimizer_fn(
-        lambda p: error_fn(TargetParams(*p)),
+        lambda p: error_fn(TargetParams(*params_prefilled(p, fixed_params))),
         np.array([*initial_guess]),
         **{
             key: val
@@ -57,7 +59,7 @@ def lti_from_data(y, u, t, x0, initial_guess=None,
             if key in optimizer_fn.__code__.co_varnames
         }
     )
-    final_params = TargetParams(*params.x)
+    final_params = TargetParams(*params_prefilled(params.x, fixed_params))
     if "outputs" in system_kwargs:
         params_fn = get_lti_params_fn(system_kwargs["outputs"])
     else:
