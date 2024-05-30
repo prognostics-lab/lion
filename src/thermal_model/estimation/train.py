@@ -30,8 +30,8 @@ def lti_from_data(y, u, t, x0, initial_guess=None, *, fixed_params=None,
         optimizer_kwargs["jac"] = "3-point"
     if "hess" not in optimizer_kwargs:
         optimizer_kwargs["hess"] = "3-point"
-    if "method" not in optimizer_kwargs:
-        optimizer_kwargs["method"] = "Nelder-Mead"
+    # if "method" not in optimizer_kwargs:
+    #     optimizer_kwargs["method"] = "Nelder-Mead"
     if "options" not in optimizer_kwargs:
         optimizer_kwargs["options"] = {
             "disp": True,

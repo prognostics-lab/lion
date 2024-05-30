@@ -90,7 +90,6 @@ def target_response(u, t, x0, params: TargetParams, **kwargs):
     sys = target_lti(params, **kwargs)
     out = sys.output(u, t, x0)
     y = out[1]
-    x = out[2]
     return y
 
 
@@ -106,7 +105,6 @@ def target_response_nl(u, t, x0, params: TargetNLParams, **kwargs):
     sys = target_lti(params, **kwargs)
     out = sys.output(u, t, x0)
     y = out[1] + params.k
-    x = out[2]
     return y
 
 
@@ -148,15 +146,15 @@ def target_response_nl(u, t, x0, params: TargetNLParams, **kwargs):
 
 def generate_evaluation(expected, u, t, x0, **kwargs):
     def _generate_system(params: TargetParams) -> float:
-        y, x = target_response(u, t, x0, params, **kwargs)
+        y = target_response(u, t, x0, params, **kwargs)
         error = expected - y
-        return expected, y, error, x
+        return expected, y, error
     return _generate_system
 
 
 def generate_evaluation_nl(expected, u, t, x0, **kwargs):
     def _generate_system(params: TargetNLParams) -> float:
-        y, x = target_response_nl(u, t, x0, params, **kwargs)
+        y = target_response_nl(u, t, x0, params, **kwargs)
         error = expected - y
-        return expected, y, error, x
+        return expected, y, error
     return _generate_system
