@@ -1,11 +1,10 @@
 %% Set simulation parameters
 % Parameters
-mdl = "sanity_check_sim";
-REAL_PARAMS = dictionary("cp", 40, ...
-    "cair", 1e-9, ...
-    "rin", 0.1, ...
-    "rout", 10, ...
-    "rair", 1e-9, ...
+REAL_PARAMS = dictionary("cp", 100, ...
+    "cair", 1, ...
+    "rin", 3, ...
+    "rout", 9, ...
+    "rair", 1, ...
     "in_temp", 298, ...
     "air_temp", 298);
 
@@ -42,36 +41,61 @@ fclose(fid);
 
 
 % % Artificially generate data
-time = linspace(0, 100000, 1000000)';
-end_time = time(end);
-SEGMENTS = 10;
-time_mod = (time(end) - time(1)) / SEGMENTS;
-power = 20 * sin(2 * pi * (0.000005 .* mod(time, time_mod) + 0) .* mod(time, time_mod));
-% power = 20 * chirp(time, 0, time(end), 0.1);
-% power = 0.1;
-% amb_temp = 298 + 0 * sin(2 * pi * 0.0001 * time);
-AMB_TEMP_DELTA = SEGMENTS / 2;
-amb_temp = 298 + floor(2 * AMB_TEMP_DELTA * time / time(end)) - AMB_TEMP_DELTA;
-% amb_temp = 298;
+% time = linspace(0, 100000, 1000000)';
+% end_time = time(end);
+% SEGMENTS = 10;
+% time_mod = (time(end) - time(1)) / SEGMENTS;
+% power = 20 * sin(2 * pi * (0.000005 .* mod(time, time_mod) + 0) .* mod(time, time_mod));
+% % power = 20 * chirp(time, 0, time(end), 0.1);
+% % power = 0.1;
+% % amb_temp = 298 + 0 * sin(2 * pi * 0.0001 * time);
+% AMB_TEMP_DELTA = SEGMENTS / 2;
+% amb_temp = 298 + floor(2 * AMB_TEMP_DELTA * time / time(end)) - AMB_TEMP_DELTA;
+% % amb_temp = 298;
 
 
-% Experiment for parameter estimation
-% time = linspace(0, 10000, 100000)';
-% power = 0.2 * ones(size(time));
-% amb_temp = 273 * ones(size(time));
+% Experiment for Rout estimation
+exp1_time = linspace(0, 10000, 100000)';
+exp1_power = 0.2 * ones(size(exp1_time));
+exp1_amb_temp = 273 * ones(size(exp1_time));
+
+exp2_time = linspace(0, 100000, 1000000)';
+exp2_power = 3 * (square(2 * pi * (5 / (exp2_time(end) - exp2_time(1))) * exp2_time));
+exp2_amb_temp = 273 * ones(size(exp2_time));
 
 %% Generate timeseries
-power_profile = timeseries(power, time);
-amb_profile = timeseries(amb_temp, time);
-time_delta = time(2) - time(1);
-end_time = time(end);
+exp1_power_profile = timeseries(exp1_power, exp1_time);
+exp1_amb_profile = timeseries(exp1_amb_temp, exp1_time);
+exp1_time_delta = exp1_time(2) - exp1_time(1);
+exp1_end_time = exp1_time(end);
+
+exp2_power_profile = timeseries(exp2_power, exp2_time);
+exp2_amb_profile = timeseries(exp2_amb_temp, exp2_time);
+exp2_time_delta = exp2_time(2) - exp2_time(1);
+exp2_end_time = exp2_time(end);
 
 %% Set simulation parameters and run simulation
-out = evaluate_model(time_delta, end_time, mdl, REAL_PARAMS, 0.1);
-out_table = table(out.tout, out.simout.sf_temp.Data, out.simout.air_temp.Data, ...
-    out.simout.q_gen.Data, out.ambient.Data, ...
+mdl = "sanity_check_sim";
+
+% Experiment 1 (Rout estimation)
+disp("Running experiment 1");
+power_profile = exp1_power_profile;
+amb_profile = exp1_amb_profile;
+out1 = evaluate_model(exp1_time_delta, exp1_end_time, mdl, REAL_PARAMS, 0.1);
+out_table1 = table(out1.tout, out1.simout.sf_temp.Data, out1.simout.air_temp.Data, ...
+    out1.simout.q_gen.Data, out1.ambient.Data, ...
     VariableNames=["time", "sf_temp", "air_temp", "q_gen", "amb_temp"]);
-writetable(out_table, "tests/sanity_check/sim.csv");
+writetable(out_table1, "tests/sanity_check/exp1_sim.csv");
+
+% Experiment 2 (Rin, Cp)
+disp("Running experiment 2");
+power_profile = exp2_power_profile;
+amb_profile = exp2_amb_profile;
+out2 = evaluate_model(exp2_time_delta, exp2_end_time, mdl, REAL_PARAMS, 0.8);
+out_table2 = table(out2.tout, out2.simout.sf_temp.Data, out2.simout.air_temp.Data, ...
+    out2.simout.q_gen.Data, out2.ambient.Data, ...
+    VariableNames=["time", "sf_temp", "air_temp", "q_gen", "amb_temp"]);
+writetable(out_table2, "tests/sanity_check/exp2_sim.csv");
 
 %% Helper functions
 function [time, power] = get_segment(table_time, table_current, table_voltage, segment, time_limit)
@@ -106,7 +130,7 @@ rout = params("rout");
 rair = params("rair");
 in_temp = params("in_temp");
 air_temp = params("air_temp");
-open_system(mdl);
+handle = load_system(mdl);
 simin = Simulink.SimulationInput(mdl);
 set_param(mdl, "SimulationCommand", "update");
 simin = setModelParameter(simin, ...

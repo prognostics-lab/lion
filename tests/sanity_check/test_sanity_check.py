@@ -6,7 +6,7 @@ import pandas as pd
 from scipy import optimize
 import pytest
 
-from thermal_model.estimation import lti_from_data
+from thermal_model.estimation import lti_from_data, TargetParams, error
 from thermal_model.estimation.models import generate_evaluation
 from thermal_model.logger import LOGGER, setup_logger
 
@@ -31,8 +31,8 @@ def alpha():
 
 
 @pytest.fixture(scope="session", autouse=True)
-def data():
-    df = pd.read_csv(os.path.join("tests", "sanity_check", "sim.csv"))
+def exp1_data():
+    df = pd.read_csv(os.path.join("tests", "sanity_check", "exp1_sim.csv"))
     with open(os.path.join("tests", "sanity_check", "params.json"), "r") as file:
         real_params = json.load(file)
 
@@ -44,16 +44,34 @@ def data():
 
 
 @pytest.fixture(scope="session", autouse=True)
-def optimize_results(logger, data):
-    y, u, t, x0, _ = data
+def exp2_data():
+    df = pd.read_csv(os.path.join("tests", "sanity_check", "exp2_sim.csv"))
+    with open(os.path.join("tests", "sanity_check", "params.json"), "r") as file:
+        real_params = json.load(file)
+
+    y = np.array([df["sf_temp"].to_numpy(), df["air_temp"].to_numpy()]).T
+    u = np.array([df["amb_temp"].to_numpy(), df["q_gen"].to_numpy()]).T
+    t = df["time"].to_numpy()
+    x0 = np.array([real_params["in_temp"], real_params["air_temp"]])
+    return y, u, t, x0, real_params
+
+
+@pytest.fixture(scope="session", autouse=True)
+def get_rout(logger, exp1_data):
+    y, u, t, x0, _ = exp1_data
+    return (y[-1, 0] - u[-1, 0]) / u[-1, 1]
+
+
+@pytest.fixture(scope="session", autouse=True)
+def optimize_results(logger, get_rout, exp2_data):
+    y, u, t, x0, _ = exp2_data
 
     (A, B, C, _), params = lti_from_data(
         y,
         u,
         t,
         x0,
-        0,
-        0,
+        initial_guess=TargetParams(cp=10, cair=10, rin=10, rout=get_rout, rair=10),
         optimizer_kwargs={
             "fn": optimize.minimize,
             "method": "Nelder-Mead",
@@ -61,10 +79,20 @@ def optimize_results(logger, data):
             "options": {
                 "maxiter": 1e2,
             },
+            "err": error.l2,
+
             # "fn": optimize.least_squares,
             # "method": "trf",
             # "verbose": 2,
             # "bounds": (_EPSILON, np.inf),
+
+            # "fn": optimize.minimize,
+            # "method": "BFGS",
+            # "tol": 1e-3,
+            # "options": {
+            #     "maxiter": 1e2,
+            # },
+            # "err": error.l2,
         },
     )
     logger.info("\n")
@@ -73,7 +101,7 @@ def optimize_results(logger, data):
     logger.info(f"B = \n{B}")
     logger.info(f"C = \n{C}")
     print(params)
-    return A, B, C, params, data
+    return A, B, C, params, exp2_data
 
 
 def test_observable(optimize_results):
