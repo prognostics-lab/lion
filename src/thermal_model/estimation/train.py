@@ -7,7 +7,7 @@ from thermal_model.estimation import error
 
 _GOOD_DEFAULT_PARAMS = TargetParams(cp=2288.8086878520617, cair=40.68543129463231,
                                     rair=0.05622811486407936, rin=0.29153746960754423, rout=0.09544187302807855)
-_EPSILON = 1e-9
+_EPSILON = 1e-12
 
 
 def lti_from_data(y, u, t, x0, initial_guess=None, *, fixed_params=None,
@@ -26,16 +26,16 @@ def lti_from_data(y, u, t, x0, initial_guess=None, *, fixed_params=None,
 
     if "bounds" not in optimizer_kwargs:
         optimizer_kwargs["bounds"] = optimize.Bounds(_EPSILON, np.inf)
-    if "jac" not in optimizer_kwargs:
-        optimizer_kwargs["jac"] = "3-point"
-    if "hess" not in optimizer_kwargs:
-        optimizer_kwargs["hess"] = "3-point"
+    # if "jac" not in optimizer_kwargs:
+    #     optimizer_kwargs["jac"] = "3-point"
+    # if "hess" not in optimizer_kwargs:
+    #     optimizer_kwargs["hess"] = "3-point"
     # if "method" not in optimizer_kwargs:
     #     optimizer_kwargs["method"] = "Nelder-Mead"
-    if "options" not in optimizer_kwargs:
-        optimizer_kwargs["options"] = {
-            "disp": True,
-        }
+    # if "options" not in optimizer_kwargs:
+    #     optimizer_kwargs["options"] = {
+    #         "disp": True,
+    #     }
 
     if "fn" not in optimizer_kwargs:
         optimizer_fn = optimize.minimize
