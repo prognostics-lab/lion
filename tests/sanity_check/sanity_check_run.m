@@ -40,25 +40,12 @@ fclose(fid);
 % amb_temp = 298 + 0 * sin(2 * pi * 0.0001 * time);
 
 
-% % Artificially generate data
-% time = linspace(0, 100000, 1000000)';
-% end_time = time(end);
-% SEGMENTS = 10;
-% time_mod = (time(end) - time(1)) / SEGMENTS;
-% power = 20 * sin(2 * pi * (0.000005 .* mod(time, time_mod) + 0) .* mod(time, time_mod));
-% % power = 20 * chirp(time, 0, time(end), 0.1);
-% % power = 0.1;
-% % amb_temp = 298 + 0 * sin(2 * pi * 0.0001 * time);
-% AMB_TEMP_DELTA = SEGMENTS / 2;
-% amb_temp = 298 + floor(2 * AMB_TEMP_DELTA * time / time(end)) - AMB_TEMP_DELTA;
-% % amb_temp = 298;
-
-
 % Experiment for Rout estimation
-exp1_time = linspace(0, 10000, 100000)';
-exp1_power = 0.2 * ones(size(exp1_time));
+exp1_time = linspace(0, 20000, 100000)';
+exp1_power = 0.05 * ones(size(exp1_time));
 exp1_amb_temp = 273 * ones(size(exp1_time));
 
+% Experiment for Cp and Rin
 exp2_time = linspace(0, 100000, 100000)';
 exp2_power = 3 * (square(2 * pi * (5 / (exp2_time(end) - exp2_time(1))) * exp2_time));
 exp2_amb_temp = 273 * ones(size(exp2_time));

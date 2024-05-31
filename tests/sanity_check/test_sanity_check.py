@@ -28,7 +28,7 @@ def acceptable_mse():
 
 @pytest.fixture(scope="session", autouse=True)
 def alpha():
-    return 0.05
+    return 0.1
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -80,12 +80,12 @@ def optimize_results(logger, get_rout, exp2_data):
             cp=1,
             cair=_real_params["cair"],
             rin=1,
-            rout=1,
+            rout=get_rout,
             rair=_real_params["rair"],
         ),
         fixed_params={
             "cair": _real_params["cair"],
-            "rout": 9, "rair": _real_params["rair"],
+            "rout": get_rout, "rair": _real_params["rair"],
         },
         optimizer_kwargs={
             "fn": optimize.minimize,
@@ -98,10 +98,7 @@ def optimize_results(logger, get_rout, exp2_data):
             },
             "err": error.l2,
         },
-        system_kwargs={
-            "sensor_cov": (100**2) * np.eye(2),
-            "prior": _prior,
-        },
+        system_kwargs={},
     )
     logger.info("\n")
     logger.info(f"Final parameters: {params}")
