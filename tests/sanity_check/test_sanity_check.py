@@ -9,6 +9,7 @@ import pytest
 from thermal_model.estimation import lti_from_data, TargetParams, error
 from thermal_model.estimation.models import generate_evaluation
 from thermal_model.logger import LOGGER, setup_logger
+from statistics.distributions import pdf_uniform, pdf_gaussian
 
 
 _EPSILON = 1e-9
@@ -65,31 +66,41 @@ def get_rout(logger, exp1_data):
 @pytest.fixture(scope="session", autouse=True)
 def optimize_results(logger, get_rout, exp2_data):
     y, u, t, x0, _real_params = exp2_data
+    def _prior(params: TargetParams) -> float:
+        prior_cp = pdf_gaussian(params.cp, 100, 10)
+        prior_rin = pdf_gaussian(params.rin, 3, 10)
+        return prior_cp * prior_rin
 
     (A, B, C, _), params = lti_from_data(
         y,
         u,
         t,
         x0,
-        initial_guess=TargetParams(cp=10, cair=_real_params["cair"], rin=10, rout=get_rout, rair=_real_params["rair"]),
-        fixed_params={"cair": _real_params["cair"], "rout": get_rout, "rair": _real_params["rair"]},
+        initial_guess=TargetParams(
+            cp=1,
+            cair=_real_params["cair"],
+            rin=1,
+            rout=1,
+            rair=_real_params["rair"],
+        ),
+        fixed_params={
+            "cair": _real_params["cair"],
+            "rout": 9, "rair": _real_params["rair"],
+        },
         optimizer_kwargs={
             "fn": optimize.minimize,
-            "method": "Nelder-Mead",
+            "method": "L-BFGS-B",
+            "jac": "3-point",
             "tol": 1e-3,
             "options": {
                 "disp": True,
                 "maxiter": 1e2,
             },
-            "err": error.likelihood_no_model_noise,
-
-            # "fn": optimize.least_squares,
-            # "method": "trf",
-            # "verbose": 2,
-            # "bounds": (_EPSILON, np.inf),
+            "err": error.l2,
         },
         system_kwargs={
-            "sensor_cov": (1000**2) * np.eye(2),
+            "sensor_cov": (100**2) * np.eye(2),
+            "prior": _prior,
         },
     )
     logger.info("\n")
@@ -110,7 +121,8 @@ def test_observable(optimize_results):
 def test_mse(optimize_results, acceptable_mse):
     *_, params, (y, u, t, x0, _) = optimize_results
     evaluate = generate_evaluation(y, u, t, x0)
-    *_, error, _ = evaluate(params)
+    *_, error = evaluate(params)
+    print()
     try:
         mse = np.diag(error.conjugate().T @ error).sum() / len(error)
     except ValueError:
