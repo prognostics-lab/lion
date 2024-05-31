@@ -1,3 +1,6 @@
+from thermal_model.estimation import error
+
+
 def main():
     y, u, t, x0, _ = data
 
@@ -6,19 +9,14 @@ def main():
         u,
         t,
         x0,
-        0,
-        0,
         optimizer_kwargs={
             "fn": optimize.minimize,
-            "method": "Nelder-Mead",
+            "method": "L-BFGS-B",
             "tol": 1e-3,
             "options": {
                 "maxiter": 1e2,
             },
-            # "fn": optimize.least_squares,
-            # "method": "trf",
-            # "verbose": 2,
-            # "bounds": (_EPSILON, np.inf),
+            "err": error.l2,
         },
     )
     logger.info("\n")
