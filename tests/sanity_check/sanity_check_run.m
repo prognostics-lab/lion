@@ -83,6 +83,7 @@ out_table2 = table(out2.tout, out2.simout.sf_temp.Data, out2.simout.air_temp.Dat
     out2.simout.q_gen.Data, out2.ambient.Data, ...
     VariableNames=["time", "sf_temp", "air_temp", "q_gen", "amb_temp"]);
 writetable(out_table2, "tests/sanity_check/exp2_sim.csv");
+save("tests/sanity_check/ws.mat");
 
 %% Helper functions
 function [time, power] = get_segment(table_time, table_current, table_voltage, segment, time_limit)
