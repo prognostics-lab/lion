@@ -59,6 +59,19 @@ def target_lti_parameters_airtemp(params: TargetParams | TargetNLParams):
     return a_mat, b_mat, c_mat, d_mat
 
 
+def target_lti_parameters_noair(params: TargetParams | TargetNLParams):
+    rt = params.rin + params.rout
+    a_mat = -1 / (params.cp * rt)
+    b_mat = np.array([
+        [1 / (params.cp * rt), 1 / params.cp],
+    ])
+    c_mat = params.rout / rt
+    d_mat = np.array([
+        [params.rin / rt],
+    ])
+    return a_mat, b_mat, c_mat, d_mat
+
+
 def get_lti_params_fn(outputs: {"sf", "air", "both"} = "both"):
     match outputs:
         case "sf":
@@ -67,6 +80,8 @@ def get_lti_params_fn(outputs: {"sf", "air", "both"} = "both"):
             return target_lti_parameters_airtemp
         case "both":
             return target_lti_parameters
+        case "noair":
+            return target_lti_parameters_noair
         case _:
             print(f"**WARNING** Option '{outputs}' not recognized, defaulting to 'both'")
             return target_lti_parameters

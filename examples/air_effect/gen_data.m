@@ -60,10 +60,10 @@ exp2_time_delta = exp2_time(2) - exp2_time(1);
 exp2_end_time = exp2_time(end);
 
 %% Set simulation parameters and run simulation
-mdl = "sanity_check_sim";
 
 % Model with air considerations
 disp("Evaluating model with air");
+mdl = "air_effect";
 disp("Running experiment 1");
 power_profile = exp1_power_profile;
 amb_profile = exp1_amb_profile;
@@ -86,6 +86,7 @@ writetable(out_table2_air, "examples/air_effect/exp2_air_sim.csv");
 
 % Model without air considerations
 disp("Evaluating model without air");
+mdl = "noair_effect";
 disp("Running experiment 1");
 power_profile = exp1_power_profile;
 amb_profile = exp1_amb_profile;
@@ -96,7 +97,7 @@ out_table1_noair = table(out1_noair.tout, out1_noair.simout.sf_temp.Data, ...
     VariableNames=["time", "sf_temp", "air_temp", "q_gen", "amb_temp"]);
 writetable(out_table1_noair, "examples/air_effect/exp1_noair_sim.csv");
 
-disp("Running experiment 2");
+disp("Running experiment 2");<
 power_profile = exp2_power_profile;
 amb_profile = exp2_amb_profile;
 out2_noair = evaluate_model(exp2_time_delta, exp2_end_time, mdl, noair_params, 0.8);
