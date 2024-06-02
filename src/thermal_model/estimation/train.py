@@ -63,5 +63,5 @@ def lti_from_data(y, u, t, x0, initial_guess=None, *, fixed_params=None,
     if "outputs" in system_kwargs:
         params_fn = get_lti_params_fn(system_kwargs["outputs"])
     else:
-        params_fn = target_lti_parameters
+        params_fn = get_lti_params_fn()
     return params_fn(final_params), final_params

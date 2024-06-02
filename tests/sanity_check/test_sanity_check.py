@@ -94,7 +94,7 @@ def optimize_results(logger, get_rout, exp2_data):
             "tol": 1e-3,
             "options": {
                 "disp": True,
-                "maxiter": 1e2,
+                "maxiter": 1e3,
             },
             "err": error.l2,
         },
