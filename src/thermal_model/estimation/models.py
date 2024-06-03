@@ -67,12 +67,12 @@ def target_lti_parameters_noair(params: TargetParams | TargetNLParams):
     ])
     c_mat = params.rout / rt
     d_mat = np.array([
-        [params.rin / rt],
+        [params.rin / rt, 0],
     ])
     return a_mat, b_mat, c_mat, d_mat
 
 
-def get_lti_params_fn(outputs: {"sf", "air", "both"} = "both"):
+def get_lti_params_fn(outputs: {"sf", "air", "both", "noair"} = "both"):
     match outputs:
         case "sf":
             return target_lti_parameters_sftemp
@@ -87,7 +87,7 @@ def get_lti_params_fn(outputs: {"sf", "air", "both"} = "both"):
             return target_lti_parameters
 
 
-def target_lti(params: TargetParams | TargetNLParams, outputs: {"sf", "air", "both"} = "both", **_) -> signal.StateSpace:
+def target_lti(params: TargetParams | TargetNLParams, outputs: {"sf", "air", "both", "noair"} = "both", **_) -> signal.StateSpace:
     """Returns an LTI StateSpace instance for the corresponding values"""
     params_fn = get_lti_params_fn(outputs)
     return signal.lti(*params_fn(params))
