@@ -23,7 +23,7 @@ encoded = jsonencode(struct("cp", air_params("cp"), ...
     "rair", air_params("rair"), ...
     "in_temp", air_params("in_temp"), ...
     "air_temp", air_params("air_temp")));
-fid = fopen("examples/air_effect/air_params.json", "w");
+fid = fopen("examples/air_effect/params_air.json", "w");
 fprintf(fid, "%s", encoded);
 fclose(fid);
 encoded = jsonencode(struct("cp", noair_params("cp"), ...
@@ -33,7 +33,7 @@ encoded = jsonencode(struct("cp", noair_params("cp"), ...
     "rair", noair_params("rair"), ...
     "in_temp", noair_params("in_temp"), ...
     "air_temp", noair_params("air_temp")));
-fid = fopen("examples/air_effect/noair_params.json", "w");
+fid = fopen("examples/air_effect/params_noair.json", "w");
 fprintf(fid, "%s", encoded);
 fclose(fid);
 
@@ -63,7 +63,7 @@ exp2_end_time = exp2_time(end);
 
 % Model with air considerations
 disp("Evaluating model with air");
-mdl = "air_effect";
+mdl = "sim_air";
 disp("Running experiment 1");
 power_profile = exp1_power_profile;
 amb_profile = exp1_amb_profile;
@@ -72,7 +72,7 @@ out_table1_air = table(out1_air.tout, out1_air.simout.sf_temp.Data, ...
     out1_air.simout.air_temp.Data, ...
     out1_air.simout.q_gen.Data, out1_air.ambient.Data, ...
     VariableNames=["time", "sf_temp", "air_temp", "q_gen", "amb_temp"]);
-writetable(out_table1_air, "examples/air_effect/exp1_air_sim.csv");
+writetable(out_table1_air, "examples/air_effect/sim1_air.csv");
 
 disp("Running experiment 2");
 power_profile = exp2_power_profile;
@@ -81,12 +81,12 @@ out2_air = evaluate_model(exp2_time_delta, exp2_end_time, mdl, air_params, 0.8);
 out_table2_air = table(out2_air.tout, out2_air.simout.sf_temp.Data, out2_air.simout.air_temp.Data, ...
     out2_air.simout.q_gen.Data, out2_air.ambient.Data, ...
     VariableNames=["time", "sf_temp", "air_temp", "q_gen", "amb_temp"]);
-writetable(out_table2_air, "examples/air_effect/exp2_air_sim.csv");
+writetable(out_table2_air, "examples/air_effect/sim2_air.csv");
 
 
 % Model without air considerations
 disp("Evaluating model without air");
-mdl = "noair_effect";
+mdl = "sim_noair";
 disp("Running experiment 1");
 power_profile = exp1_power_profile;
 amb_profile = exp1_amb_profile;
@@ -95,7 +95,7 @@ out_table1_noair = table(out1_noair.tout, out1_noair.simout.sf_temp.Data, ...
     out1_noair.simout.air_temp.Data, ...
     out1_noair.simout.q_gen.Data, out1_noair.ambient.Data, ...
     VariableNames=["time", "sf_temp", "air_temp", "q_gen", "amb_temp"]);
-writetable(out_table1_noair, "examples/air_effect/exp1_noair_sim.csv");
+writetable(out_table1_noair, "examples/air_effect/sim1_noair.csv");
 
 disp("Running experiment 2");
 power_profile = exp2_power_profile;
@@ -105,10 +105,10 @@ out_table2_noair = table(out2_noair.tout, out2_noair.simout.sf_temp.Data, ...
     out2_noair.simout.air_temp.Data, ...
     out2_noair.simout.q_gen.Data, out2_noair.ambient.Data, ...
     VariableNames=["time", "sf_temp", "air_temp", "q_gen", "amb_temp"]);
-writetable(out_table2_noair, "examples/air_effect/exp2_noair_sim.csv");
+writetable(out_table2_noair, "examples/air_effect/sim2_noair.csv");
 
 %% Save the workspace
-save("examples/air_effect/ws.mat");
+save("examples/air_effect/data_gen.mat");
 
 %% Helper functions
 function out = evaluate_model(time_delta, end_time, mdl, params, initial_soc)
