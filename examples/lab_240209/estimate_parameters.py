@@ -89,7 +89,7 @@ def main():
         train_data,
         name="both",
     )
-    with open(os.path.join("examples", "lab_240209", "params_est_air.json"), "r") as f:
+    with open(os.path.join("examples", "lab_240209", "params_est_air.json"), "w") as f:
         f.write(json.dumps(params_air._asdict()))
 
     LOGGER.info("Estimating parameters for experiment without air")
@@ -97,5 +97,5 @@ def main():
         train_data,
         name="noair",
     )
-    with open(os.path.join("examples", "lab_240209", "params_est_noair.json"), "r") as f:
+    with open(os.path.join("examples", "lab_240209", "params_est_noair.json"), "w") as f:
         f.write(json.dumps(params_noair._asdict()))
