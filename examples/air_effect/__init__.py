@@ -1,4 +1,5 @@
 import subprocess as sp
+import sys
 
 # pylint: disable=import-error
 from thermal_model.logger import LOGGER
@@ -11,10 +12,16 @@ from .estimate_parameters import main as _main
 _MLCALL = "matlab -nodisplay -batch \"matlab.project.loadProject('battery_temperature_modelling.prj'); {}\""
 
 
+def test(a):
+    LOGGER.debug(a)
+
+
 def _call_matlab_script(cmd):
-    with sp.Popen(cmd, stdout=sp.PIPE, universal_newlines=True, shell=True) as p:
-        for l in iter(p.stdout.readline, ""):
-            LOGGER.debug("[MATLAB] %s", l[:-1] if l.endswith("\n") else l)
+    with sp.Popen(cmd, stdout=sys.stdout, universal_newlines=True, shell=True, bufsize=1) as p:
+        pass
+
+    if p.returncode != 0:
+        raise sp.CalledProcessError(p.returncode, p.args)
 
 
 def main():
