@@ -68,29 +68,37 @@ mdl = "sim_air";
 disp("Running experiment 1");
 power_profile = exp1_power_profile;
 amb_profile = exp1_amb_profile;
+disp("Evaluating model");
 out1_air = evaluate_model(exp1_time_delta, exp1_end_time, mdl, air_params, 0.2);
+disp("Generating noises");
 sf_noise = sensor_noise_std * randn(size(out1_air.simout.sf_temp.Data));
 air_noise = sensor_noise_std * randn(size(out1_air.simout.air_temp.Data));
+disp("Generating table");
 out_table1_air = table(out1_air.tout, ...
     out1_air.simout.sf_temp.Data + sf_noise, ...
     out1_air.simout.air_temp.Data + air_noise, ...
     out1_air.simout.q_gen.Data, ...
     out1_air.ambient.Data, ...
     VariableNames=["time", "sf_temp", "air_temp", "q_gen", "amb_temp"]);
+disp("Writing table");
 writetable(out_table1_air, "examples/air_effect/sim1_air.csv");
 
 disp("Running experiment 2");
 power_profile = exp2_power_profile;
 amb_profile = exp2_amb_profile;
+disp("Evaluating model");
 out2_air = evaluate_model(exp2_time_delta, exp2_end_time, mdl, air_params, 0.8);
+disp("Generating noises");
 sf_noise = sensor_noise_std * randn(size(out2_air.simout.sf_temp.Data));
 air_noise = sensor_noise_std * randn(size(out2_air.simout.air_temp.Data));
+disp("Generating table");
 out_table2_air = table(out2_air.tout, ...
     out2_air.simout.sf_temp.Data + sf_noise, ...
     out2_air.simout.air_temp.Data + air_noise, ...
     out2_air.simout.q_gen.Data, ...
     out2_air.ambient.Data, ...
     VariableNames=["time", "sf_temp", "air_temp", "q_gen", "amb_temp"]);
+disp("Writing table");
 writetable(out_table2_air, "examples/air_effect/sim2_air.csv");
 
 
@@ -100,29 +108,37 @@ mdl = "sim_noair";
 disp("Running experiment 1");
 power_profile = exp1_power_profile;
 amb_profile = exp1_amb_profile;
+disp("Evaluating model");
 out1_noair = evaluate_model(exp1_time_delta, exp1_end_time, mdl, noair_params, 0.1);
+disp("Generating noises");
 sf_noise = sensor_noise_std * randn(size(out1_noair.simout.sf_temp.Data));
 air_noise = sensor_noise_std * randn(size(out1_noair.simout.air_temp.Data));
+disp("Generating table");
 out_table1_noair = table(out1_noair.tout, ...
     out1_noair.simout.sf_temp.Data + sf_noise, ...
     out1_noair.simout.air_temp.Data + air_noise, ...
     out1_noair.simout.q_gen.Data, ...
     out1_noair.ambient.Data, ...
     VariableNames=["time", "sf_temp", "air_temp", "q_gen", "amb_temp"]);
+disp("Writing table");
 writetable(out_table1_noair, "examples/air_effect/sim1_noair.csv");
 
 disp("Running experiment 2");
 power_profile = exp2_power_profile;
 amb_profile = exp2_amb_profile;
+disp("Evaluating model");
 out2_noair = evaluate_model(exp2_time_delta, exp2_end_time, mdl, noair_params, 0.8);
+disp("Generating noises");
 sf_noise = sensor_noise_std * randn(size(out2_noair.simout.sf_temp.Data));
 air_noise = sensor_noise_std * randn(size(out2_noair.simout.air_temp.Data));
+disp("Generating table");
 out_table2_noair = table(out2_noair.tout, ...
     out2_noair.simout.sf_temp.Data + sf_noise, ...
     out2_noair.simout.air_temp.Data + air_noise, ...
     out2_noair.simout.q_gen.Data, ...
     out2_noair.ambient.Data, ...
     VariableNames=["time", "sf_temp", "air_temp", "q_gen", "amb_temp"]);
+disp("Writing table");
 writetable(out_table2_noair, "examples/air_effect/sim2_noair.csv");
 
 %% Save the workspace
