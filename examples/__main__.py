@@ -9,8 +9,10 @@ src_path = pathlib.Path.joinpath(pathlib.Path(__file__).parent.parent, "src")
 os.environ["PYTHONPATH"] = str(src_path)
 sys.path.append(str(src_path))
 
+# pylint: disable=import-error
 from thermal_model.logger import setup_logger, LOGGER
 from thermal_model.console import ShellColors
+# pylint: enable=import-error
 
 
 # Set up argument parsing

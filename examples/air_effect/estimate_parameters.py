@@ -9,6 +9,7 @@ from scipy import optimize
 from thermal_model.console import ShellColors
 from thermal_model.estimation import TargetParams, error, lti_from_data
 from thermal_model.logger import LOGGER
+from thermal_stats.distributions import pdf_gaussian, pdf_uniform
 
 # pylint: enable=import-error
 
@@ -63,7 +64,6 @@ def perform_experiment(
         ),
         fixed_params={
             "cair": cair,
-            # "rout": rout,
             "rair": rair,
         },
         optimizer_kwargs={

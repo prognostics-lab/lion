@@ -29,9 +29,27 @@ est_params = dictionary("cp", est_params_.cp, ...
 
 
 %% Data loading
-time = linspace(0, 100000, 100000)';
-power = 3 * (square(2 * pi * (5 / (time(end) - time(1))) * time));
-amb_temp = 273 * ones(size(time));
+% Load csv file
+csv_dir = "data/240209_temptest_C6B2/TestData.csv";
+opts = detectImportOptions(csv_dir);
+opts = setvaropts(opts, "Seconds", "InputFormat", "MM/dd/uuuu HH:mm:ss.SSS");
+csv_table = readtable(csv_dir, opts);
+
+% Determine relevant parameters
+SEGMENT = 4;
+TIME_LIMIT = 50;
+
+% Extract data
+time = csv_table(:, "Seconds") - csv_table(1, "Seconds");
+time = seconds(time.(1));
+current = csv_table(:, "Current").(1);
+voltage = csv_table(:, "Voltage").(1);
+[time, power] = get_segment(time, current, voltage, SEGMENT, TIME_LIMIT);
+amb_temp = 298;
+
+% time = linspace(0, 100000, 100000)';
+% power = 3 * (square(2 * pi * (5 / (time(end) - time(1))) * time));
+% amb_temp = 273 * ones(size(time));
 
 %% Generate timeseries
 power_profile = timeseries(power, time);
@@ -84,4 +102,28 @@ simin = setBlockParameter(simin, ...
 
 % Run simulation
 out = sim(simin);
+end
+
+
+function [time, power] = get_segment(table_time, table_current, table_voltage, segment, time_limit)
+% Initialize helper variables
+curr_seg = 1;
+prev_time = 0;
+segment_id = zeros(length(table_time), 1);
+
+% Identify segments
+for i = 1:length(table_time)
+    t = table_time(i);
+    if abs(t - prev_time) >= time_limit
+        curr_seg = curr_seg + 1;
+    end
+    segment_id(i) = curr_seg;
+    prev_time = t;
+end
+
+time = table_time(segment_id == segment);
+time = time - time(1);
+current = table_current(segment_id == segment);
+voltage = table_voltage(segment_id == segment);
+power = current .* voltage;
 end
