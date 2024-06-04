@@ -40,7 +40,7 @@ TargetNLParams = namedtuple("TargetNLParams", "cp cair rair rin rout k")
 Data = namedtuple("Data", "t y u x0")
 
 
-DATA_DIR = os.path.join("240209_temptest_C6B2")
+DATA_DIR = os.path.join("data/240209_temptest_C6B2")
 TEMP_IMG_DIR = os.path.join("img_raw")
 IMG_DIR = os.path.join("img_raw")
 SAVE_FMT = "pdf"
