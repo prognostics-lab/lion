@@ -177,7 +177,7 @@ def generate_ocv_plt(savefig):
 
 
 def generate_air_theory_plt(savefig):
-    figsize = (DEFAULT_FIGSIZE[0], 9)
+    figsize = (DEFAULT_FIGSIZE[0], 7)
     fig, (ax1, ax2) = plt.subplots(2, 1, sharex=True, figsize=figsize)
 
     df_real = pd.read_csv(os.path.join("examples", "air_effect", "data_air_real.csv"))
@@ -186,8 +186,8 @@ def generate_air_theory_plt(savefig):
     real_time = df_real["time"].to_numpy() / 3600
     est_time = df_est["time"].to_numpy() / 3600
 
-    ax1.plot(real_time, df_real["sf_temp"], label="Expected", linestyle="--")
-    ax1.plot(est_time, df_est["sf_temp"], label="Obtained")
+    ax1.plot(real_time, kelvin_to_celsius(df_real["sf_temp"]), label="Expected", linestyle="--")
+    ax1.plot(est_time, kelvin_to_celsius(df_est["sf_temp"]), label="Obtained")
     ax2.plot(real_time, 1e3 * df_real["q_gen"], label="Expected", linestyle="--")
     ax2.plot(est_time, 1e3 * df_est["q_gen"], label="Obtained")
 
@@ -210,7 +210,7 @@ def generate_air_theory_plt(savefig):
 
 
 def generate_noair_theory_plt(savefig):
-    figsize = (DEFAULT_FIGSIZE[0], 9)
+    figsize = (DEFAULT_FIGSIZE[0], 7)
     fig, (ax1, ax2) = plt.subplots(2, 1, sharex=True, figsize=figsize)
 
     df_real = pd.read_csv(os.path.join("examples", "air_effect", "data_noair_real.csv"))
@@ -219,8 +219,8 @@ def generate_noair_theory_plt(savefig):
     real_time = df_real["time"].to_numpy() / 3600
     est_time = df_est["time"].to_numpy() / 3600
 
-    ax1.plot(real_time, df_real["sf_temp"], label="Expected", linestyle="--")
-    ax1.plot(est_time, df_est["sf_temp"], label="Obtained")
+    ax1.plot(real_time, kelvin_to_celsius(df_real["sf_temp"]), label="Expected", linestyle="--")
+    ax1.plot(est_time, kelvin_to_celsius(df_est["sf_temp"]), label="Obtained")
     ax2.plot(real_time, 1e3 * df_real["q_gen"], label="Expected", linestyle="--")
     ax2.plot(est_time, 1e3 * df_est["q_gen"], label="Obtained")
 
