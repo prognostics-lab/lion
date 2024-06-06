@@ -1,6 +1,6 @@
 %% Set simulation parameters
 % Real parameters
-fid = fopen("examples/air_effect/params_noair.json", "r");
+fid = fopen("examples/air_effect/params_expected_noair.json", "r");
 raw = fread(fid, inf);
 str = char(raw');
 fclose(fid);
@@ -14,7 +14,7 @@ real_params = dictionary("cp", real_params_.cp, ...
     "air_temp", real_params_.air_temp);
 
 % Estimated parameters
-fid = fopen("examples/air_effect/params_est_noair.json", "r");
+fid = fopen("examples/air_effect/params_obtained_noair.json", "r");
 raw = fread(fid, inf);
 str = char(raw');
 fclose(fid);
@@ -65,14 +65,14 @@ out1 = evaluate_model(time_delta, end_time, mdl, real_params, 0.8);
 out1_table = table(out1.tout, out1.simout.sf_temp.Data, out1.simout.air_temp.Data, ...
     out1.simout.q_gen.Data, out1.ambient.Data, ...
     VariableNames=["time", "sf_temp", "air_temp", "q_gen", "amb_temp"]);
-writetable(out1_table, "examples/air_effect/data_noair_real.csv");
+writetable(out1_table, "examples/air_effect/validation_noair_expected.csv");
 
 disp("Running experiment for estimated parameters");
 out2 = evaluate_model(time_delta, end_time, mdl, est_params, 0.8);
 out2_table = table(out2.tout, out2.simout.sf_temp.Data, out2.simout.air_temp.Data, ...
     out2.simout.q_gen.Data, out2.ambient.Data, ...
     VariableNames=["time", "sf_temp", "air_temp", "q_gen", "amb_temp"]);
-writetable(out2_table, "examples/air_effect/data_noair_est.csv");
+writetable(out2_table, "examples/air_effect/validation_noair_obtained.csv");
 
 %% Helper functions
 function out = evaluate_model(time_delta, end_time, mdl, params, initial_soc)

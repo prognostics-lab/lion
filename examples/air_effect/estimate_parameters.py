@@ -7,7 +7,7 @@ from scipy import optimize
 
 # pylint: disable=import-error
 from thermal_model.console import ShellColors
-from thermal_model.estimation import TargetParams, error, lti_from_data
+from thermal_model.estimation import TargetParams, error, lti_from_data, models
 from thermal_model.logger import LOGGER
 from thermal_stats.distributions import pdf_gaussian, pdf_uniform
 
@@ -96,16 +96,16 @@ def main():
     exp1_air = pd.read_csv(os.path.join("examples", "air_effect", "sim1_air.csv"))
     exp2_air = pd.read_csv(os.path.join("examples", "air_effect", "sim2_air.csv"))
     LOGGER.info("Reading data from noair experiment")
-    exp1_noair = pd.read_csv(
-        os.path.join("examples", "air_effect", "sim1_noair.csv")
-    )
-    exp2_noair = pd.read_csv(
-        os.path.join("examples", "air_effect", "sim2_noair.csv")
-    )
+    exp1_noair = pd.read_csv(os.path.join("examples", "air_effect", "sim1_noair.csv"))
+    exp2_noair = pd.read_csv(os.path.join("examples", "air_effect", "sim2_noair.csv"))
     LOGGER.info("Reading real parameters")
-    with open(os.path.join("examples", "air_effect", "params_air.json"), "r") as file:
+    with open(
+        os.path.join("examples", "air_effect", "params_expected_air.json"), "r"
+    ) as file:
         air_params = json.load(file)
-    with open(os.path.join("examples", "air_effect", "params_noair.json"), "r") as file:
+    with open(
+        os.path.join("examples", "air_effect", "params_expected_noair.json"), "r"
+    ) as file:
         noair_params = json.load(file)
 
     LOGGER.debug("Creating initial conditions")
@@ -144,16 +144,23 @@ def main():
         if err >= _ERROR_THRESHOLD:
             found_error = True
             print(
-                f" + {n} -> {ShellColors.RED} {percent_err:7.2f}% >= {100 * _ERROR_THRESHOLD:3.0f}%{ShellColors.RESET}"
+                f" + {n:>5} -> {ShellColors.RED} {percent_err:9.2f}% >= {100 * _ERROR_THRESHOLD:3.0f}%{ShellColors.RESET}"
             )
         else:
             print(f" + {n} -> {percent_err:7.2f}%")
     if found_error:
         LOGGER.warning("Found an error in the estimated parameters")
     with open(
-        os.path.join("examples", "air_effect", "params_est_air.json"), "w"
+        os.path.join("examples", "air_effect", "params_obtained_air.json"), "w"
     ) as f:
         f.write(json.dumps(params_air._asdict()))
+    u_air = np.array([exp2_air["amb_temp"].to_numpy(), exp2_air["q_gen"].to_numpy()]).T
+    t_air = exp2_air["time"].to_numpy()
+    y_air = models.target_response(u_air, t_air, x0_air, params_air, outputs="both")
+    pd.DataFrame(
+        np.array([*y_air.T, *u_air.T, t_air]).T,
+        columns=["sf_temp", "air_temp", "amb_temp", "q_gen", "time"],
+    ).to_csv(os.path.join("examples", "air_effect", "training_air_obtained.csv"))
 
     ### Experiment without air ###
     LOGGER.debug("Estimating parameters from noair")
@@ -190,6 +197,17 @@ def main():
     if found_error:
         LOGGER.warning("Found an error in the estimated parameters")
     with open(
-        os.path.join("examples", "air_effect", "params_est_noair.json"), "w"
+        os.path.join("examples", "air_effect", "params_obtained_noair.json"), "w"
     ) as f:
         f.write(json.dumps(params_noair._asdict()))
+    u_noair = np.array(
+        [exp2_noair["amb_temp"].to_numpy(), exp2_noair["q_gen"].to_numpy()]
+    ).T
+    t_noair = exp2_noair["time"].to_numpy()
+    y_noair = models.target_response(
+        u_noair, t_noair, x0_noair, params_noair, outputs="noair"
+    )
+    pd.DataFrame(
+        np.array([y_noair, *u_noair.T, t_noair]).T,
+        columns=["sf_temp", "amb_temp", "q_gen", "time"],
+    ).to_csv(os.path.join("examples", "air_effect", "training_noair_obtained.csv"))
