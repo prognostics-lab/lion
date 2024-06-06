@@ -17,7 +17,14 @@ def test(a):
 
 
 def _call_matlab_script(cmd):
-    with sp.Popen(cmd, stdout=sys.stdout, universal_newlines=True, shell=True, bufsize=1) as p:
+    with sp.Popen(
+        cmd,
+        stdout=sys.stdout,
+        stderr=sp.STDOUT,
+        universal_newlines=True,
+        shell=True,
+        bufsize=1,
+    ) as p:
         pass
 
     if p.returncode != 0:
@@ -35,3 +42,4 @@ def main():
     _call_matlab_script([_MLCALL.format("eval_air_estimation")])
 
     LOGGER.info("Evaluating no-air estimation")
+    _call_matlab_script([_MLCALL.format("eval_noair_estimation")])
