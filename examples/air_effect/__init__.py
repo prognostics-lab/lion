@@ -31,15 +31,27 @@ def _call_matlab_script(cmd):
         raise sp.CalledProcessError(p.returncode, p.args)
 
 
-def main():
-    LOGGER.info("Generating simulated data")
-    _call_matlab_script([_MLCALL.format("gen_data")])
+def main(gen=True, est=True, air=True, noair=True):
+    if gen:
+        LOGGER.info("Generating simulated data")
+        _call_matlab_script([_MLCALL.format("gen_data")])
+    else:
+        LOGGER.warning("Skipping generation of simulated data")
 
-    LOGGER.info("Running parameter estimation on simulated data")
-    _main()
+    if est:
+        LOGGER.info("Running parameter estimation on simulated data")
+        _main()
+    else:
+        LOGGER.warning("Skipping parameter estimation")
 
-    LOGGER.info("Evaluating air estimation")
-    _call_matlab_script([_MLCALL.format("eval_air_estimation")])
+    if air:
+        LOGGER.info("Evaluating air estimation")
+        _call_matlab_script([_MLCALL.format("eval_air_estimation")])
+    else:
+        LOGGER.warning("Skipping air estimation")
 
-    LOGGER.info("Evaluating no-air estimation")
-    _call_matlab_script([_MLCALL.format("eval_noair_estimation")])
+    if noair:
+        LOGGER.info("Evaluating no-air estimation")
+        _call_matlab_script([_MLCALL.format("eval_noair_estimation")])
+    else:
+        LOGGER.warning("Skipping noair estimation")

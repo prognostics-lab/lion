@@ -65,6 +65,8 @@ for arg in map(lambda x: x.split("="), cmd_args.args[1:]):
     else:
         if arg[0][0] == "+":
             ex_kwargs[arg[0][1:]] = True
+        elif arg[0][0] == "/":
+            ex_kwargs[arg[0][1:]] = False
         else:
             ex_args.extend(arg)
 
