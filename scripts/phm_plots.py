@@ -50,12 +50,15 @@ SMALL_SIZE = 8
 MEDIUM_SIZE = 10
 BIGGER_SIZE = 12
 DEFAULT_FIGSIZE = (3.38765625, 3)
+GRID_ALPHA = 0.25
 
 mpl.rcParams["text.usetex"] = True
 mpl.rcParams["font.family"] = "Times"
 mpl.rcParams["font.size"] = MEDIUM_SIZE
 mpl.rcParams["axes.titlesize"] = MEDIUM_SIZE
 mpl.rcParams["axes.labelsize"] = MEDIUM_SIZE
+mpl.rcParams["axes.grid"] = True
+mpl.rcParams["grid.alpha"] = GRID_ALPHA
 mpl.rcParams["ytick.labelsize"] = SMALL_SIZE
 mpl.rcParams["ytick.labelsize"] = SMALL_SIZE
 mpl.rcParams["legend.fontsize"] = SMALL_SIZE
@@ -125,10 +128,9 @@ def generate_soc_shift_plt(savefig):
         else:
             ax.plot(100 * soc, 100 * soc_t, alpha=0.1, color="#aaa")
     ax.plot(100 * soc, 100 * soc, linestyle="--", color="#000", label="Reference T°")
-    fig.suptitle("SoC variation with temperature")
-    ax.grid(alpha=0.25)
+    ax.set_title("SoC variation with temperature")
     ax.set_xlabel(r"$\mathrm{SoC}_0$ (\%)")
-    ax.set_ylabel(r"$\mathrm{SoC}$ (\%)")
+    ax.set_ylabel(r"$\mathrm{SoC}_{\mathrm{use}}$ (\%)")
     ax.legend()
 
     fig.tight_layout()
@@ -163,7 +165,6 @@ def generate_ocv_plt(savefig):
         label="Reference T°",
     )
     ax.set_title("Effect of temperature on OCV curve according to model")
-    ax.grid(alpha=0.25)
     ax.set_xlabel(r"$\mathrm{SoC}_0$ (\%)")
     ax.set_ylabel(r"$V_{\mathrm{oc}}$ (V)")
     ax.legend()
@@ -176,12 +177,12 @@ def generate_ocv_plt(savefig):
         )
 
 
-def generate_air_theory_plt(savefig):
-    figsize = (DEFAULT_FIGSIZE[0], 7)
+def generate_airval_plt(savefig):
+    figsize = (DEFAULT_FIGSIZE[0], 9)
     fig, (ax1, ax2) = plt.subplots(2, 1, sharex=True, figsize=figsize)
 
-    df_real = pd.read_csv(os.path.join("examples", "air_effect", "data_air_real.csv"))
-    df_est = pd.read_csv(os.path.join("examples", "air_effect", "data_air_est.csv"))
+    df_real = pd.read_csv(os.path.join("examples", "air_effect", "validation_air_expected.csv"))
+    df_est = pd.read_csv(os.path.join("examples", "air_effect", "validation_air_obtained.csv"))
 
     real_time = df_real["time"].to_numpy() / 3600
     est_time = df_est["time"].to_numpy() / 3600
@@ -193,8 +194,6 @@ def generate_air_theory_plt(savefig):
 
     ax1.set_title("Surface temperature")
     ax2.set_title("Generated heat")
-    ax1.grid(alpha=0.25)
-    ax2.grid(alpha=0.25)
     ax1.legend()
     ax2.legend()
 
@@ -205,16 +204,84 @@ def generate_air_theory_plt(savefig):
     fig.tight_layout()
     if savefig:
         fig.savefig(
-            os.path.join(THEORY_IMG_DIR, f"air_curves.{SAVE_FMT}"), **SAVEFIG_PARAMS
+            os.path.join(THEORY_IMG_DIR, f"expair_val.{SAVE_FMT}"), **SAVEFIG_PARAMS
         )
 
 
-def generate_noair_theory_plt(savefig):
+def generate_val_plt(savefig):
+    figsize = (DEFAULT_FIGSIZE[0], 9)
+    fig, (ax1, ax2, ax3) = plt.subplots(3, 1, sharex=True, figsize=figsize)
+
+    df_real = pd.read_csv(os.path.join("examples", "air_effect", "validation_noair_expected.csv"))
+    df_est = pd.read_csv(os.path.join("examples", "air_effect", "validation_noair_obtained.csv"))
+
+    real_time = df_real["time"].to_numpy() / 3600
+    est_time = df_est["time"].to_numpy() / 3600
+
+    ax1.plot(real_time, kelvin_to_celsius(df_real["sf_temp"]), label="Expected", linestyle="--")
+    ax1.plot(est_time, kelvin_to_celsius(df_est["sf_temp"]), label="Obtained")
+    ax2.plot(est_time, kelvin_to_celsius(df_est["in_temp"]), label=" Obtained internal temperature")
+    ax3.plot(real_time, 1e3 * df_real["q_gen"], label="Expected", linestyle="--")
+    ax3.plot(est_time, 1e3 * df_est["q_gen"], label="Obtained")
+
+    ax1.set_title("Surface temperature")
+    ax2.set_title("Internal temperature")
+    ax3.set_title("Generated heat")
+    ax1.legend()
+    ax2.legend()
+    ax3.legend()
+
+    ax3.set_xlabel("Time (h)")
+    ax1.set_ylabel("Temperature (°C)")
+    ax2.set_ylabel("Temperature (°C)")
+    ax3.set_ylabel("Heat (mW)")
+
+    fig.tight_layout()
+    if savefig:
+        fig.savefig(
+            os.path.join(THEORY_IMG_DIR, f"exp_val.{SAVE_FMT}"), **SAVEFIG_PARAMS
+        )
+
+
+def generate_val_input_plt(savefig):
+    figsize = (DEFAULT_FIGSIZE[0], 9)
+    fig, (ax1, ax2, ax3) = plt.subplots(3, 1, sharex=True, figsize=figsize)
+
+    df_real = pd.read_csv(os.path.join("examples", "air_effect", "validation_noair_expected.csv"))
+
+    real_time = df_real["time"].to_numpy() / 3600
+
+    voltage = df_real["voltage"]
+    current = df_real["current"]
+    ax1.plot(real_time, df_real["voltage"], label="$V$")
+    ax1.plot(real_time, df_real["oc_voltage"], label=r"$V_{\mathrm{oc}}$")
+    ax2.plot(real_time, df_real["current"], label="$I$")
+    ax3.plot(real_time, voltage * current, label="$P$")
+
+    ax1.set_title("Voltage")
+    ax2.set_title("Current")
+    ax3.set_title("Power")
+    ax1.legend()
+    ax2.legend()
+
+    ax3.set_xlabel("Time (h)")
+    ax1.set_ylabel("Voltage (V)")
+    ax2.set_ylabel("Current (A)")
+    ax3.set_ylabel("Power (W)")
+
+    fig.tight_layout()
+    if savefig:
+        fig.savefig(
+            os.path.join(THEORY_IMG_DIR, f"exp_val_input.{SAVE_FMT}"), **SAVEFIG_PARAMS
+        )
+
+
+def generate_train_plt(savefig):
     figsize = (DEFAULT_FIGSIZE[0], 7)
     fig, (ax1, ax2) = plt.subplots(2, 1, sharex=True, figsize=figsize)
 
-    df_real = pd.read_csv(os.path.join("examples", "air_effect", "data_noair_real.csv"))
-    df_est = pd.read_csv(os.path.join("examples", "air_effect", "data_noair_est.csv"))
+    df_real = pd.read_csv(os.path.join("examples", "air_effect", "sim2_noair.csv"))
+    df_est = pd.read_csv(os.path.join("examples", "air_effect", "training_noair_obtained.csv"))
 
     real_time = df_real["time"].to_numpy() / 3600
     est_time = df_est["time"].to_numpy() / 3600
@@ -226,8 +293,6 @@ def generate_noair_theory_plt(savefig):
 
     ax1.set_title("Surface temperature")
     ax2.set_title("Generated heat")
-    ax1.grid(alpha=0.25)
-    ax2.grid(alpha=0.25)
     ax1.legend()
     ax2.legend()
 
@@ -238,15 +303,50 @@ def generate_noair_theory_plt(savefig):
     fig.tight_layout()
     if savefig:
         fig.savefig(
-            os.path.join(THEORY_IMG_DIR, f"noair_curves.{SAVE_FMT}"), **SAVEFIG_PARAMS
+            os.path.join(THEORY_IMG_DIR, f"exp_train.{SAVE_FMT}"), **SAVEFIG_PARAMS
+        )
+
+
+def generate_train_input_plt(savefig):
+    figsize = (DEFAULT_FIGSIZE[0], 9)
+    fig, (ax1, ax2, ax3) = plt.subplots(3, 1, sharex=True, figsize=figsize)
+
+    df_real = pd.read_csv(os.path.join("examples", "air_effect", "sim2_noair.csv"))
+
+    real_time = df_real["time"].to_numpy() / 3600
+
+    voltage = df_real["voltage"]
+    current = df_real["current"]
+    ax1.plot(real_time, df_real["voltage"], label="$V$")
+    ax1.plot(real_time, df_real["oc_voltage"], label=r"$V_{\mathrm{oc}}$")
+    ax2.plot(real_time, df_real["current"], label="$I$")
+    ax3.plot(real_time, voltage * current, label="$P$")
+
+    ax1.set_title("Voltage")
+    ax2.set_title("Current")
+    ax3.set_title("Power")
+    ax1.legend()
+    ax2.legend()
+
+    ax3.set_xlabel("Time (h)")
+    ax1.set_ylabel("Voltage (V)")
+    ax2.set_ylabel("Current (A)")
+    ax3.set_ylabel("Power (W)")
+
+    fig.tight_layout()
+    if savefig:
+        fig.savefig(
+            os.path.join(THEORY_IMG_DIR, f"exp_train_input.{SAVE_FMT}"), **SAVEFIG_PARAMS
         )
 
 
 def main(savefig=False, showfig=False):
     generate_soc_shift_plt(savefig)
     generate_ocv_plt(savefig)
-    generate_air_theory_plt(savefig)
-    generate_noair_theory_plt(savefig)
+    generate_val_plt(savefig)
+    generate_val_input_plt(savefig)
+    generate_train_plt(savefig)
+    generate_train_input_plt(savefig)
 
     if showfig:
         plt.show()
