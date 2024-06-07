@@ -1,5 +1,6 @@
 %% Set simulation parameters
 % Real parameters
+disp("Loading real parameters");
 fid = fopen("examples/air_effect/params_expected_noair.json", "r");
 raw = fread(fid, inf);
 str = char(raw');
@@ -14,6 +15,7 @@ real_params = dictionary("cp", real_params_.cp, ...
     "air_temp", real_params_.air_temp);
 
 % Estimated parameters
+disp("Loading estimated parameters");
 fid = fopen("examples/air_effect/params_obtained_noair.json", "r");
 raw = fread(fid, inf);
 str = char(raw');
@@ -30,6 +32,7 @@ est_params = dictionary("cp", est_params_.cp, ...
 
 %% Data loading
 % Load csv file
+disp("Loading experimental data");
 csv_dir = "data/240209_temptest_C6B2/TestData.csv";
 opts = detectImportOptions(csv_dir);
 opts = setvaropts(opts, "Seconds", "InputFormat", "MM/dd/uuuu HH:mm:ss.SSS");
@@ -40,6 +43,7 @@ SEGMENT = 4;
 TIME_LIMIT = 50;
 
 % Extract data
+disp("Extracting data");
 time = csv_table(:, "Seconds") - csv_table(1, "Seconds");
 time = seconds(time.(1));
 current = csv_table(:, "Current").(1);
