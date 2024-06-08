@@ -70,7 +70,7 @@ exp2_time_delta = exp2_time(2) - exp2_time(1);
 exp2_end_time = exp2_time(end);
 
 %% Set simulation parameters and run simulation
-sensor_noise_std = 0.5;
+sensor_noise_std = 1;
 
 % Model with air considerations
 disp("Evaluating model with air");
