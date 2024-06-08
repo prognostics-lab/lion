@@ -209,7 +209,7 @@ def generate_airval_plt(savefig):
 
 
 def generate_val_plt(savefig):
-    figsize = (DEFAULT_FIGSIZE[0], 9)
+    figsize = (DEFAULT_FIGSIZE[0], 8.6)
     fig, (ax1, ax2, ax3) = plt.subplots(3, 1, sharex=True, figsize=figsize)
 
     df_real = pd.read_csv(os.path.join("examples", "air_effect", "validation_noair_expected.csv"))
@@ -218,18 +218,16 @@ def generate_val_plt(savefig):
     real_time = df_real["time"].to_numpy() / 3600
     est_time = df_est["time"].to_numpy() / 3600
 
-    ax1.plot(real_time, kelvin_to_celsius(df_real["sf_temp"]), label="Expected", linestyle="--")
+    ax1.plot(real_time, kelvin_to_celsius(df_real["sf_temp"]), label="Measured", linestyle="--")
     ax1.plot(est_time, kelvin_to_celsius(df_est["sf_temp"]), label="Obtained")
     ax2.plot(est_time, kelvin_to_celsius(df_est["in_temp"]), label=" Obtained internal temperature")
-    ax3.plot(real_time, 1e3 * df_real["q_gen"], label="Expected", linestyle="--")
-    ax3.plot(est_time, 1e3 * df_est["q_gen"], label="Obtained")
+    ax3.plot(real_time, 1e3 * df_real["q_gen"], label="Generated heat")
 
     ax1.set_title("Surface temperature")
     ax2.set_title("Internal temperature")
     ax3.set_title("Generated heat")
     ax1.legend()
     ax2.legend()
-    ax3.legend()
 
     ax3.set_xlabel("Time (h)")
     ax1.set_ylabel("Temperature (°C)")
@@ -244,8 +242,8 @@ def generate_val_plt(savefig):
 
 
 def generate_val_input_plt(savefig):
-    figsize = (DEFAULT_FIGSIZE[0], 9)
-    fig, (ax1, ax2, ax3) = plt.subplots(3, 1, sharex=True, figsize=figsize)
+    figsize = (DEFAULT_FIGSIZE[0], 8.6)
+    fig, ax = plt.subplots()
 
     df_real = pd.read_csv(os.path.join("examples", "air_effect", "validation_noair_expected.csv"))
 
@@ -253,21 +251,12 @@ def generate_val_input_plt(savefig):
 
     voltage = df_real["voltage"]
     current = df_real["current"]
-    ax1.plot(real_time, df_real["voltage"], label="$V$")
-    ax1.plot(real_time, df_real["oc_voltage"], label=r"$V_{\mathrm{oc}}$")
-    ax2.plot(real_time, df_real["current"], label="$I$")
-    ax3.plot(real_time, voltage * current, label="$P$")
+    ax.plot(real_time, voltage * current, label="$P$")
 
-    ax1.set_title("Voltage")
-    ax2.set_title("Current")
-    ax3.set_title("Power")
-    ax1.legend()
-    ax2.legend()
+    ax.set_title("Validation experiment power profile")
 
-    ax3.set_xlabel("Time (h)")
-    ax1.set_ylabel("Voltage (V)")
-    ax2.set_ylabel("Current (A)")
-    ax3.set_ylabel("Power (W)")
+    ax.set_xlabel("Time (h)")
+    ax.set_ylabel("Power (W)")
 
     fig.tight_layout()
     if savefig:
@@ -277,7 +266,7 @@ def generate_val_input_plt(savefig):
 
 
 def generate_train_plt(savefig):
-    figsize = (DEFAULT_FIGSIZE[0], 7)
+    figsize = (DEFAULT_FIGSIZE[0], 5)
     fig, (ax1, ax2) = plt.subplots(2, 1, sharex=True, figsize=figsize)
 
     df_real = pd.read_csv(os.path.join("examples", "air_effect", "sim2_noair.csv"))
@@ -286,19 +275,17 @@ def generate_train_plt(savefig):
     real_time = df_real["time"].to_numpy() / 3600
     est_time = df_est["time"].to_numpy() / 3600
 
-    ax1.plot(real_time, kelvin_to_celsius(df_real["sf_temp"]), label="Expected", linestyle="--")
+    ax1.plot(real_time, kelvin_to_celsius(df_real["sf_temp"]), label="Measured", linestyle="--")
     ax1.plot(est_time, kelvin_to_celsius(df_est["sf_temp"]), label="Obtained")
-    ax2.plot(real_time, 1e3 * df_real["q_gen"], label="Expected", linestyle="--")
-    ax2.plot(est_time, 1e3 * df_est["q_gen"], label="Obtained")
+    ax2.plot(real_time, df_real["q_gen"], label="Expected")
 
     ax1.set_title("Surface temperature")
     ax2.set_title("Generated heat")
     ax1.legend()
-    ax2.legend()
 
     ax2.set_xlabel("Time (h)")
     ax1.set_ylabel("Temperature (°C)")
-    ax2.set_ylabel("Heat (mW)")
+    ax2.set_ylabel("Heat (W)")
 
     fig.tight_layout()
     if savefig:
@@ -308,8 +295,7 @@ def generate_train_plt(savefig):
 
 
 def generate_train_input_plt(savefig):
-    figsize = (DEFAULT_FIGSIZE[0], 9)
-    fig, (ax1, ax2, ax3) = plt.subplots(3, 1, sharex=True, figsize=figsize)
+    fig, ax = plt.subplots()
 
     df_real = pd.read_csv(os.path.join("examples", "air_effect", "sim2_noair.csv"))
 
@@ -317,21 +303,12 @@ def generate_train_input_plt(savefig):
 
     voltage = df_real["voltage"]
     current = df_real["current"]
-    ax1.plot(real_time, df_real["voltage"], label="$V$")
-    ax1.plot(real_time, df_real["oc_voltage"], label=r"$V_{\mathrm{oc}}$")
-    ax2.plot(real_time, df_real["current"], label="$I$")
-    ax3.plot(real_time, voltage * current, label="$P$")
+    ax.plot(real_time, voltage * current, label="$P$")
 
-    ax1.set_title("Voltage")
-    ax2.set_title("Current")
-    ax3.set_title("Power")
-    ax1.legend()
-    ax2.legend()
+    ax.set_title("Training experiment power profile")
 
-    ax3.set_xlabel("Time (h)")
-    ax1.set_ylabel("Voltage (V)")
-    ax2.set_ylabel("Current (A)")
-    ax3.set_ylabel("Power (W)")
+    ax.set_xlabel("Time (h)")
+    ax.set_ylabel("Power (W)")
 
     fig.tight_layout()
     if savefig:
