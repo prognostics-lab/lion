@@ -7,6 +7,7 @@ from thermal_model.logger import LOGGER
 # pylint: enable=import-error
 
 from .estimate_parameters import main as _main
+from .plot_results import plot_results
 
 
 _MLCALL = "matlab -nodisplay -batch \"matlab.project.loadProject('battery_temperature_modelling.prj'); {}\""
@@ -31,7 +32,7 @@ def _call_matlab_script(cmd):
         raise sp.CalledProcessError(p.returncode, p.args)
 
 
-def main(gen=True, est=True, air=True, noair=True):
+def main(gen=True, est=True, air=True, noair=True, plots=False):
     if gen:
         LOGGER.info("Generating simulated data")
         _call_matlab_script([_MLCALL.format("gen_data")])
@@ -55,3 +56,7 @@ def main(gen=True, est=True, air=True, noair=True):
         _call_matlab_script([_MLCALL.format("eval_noair_estimation")])
     else:
         LOGGER.warning("Skipping noair estimation")
+
+    if plots:
+        LOGGER.info("Generating plots")
+        plot_results()
