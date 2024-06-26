@@ -208,3 +208,4 @@ pyrightconfig.json
 img_raw
 data_raw
 logs
+.temp
