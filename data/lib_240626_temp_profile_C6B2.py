@@ -74,7 +74,7 @@ chamber_time_full = np.array([delta.total_seconds() for delta in _chamber_second
 chamber_sp_full = chamber_df["TEMPERATURE SP"].to_numpy()
 chamber_pv_full = chamber_df["TEMPERATURE PV"].to_numpy()
 
-_CHAMBER_START = 350
+_CHAMBER_START = None
 _CHAMBER_CUTOFF = None
 chamber_time = chamber_time_full[_CHAMBER_START:_CHAMBER_CUTOFF]
 chamber_time = chamber_time - chamber_time[0]
@@ -91,7 +91,7 @@ cap_current_full = cap_df["Current"].to_numpy()
 cap_voltage_full = cap_df["Voltage"].to_numpy()
 cap_soc_full = cap_df["SOC"].to_numpy()
 
-_CAP_START = None
+_CAP_START = 3800
 _CAP_CUTOFF = None
 cap_time = cap_time_full[_CAP_START:_CAP_CUTOFF]
 cap_time = cap_time - cap_time[0]
@@ -103,9 +103,27 @@ cap_power = cap_current * cap_voltage
 cell_internal_resistance = np.max(cap_voltage / cap_current)
 print(f"Calculated internal resistance is {cell_internal_resistance} Ohm")
 
+_TO_UTC = "-04:00"
+sensor_idx = 0 if _TEMP_START is None else _TEMP_START
+chamber_idx = 0 if _CHAMBER_START is None else _CHAMBER_START
+cap_idx = 0 if _CAP_START is None else _CAP_START
+sensor_start_time = datetime.datetime.strptime(sensor_df["timestamp_utc"].iloc[sensor_idx], "%Y-%m-%d %H:%M:%S.%f%z")
+chamber_start_time = datetime.datetime.strptime(chamber_df["DateTime"].iloc[chamber_idx] + _TO_UTC, "%m/%d/%Y %H:%M:%S%z")
+cap_start_time = datetime.datetime.strptime(cap_df["Seconds"].iloc[cap_idx][:-3] + _TO_UTC, "%m/%d/%Y %H:%M:%S.%f%z")
+sensor_start_time = sensor_start_time.astimezone()
+chamber_start_time = chamber_start_time.astimezone()
+cap_start_time = cap_start_time.astimezone()
+print("===============================")
+print("Start times report (Local time)")
+print("-------------------------------")
+print(f"Sensors  : {sensor_start_time}")
+print(f"Chamber  : {chamber_start_time}")
+print(f"Capacity : {cap_start_time}")
+print("===============================")
+
 
 ### Segmentation ###
-_TIME_LIMIT = 50
+_TIME_LIMIT = 100
 starts_idx = np.concatenate(
     ([0], np.where((cap_time[1:] - cap_time[:-1]) >= _TIME_LIMIT)[0] + 1))
 ends_idx = np.concatenate(
@@ -136,14 +154,16 @@ temp_sur_rs_segs = [signal.resample(temp_sur_raw_segs[i], len(
     cap_time_segs[i])) for i in range(segments_total)]
 temp_air_rs_segs = [signal.resample(temp_air_raw_segs[i], len(
     cap_time_segs[i])) for i in range(segments_total)]
-b, a = signal.butter(5, 0.002)
+# temp_sur_rs_segs = temp_sur_raw_segs
+# temp_air_rs_segs = temp_air_raw_segs
+b, a = signal.butter(5, 0.01)
 _zi = signal.lfilter_zi(b, a)
 temp_sur_segs = [signal.lfilter(b, a, temp, zi=_zi * temp[0])[0]
                  for temp in temp_sur_rs_segs]
 temp_air_segs = [signal.lfilter(b, a, temp, zi=_zi * temp[0])[0]
                  for temp in temp_air_rs_segs]
-gen_heat_segs = [models.generated_heat_from_current(
-    current, temp, soc, cell_internal_resistance) for current, temp, soc in zip(cap_current_segs, temp_sur_segs, cap_soc_segs)]
+# gen_heat_segs = [models.generated_heat_from_current(
+#     current, temp, soc, cell_internal_resistance) for current, temp, soc in zip(cap_current_segs, temp_sur_segs, cap_soc_segs)]
 
 # Segementation, filtering and interpolation of chamber data
 chamber_time_segs = [chamber_time[m] for m in chamber_masks]
@@ -158,8 +178,23 @@ chamber_pv_rs_segs = [f(t) for t, f in zip(cap_time_segs, _pv_lerp)]
 chamber_pv_segs = [signal.lfilter(
     b, a, temp, zi=_zi * temp[0])[0] for temp in chamber_pv_rs_segs]
 
+temp_sensor_std = temp_sur[30000:].std()
+temp_sensor_mean = temp_sur[30000:].mean()
+temp_sensor_snr = (temp_sensor_mean / temp_sensor_std) ** 2
+temp_sensor_snr = 10 * np.log10(temp_sensor_snr)
+print(f"Temperature sensor mean: {temp_sensor_mean}")
+print(f"Temperature sensor std: {temp_sensor_std}")
+print(f"Temperature sensor SNR: {temp_sensor_snr} dB")
+chamber_pv_std = chamber_pv[4000:].std()
+chamber_pv_mean = chamber_pv[4000:].mean()
+chamber_pv_snr = (chamber_pv_mean / chamber_pv_std) ** 2
+chamber_pv_snr = 10 * np.log10(chamber_pv_snr)
+print(f"Chamber mean: {chamber_pv_mean}")
+print(f"Chamber std: {chamber_pv_std}")
+print(f"Chamber SNR: {chamber_pv_snr} dB")
 
-def get_data(training_segment=3, eval_segment=2, *, training_start=None, training_cutoff=None, eval_start=None, eval_cutoff=None):
+
+def get_data(training_segment=0, eval_segment=0, *, training_start=None, training_cutoff=None, eval_start=None, eval_cutoff=None):
     # We assume the observations match the states at the beginning
     t_train = np.linspace(0, cap_time_segs[training_segment][-1] -
                           cap_time_segs[training_segment][0], len(cap_time_segs[training_segment]))[training_start:training_cutoff]
@@ -190,7 +225,8 @@ def main():
     # ax[0].scatter(temp_time, temp_air, 1, alpha=0.5, label="Air")
     ax[0].plot(temp_time, temp_sur, alpha=0.5, label="Surface")
     ax[0].plot(temp_time, temp_air, alpha=0.5, label="Air")
-    ax[0].scatter(chamber_time, chamber_pv, 1, alpha=0.5, label="Ambient")
+    ax[0].scatter(chamber_time, chamber_pv, 1, alpha=0.5, label="Ambient (PV)")
+    ax[0].scatter(chamber_time, chamber_sp, 1, alpha=0.5, label="Ambient (SP)")
     ax[0].legend()
 
     ax[1].scatter(cap_time, cap_voltage, 1, alpha=0.5, label="Voltage")
@@ -208,15 +244,17 @@ def main():
     ax[2].legend()
 
     ### Plot filtered temperature data ###
-    fig, axs = plt.subplots(2, segments_total, sharex=True)
+    fig, axs = plt.subplots(2, segments_total + 1, sharex=True)
     for ax, time, sur, amb in zip(axs[0, :].flatten(), cap_time_segs, temp_sur_segs, chamber_pv_segs):
         ax.plot(time, sur, label="Surface")
-        ax.plot(time, amb, label="Ambient")
+        # ax.plot(time, amb, label="Ambient")
+        ax.grid(alpha=0.25)
         ax.legend()
 
     for ax, time, current, power in zip(axs[1, :].flatten(), cap_time_segs, cap_current_segs, cap_power_segs):
         ax.plot(time, current, label="Current")
         ax.plot(time, power, label="Power")
+        ax.grid(alpha=0.25)
         ax.legend()
 
 
