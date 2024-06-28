@@ -14,7 +14,7 @@ sys.path.append(str(datalib_path))
 from thermal_model.estimation import lti_from_data, TargetParams, error
 from thermal_model.logger import LOGGER
 
-from lib_240209_temptest_C6B2 import get_data, Data
+from lib_240626_temp_profile_C6B2 import get_data, Data
 
 # pylint: enable=import-error
 
@@ -82,14 +82,14 @@ def perform_experiment(
 
 def main():
     LOGGER.info("Getting data from experiment")
-    train_data, _ = get_data(3, 2)
+    train_data, _ = get_data(0, 0)
 
     LOGGER.info("Estimating parameters for experiment with air")
     *_, params_air = perform_experiment(
         train_data,
         name="both",
     )
-    with open(os.path.join("examples", "lab_240209", "params_est_air.json"), "w") as f:
+    with open(os.path.join("examples", "lab_240626", "params_est_air.json"), "w") as f:
         f.write(json.dumps(params_air._asdict()))
 
     LOGGER.info("Estimating parameters for experiment without air")
@@ -97,5 +97,5 @@ def main():
         train_data,
         name="noair",
     )
-    with open(os.path.join("examples", "lab_240209", "params_est_noair.json"), "w") as f:
+    with open(os.path.join("examples", "lab_240626", "params_est_noair.json"), "w") as f:
         f.write(json.dumps(params_noair._asdict()))
