@@ -26,6 +26,19 @@ def l2(expected, u, t, x0, **kwargs) -> Callable[[TargetParams], float]:
     return _generate_system
 
 
+def l2_simulation(expected, u, t, x0, **kwargs) -> Callable[[TargetParams], float]:
+    def _generate_system(params: TargetParams) -> float:
+        raise NotImplementedError("Optimizing from simulation not implemented")
+        obtained = None
+        error = expected - obtained
+        try:
+            mse = np.diag(error.conjugate().T @ error).sum() / len(t)
+        except ValueError:
+            mse = error.conjugate().T @ error / len(t)
+        return mse
+    return _generate_system
+
+
 def likelihood(expected, u, t, x0, sensor_cov, prior: Callable[[TargetParams], float] = None, **kwargs) -> Callable[[TargetParams], float]:
     # if prior is None:
     #     prior = lambda params: 1
