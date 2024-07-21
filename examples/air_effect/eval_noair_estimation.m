@@ -51,10 +51,6 @@ voltage = csv_table(:, "Voltage").(1);
 [time, power] = get_segment(time, current, voltage, SEGMENT, TIME_LIMIT);
 amb_temp = 298;
 
-% time = linspace(0, 100000, 100000)';
-% power = 3 * (square(2 * pi * (5 / (time(end) - time(1))) * time));
-% amb_temp = 273 * ones(size(time));
-
 %% Generate timeseries
 power_profile = timeseries(power, time);
 amb_profile = timeseries(amb_temp, time);
