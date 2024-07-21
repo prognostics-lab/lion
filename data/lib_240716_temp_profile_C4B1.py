@@ -61,10 +61,10 @@ temp_air_full = 0.5 * (temp_a1_full + temp_a2_full)
 
 _TEMP_START = None
 _TEMP_CUTOFF = None
-temp_time = temp_time_full[_TEMP_START:_TEMP_CUTOFF]
-temp_time = temp_time - temp_time[0]
-temp_sur = temp_sur_full[_TEMP_START:_TEMP_CUTOFF]
-temp_air = temp_air_full[_TEMP_START:_TEMP_CUTOFF]
+temp_time_raw = temp_time_full[_TEMP_START:_TEMP_CUTOFF]
+temp_time_raw = temp_time_raw - temp_time_raw[0]
+temp_sur_raw = temp_sur_full[_TEMP_START:_TEMP_CUTOFF]
+temp_air_raw = temp_air_full[_TEMP_START:_TEMP_CUTOFF]
 
 
 ### Chamber data ###
@@ -76,10 +76,10 @@ chamber_pv_full = chamber_df["TEMPERATURE PV"].to_numpy()
 
 _CHAMBER_START = None
 _CHAMBER_CUTOFF = None
-chamber_time = chamber_time_full[_CHAMBER_START:_CHAMBER_CUTOFF]
-chamber_time = chamber_time - chamber_time[0]
-chamber_sp = chamber_sp_full[_CHAMBER_START:_CHAMBER_CUTOFF]
-chamber_pv = chamber_pv_full[_CHAMBER_START:_CHAMBER_CUTOFF]
+chamber_time_raw = chamber_time_full[_CHAMBER_START:_CHAMBER_CUTOFF]
+chamber_time_raw = chamber_time_raw - chamber_time_raw[0]
+chamber_sp_raw = chamber_sp_full[_CHAMBER_START:_CHAMBER_CUTOFF]
+chamber_pv_raw = chamber_pv_full[_CHAMBER_START:_CHAMBER_CUTOFF]
 
 
 ### Capacity data ###
@@ -91,16 +91,16 @@ cap_current_full = cap_df["Current"].to_numpy()
 cap_voltage_full = cap_df["Voltage"].to_numpy()
 cap_soc_full = cap_df["SOC"].to_numpy()
 
-_CAP_START = 3800
+_CAP_START = None
 _CAP_CUTOFF = None
-cap_time = cap_time_full[_CAP_START:_CAP_CUTOFF]
-cap_time = cap_time - cap_time[0]
-cap_voltage = cap_voltage_full[_CAP_START:_CAP_CUTOFF]
-cap_current = cap_current_full[_CAP_START:_CAP_CUTOFF]
-cap_soc = cap_soc_full[_CAP_START:_CAP_CUTOFF]
-cap_power = cap_current * cap_voltage
+cap_time_raw = cap_time_full[_CAP_START:_CAP_CUTOFF]
+cap_time_raw = cap_time_raw - cap_time_raw[0]
+cap_voltage_raw = cap_voltage_full[_CAP_START:_CAP_CUTOFF]
+cap_current_raw = cap_current_full[_CAP_START:_CAP_CUTOFF]
+cap_soc_raw = cap_soc_full[_CAP_START:_CAP_CUTOFF]
+cap_power_raw = cap_current_raw * cap_voltage_raw
 
-cell_internal_resistance = np.max(cap_voltage / cap_current)
+cell_internal_resistance = np.max(cap_voltage_raw / cap_current_raw)
 print(f"Calculated internal resistance is {cell_internal_resistance} Ohm")
 
 _TO_UTC = "-04:00"
@@ -122,61 +122,90 @@ print(f"Capacity : {cap_start_time}")
 print("===============================")
 
 
-### Segmentation ###
-_TIME_LIMIT = 100
-starts_idx = np.concatenate(
-    ([0], np.where((cap_time[1:] - cap_time[:-1]) >= _TIME_LIMIT)[0] + 1))
-ends_idx = np.concatenate(
-    (np.where((cap_time[1:] - cap_time[:-1]) >= _TIME_LIMIT)[0], [-1]))
-starts = cap_time[starts_idx]
-ends = cap_time[ends_idx]
-
-# Define masks
-segments_total = sum(1 for _ in zip(starts, ends))
-temp_masks = [(s <= temp_time) & (temp_time <= e)
-              for s, e in zip(starts, ends)]
-chamber_masks = [(s <= chamber_time) & (chamber_time <= e)
-                 for s, e in zip(starts, ends)]
-cap_masks = [(s <= cap_time) & (cap_time <= e) for s, e in zip(starts, ends)]
-
-# Segmentate capacity data
-cap_time_segs = [cap_time[m] for m in cap_masks]
-cap_current_segs = [cap_current[m] for m in cap_masks]
-cap_voltage_segs = [cap_voltage[m] for m in cap_masks]
-cap_power_segs = [cap_power[m] for m in cap_masks]
-cap_soc_segs = [cap_soc[m] for m in cap_masks]
-
-# Segmentation and filtering of temperature data
-temp_time_segs = [temp_time[m] for m in temp_masks]
-temp_sur_raw_segs = [temp_sur[m] for m in temp_masks]
-temp_air_raw_segs = [temp_air[m] for m in temp_masks]
-temp_sur_rs_segs = [signal.resample(temp_sur_raw_segs[i], len(
-    cap_time_segs[i])) for i in range(segments_total)]
-temp_air_rs_segs = [signal.resample(temp_air_raw_segs[i], len(
-    cap_time_segs[i])) for i in range(segments_total)]
-# temp_sur_rs_segs = temp_sur_raw_segs
-# temp_air_rs_segs = temp_air_raw_segs
-b, a = signal.butter(5, 0.01)
+### Interpolation and resampling ###
+# Temperature - Low pass filtering
+temp_time = temp_time_raw
+# temp_sur = temp_sur_raw
+# temp_air = temp_air_raw
+b, a = signal.butter(5, 0.1)
 _zi = signal.lfilter_zi(b, a)
-temp_sur_segs = [signal.lfilter(b, a, temp, zi=_zi * temp[0])[0]
-                 for temp in temp_sur_rs_segs]
-temp_air_segs = [signal.lfilter(b, a, temp, zi=_zi * temp[0])[0]
-                 for temp in temp_air_rs_segs]
-# gen_heat_segs = [models.generated_heat_from_current(
-#     current, temp, soc, cell_internal_resistance) for current, temp, soc in zip(cap_current_segs, temp_sur_segs, cap_soc_segs)]
+temp_sur = signal.lfilter(b, a, temp_sur_raw, zi=_zi * temp_sur_raw[0])[0]
+temp_air = signal.lfilter(b, a, temp_air_raw, zi=_zi * temp_air_raw[0])[0]
 
-# Segementation, filtering and interpolation of chamber data
-chamber_time_segs = [chamber_time[m] for m in chamber_masks]
-chamber_sp_raw_segs = [chamber_sp[m] for m in chamber_masks]
-chamber_pv_raw_segs = [chamber_pv[m] for m in chamber_masks]
-_sp_lerp = [interpolate.interp1d(t, y, fill_value="extrapolate") for t, y in zip(
-    chamber_time_segs, chamber_sp_raw_segs)]
-_pv_lerp = [interpolate.interp1d(t, y, fill_value="extrapolate") for t, y in zip(
-    chamber_time_segs, chamber_pv_raw_segs)]
-chamber_sp_segs = [f(t) for t, f in zip(cap_time_segs, _sp_lerp)]
-chamber_pv_rs_segs = [f(t) for t, f in zip(cap_time_segs, _pv_lerp)]
-chamber_pv_segs = [signal.lfilter(
-    b, a, temp, zi=_zi * temp[0])[0] for temp in chamber_pv_rs_segs]
+# Chamber - Interpolation
+_pv_lerp = interpolate.interp1d(chamber_time_raw, chamber_pv_raw, fill_value="extrapolate")
+_sp_lerp = interpolate.interp1d(chamber_time_raw, chamber_sp_raw, fill_value="extrapolate")
+chamber_pv = _pv_lerp(temp_time)
+chamber_sp = _sp_lerp(temp_time)
+chamber_time = temp_time
+
+# Capacity - Interpolation
+_curr_lerp = interpolate.interp1d(cap_time_raw, cap_current_raw, fill_value="extrapolate")
+_volt_lerp = interpolate.interp1d(cap_time_raw, cap_voltage_raw, fill_value="extrapolate")
+_power_lerp = interpolate.interp1d(cap_time_raw, cap_power_raw, fill_value="extrapolate")
+_soc_lerp = interpolate.interp1d(cap_time_raw, cap_soc_raw, fill_value="extrapolate")
+cap_current = _curr_lerp(temp_time)
+cap_voltage = _volt_lerp(temp_time)
+cap_power = _power_lerp(temp_time)
+cap_soc = _soc_lerp(temp_time)
+cap_time = cap_time_raw
+
+
+### Segmentation ###
+# _TIME_LIMIT = 100
+# starts_idx = np.concatenate(
+#     ([0], np.where((cap_time[1:] - cap_time[:-1]) >= _TIME_LIMIT)[0] + 1))
+# ends_idx = np.concatenate(
+#     (np.where((cap_time[1:] - cap_time[:-1]) >= _TIME_LIMIT)[0], [-1]))
+# starts = cap_time[starts_idx]
+# ends = cap_time[ends_idx]
+
+# # Define masks
+# segments_total = sum(1 for _ in zip(starts, ends))
+# temp_masks = [(s <= temp_time) & (temp_time <= e)
+#               for s, e in zip(starts, ends)]
+# chamber_masks = [(s <= chamber_time) & (chamber_time <= e)
+#                  for s, e in zip(starts, ends)]
+# cap_masks = [(s <= cap_time) & (cap_time <= e) for s, e in zip(starts, ends)]
+
+# # Segmentate capacity data
+# cap_time_segs = [cap_time[m] for m in cap_masks]
+# cap_current_segs = [cap_current[m] for m in cap_masks]
+# cap_voltage_segs = [cap_voltage[m] for m in cap_masks]
+# cap_power_segs = [cap_power[m] for m in cap_masks]
+# cap_soc_segs = [cap_soc[m] for m in cap_masks]
+
+# # Segmentation and filtering of temperature data
+# temp_time_segs = [temp_time[m] for m in temp_masks]
+# temp_sur_raw_segs = [temp_sur[m] for m in temp_masks]
+# temp_air_raw_segs = [temp_air[m] for m in temp_masks]
+# temp_sur_rs_segs = [signal.resample(temp_sur_raw_segs[i], len(
+#     cap_time_segs[i])) for i in range(segments_total)]
+# temp_air_rs_segs = [signal.resample(temp_air_raw_segs[i], len(
+#     cap_time_segs[i])) for i in range(segments_total)]
+# # temp_sur_rs_segs = temp_sur_raw_segs
+# # temp_air_rs_segs = temp_air_raw_segs
+# b, a = signal.butter(5, 0.01)
+# _zi = signal.lfilter_zi(b, a)
+# temp_sur_segs = [signal.lfilter(b, a, temp, zi=_zi * temp[0])[0]
+#                  for temp in temp_sur_rs_segs]
+# temp_air_segs = [signal.lfilter(b, a, temp, zi=_zi * temp[0])[0]
+#                  for temp in temp_air_rs_segs]
+# # gen_heat_segs = [models.generated_heat_from_current(
+# #     current, temp, soc, cell_internal_resistance) for current, temp, soc in zip(cap_current_segs, temp_sur_segs, cap_soc_segs)]
+
+# # Segementation, filtering and interpolation of chamber data
+# chamber_time_segs = [chamber_time[m] for m in chamber_masks]
+# chamber_sp_raw_segs = [chamber_sp[m] for m in chamber_masks]
+# chamber_pv_raw_segs = [chamber_pv[m] for m in chamber_masks]
+# _sp_lerp = [interpolate.interp1d(t, y, fill_value="extrapolate") for t, y in zip(
+#     chamber_time_segs, chamber_sp_raw_segs)]
+# _pv_lerp = [interpolate.interp1d(t, y, fill_value="extrapolate") for t, y in zip(
+#     chamber_time_segs, chamber_pv_raw_segs)]
+# chamber_sp_segs = [f(t) for t, f in zip(cap_time_segs, _sp_lerp)]
+# chamber_pv_rs_segs = [f(t) for t, f in zip(cap_time_segs, _pv_lerp)]
+# chamber_pv_segs = [signal.lfilter(
+#     b, a, temp, zi=_zi * temp[0])[0] for temp in chamber_pv_rs_segs]
 
 temp_sensor_std = temp_sur[30000:].std()
 temp_sensor_mean = temp_sur[30000:].mean()
@@ -194,27 +223,37 @@ print(f"Chamber std: {chamber_pv_std}")
 print(f"Chamber SNR: {chamber_pv_snr} dB")
 
 
-def get_data(training_segment=0, eval_segment=0, *, training_start=None, training_cutoff=None, eval_start=None, eval_cutoff=None):
-    # We assume the observations match the states at the beginning
-    t_train = np.linspace(0, cap_time_segs[training_segment][-1] -
-                          cap_time_segs[training_segment][0], len(cap_time_segs[training_segment]))[training_start:training_cutoff]
-    y_train = np.array([temp_sur_segs[training_segment],
-                        temp_air_segs[training_segment]]).T[training_start:training_cutoff, :]
-    u_train = np.array([chamber_pv_segs[training_segment],
-                        gen_heat_segs[training_segment]]).T[training_start:training_cutoff, :]
-    x0_train = y_train[0]
-    train_data = Data(t_train, y_train, u_train, x0_train)
+def get_data(start=None, cutoff=None):
+    t = temp_time[start:cutoff]
+    y = np.array([temp_sur, temp_air]).T[start:cutoff, :]
+    u = np.array([chamber_pv, cap_power]).T[start:cutoff, :]
+    # For initial temperature, we assume the experiment starts after cells have rested
+    x0 = np.array([chamber_pv[start], chamber_pv[start]])
+    data = Data(t, y, u, x0)
+    return data
 
-    t_eval = np.linspace(0, cap_time_segs[eval_segment][-1] -
-                         cap_time_segs[eval_segment][0], len(cap_time_segs[eval_segment]))[eval_start:eval_cutoff]
-    y_eval = np.array([temp_sur_segs[eval_segment],
-                       temp_air_segs[eval_segment]]).T[eval_start:eval_cutoff]
-    u_eval = np.array([chamber_pv_segs[eval_segment],
-                       gen_heat_segs[eval_segment]]).T[eval_start:eval_cutoff]
-    x0_eval = y_eval[0]
-    eval_data = Data(t_eval, y_eval, u_eval, x0_eval)
 
-    return train_data, eval_data
+# def get_data(training_segment=0, eval_segment=0, *, training_start=None, training_cutoff=None, eval_start=None, eval_cutoff=None):
+#     # We assume the observations match the states at the beginning
+#     t_train = np.linspace(0, cap_time_segs[training_segment][-1] -
+#                           cap_time_segs[training_segment][0], len(cap_time_segs[training_segment]))[training_start:training_cutoff]
+#     y_train = np.array([temp_sur_segs[training_segment],
+#                         temp_air_segs[training_segment]]).T[training_start:training_cutoff, :]
+#     u_train = np.array([chamber_pv_segs[training_segment],
+#                         gen_heat_segs[training_segment]]).T[training_start:training_cutoff, :]
+#     x0_train = y_train[0]
+#     train_data = Data(t_train, y_train, u_train, x0_train)
+
+#     t_eval = np.linspace(0, cap_time_segs[eval_segment][-1] -
+#                          cap_time_segs[eval_segment][0], len(cap_time_segs[eval_segment]))[eval_start:eval_cutoff]
+#     y_eval = np.array([temp_sur_segs[eval_segment],
+#                        temp_air_segs[eval_segment]]).T[eval_start:eval_cutoff]
+#     u_eval = np.array([chamber_pv_segs[eval_segment],
+#                        gen_heat_segs[eval_segment]]).T[eval_start:eval_cutoff]
+#     x0_eval = y_eval[0]
+#     eval_data = Data(t_eval, y_eval, u_eval, x0_eval)
+
+#     return train_data, eval_data
 
 
 def main():
@@ -223,39 +262,57 @@ def main():
 
     # ax[0].scatter(temp_time, temp_sur, 1, alpha=0.5, label="Surface")
     # ax[0].scatter(temp_time, temp_air, 1, alpha=0.5, label="Air")
-    ax[0].plot(temp_time, temp_sur, alpha=0.5, label="Surface")
-    ax[0].plot(temp_time, temp_air, alpha=0.5, label="Air")
-    ax[0].scatter(chamber_time, chamber_pv, 1, alpha=0.5, label="Ambient (PV)")
-    ax[0].scatter(chamber_time, chamber_sp, 1, alpha=0.5, label="Ambient (SP)")
+    ax[0].plot(temp_time_raw, temp_sur_raw, alpha=0.5, label="Surface")
+    ax[0].plot(temp_time_raw, temp_air_raw, alpha=0.5, label="Air")
+    ax[0].scatter(chamber_time_raw, chamber_pv_raw, 1, alpha=0.5, label="Ambient (PV)")
+    ax[0].scatter(chamber_time_raw, chamber_sp_raw, 1, alpha=0.5, label="Ambient (SP)")
     ax[0].legend()
 
-    ax[1].scatter(cap_time, cap_voltage, 1, alpha=0.5, label="Voltage")
+    ax[1].scatter(cap_time_raw, cap_voltage_raw, 1, alpha=0.5, label="Voltage")
     ax_t = ax[1].twinx()
-    ax_t.scatter(cap_time, cap_current, 1, alpha=0.5, color="y", label="Current")
+    ax_t.scatter(cap_time_raw, cap_current_raw, 1, alpha=0.5, color="y", label="Current")
     ax[1].legend()
     ax[1].set_ylabel("Voltage")
     ax_t.set_ylabel("Current")
 
-    ax[2].scatter(cap_time, cap_power, 1, label="Power")
-    ax_t = ax[2].twinx()
-    ax_t.scatter(cap_time, cap_voltage / cap_current, 1, color="k", label="Resistance")
-    ax_t.set_ylabel("Resistance")
+    ax[2].scatter(cap_time_raw, cap_power_raw, 1, label="Power")
     ax[2].set_ylabel("Power")
     ax[2].legend()
 
-    ### Plot filtered temperature data ###
-    fig, axs = plt.subplots(2, segments_total + 1, sharex=True)
-    for ax, time, sur, amb in zip(axs[0, :].flatten(), cap_time_segs, temp_sur_segs, chamber_pv_segs):
-        ax.plot(time, sur, label="Surface")
-        # ax.plot(time, amb, label="Ambient")
-        ax.grid(alpha=0.25)
-        ax.legend()
+    ### Plot interpolated and resampled data ###
+    fig, ax = plt.subplots(4, 1, sharex=True)
+    ax[0].plot(temp_time, temp_sur, alpha=0.5, label="Surface")
+    ax[0].plot(temp_time, temp_air, alpha=0.5, label="Air")
+    ax[0].plot(temp_time, chamber_pv, alpha=0.5, label="Ambient")
+    ax[0].grid(alpha=0.25)
+    ax[0].legend()
 
-    for ax, time, current, power in zip(axs[1, :].flatten(), cap_time_segs, cap_current_segs, cap_power_segs):
-        ax.plot(time, current, label="Current")
-        ax.plot(time, power, label="Power")
-        ax.grid(alpha=0.25)
-        ax.legend()
+    ax[1].plot(temp_time, cap_current, alpha=1, label="Current")
+    ax[1].grid(alpha=0.25)
+    ax[1].legend()
+
+    ax[2].plot(temp_time, cap_voltage, alpha=1, label="Voltage")
+    ax[2].grid(alpha=0.25)
+    ax[2].legend()
+
+    ax[3].plot(temp_time, cap_soc, alpha=1, label="SoC")
+    ax[3].grid(alpha=0.25)
+    ax[3].legend()
+
+    ### Plot filtered temperature data ###
+    # fig, axs = plt.subplots(2, segments_total)
+    # for ax, time, sur, amb in zip(axs[0, :].flatten(), cap_time_segs, temp_sur_segs, chamber_pv_segs):
+    #     ax.plot(time, sur, label="Surface")
+    #     # ax.plot(time, amb, label="Ambient")
+    #     ax.grid(alpha=0.25)
+    #     ax.legend()
+
+    # for ax, time, current, power in zip(axs[1, :].flatten(), cap_time_segs, cap_current_segs, cap_power_segs):
+    #     ax.plot(time, current, label="Current")
+    #     ax.plot(time, power, label="Power")
+    #     ax.grid(alpha=0.25)
+    #     ax.legend()
+    # fig.tight_layout()
 
 
 if __name__ == "__main__":
