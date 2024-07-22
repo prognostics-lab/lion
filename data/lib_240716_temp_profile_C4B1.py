@@ -224,9 +224,9 @@ print(f"Chamber SNR: {chamber_pv_snr} dB")
 
 
 def get_data(start=None, cutoff=None):
-    t = temp_time[start:cutoff]
+    t = temp_time[start:cutoff].astype(float)
     y = np.array([temp_sur, temp_air]).T[start:cutoff, :]
-    u = np.array([chamber_pv, cap_power]).T[start:cutoff, :]
+    u = np.array([chamber_pv, -cap_power]).T[start:cutoff, :]
     # For initial temperature, we assume the experiment starts after cells have rested
     x0 = np.array([chamber_pv[start], chamber_pv[start]])
     data = Data(t, y, u, x0)
