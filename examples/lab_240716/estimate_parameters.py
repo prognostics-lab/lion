@@ -89,6 +89,10 @@ def main():
     data = get_data()
     time_delta = data.t[-1] - data.t[-2]
     end_time = data.t[-1]
+
+    time = data.t
+    power = data.u[:, 1]
+    amb_temp = data.u[:, 0]
     LOGGER.debug(f"{time_delta=}, {end_time=}")
 
     LOGGER.info("Initializing MATLAB engine")
@@ -97,9 +101,7 @@ def main():
     eng.matlab.project.loadProject(ML_PROJECTFILE)
     LOGGER.debug("Loading Simulink model")
     mdl = LAB_SLX_FILENAME
-    simin = eng.py_load_model(
-        mdl, time_delta, end_time, data.t, data.u[:, 1], data.u[:, 0]
-    )
+    simin = eng.py_load_model(mdl, time_delta, end_time, time, power, amb_temp)
 
     LOGGER.info("Estimating parameters for experiment without air")
     *_, params = perform_experiment(

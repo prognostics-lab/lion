@@ -3,7 +3,7 @@ simin = py_set_model_parameters(mdl, simin, params, initial_conditions);
 out = sim(simin);
 
 figure
-plot(out.power);
+plot(out.power)
 
 simout = out.simout;
 disp(simout.sf_temp);

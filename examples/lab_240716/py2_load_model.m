@@ -1,4 +1,3 @@
-function simin = py_load_model(mdl, time_delta, end_time, time, power, amb_temp)
 disp("[DEBUG] Loading Simulink system");
 load_system(mdl);
 simin = Simulink.SimulationInput(mdl);
@@ -19,4 +18,3 @@ simin = setModelParameter(simin, ...
     Solver="ode14x", ...
     StopTime=string(end_time), ...
     FixedStep=string(time_delta));
-end
