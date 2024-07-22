@@ -4,6 +4,7 @@ import numpy as np
 
 from thermal_model.estimation.models import target_response
 from thermal_model.estimation.params import TargetParams
+from thermal_model.logger import LOGGER
 
 
 def l1(expected, u, t, x0, **kwargs) -> Callable[[TargetParams], float]:
@@ -26,15 +27,38 @@ def l2(expected, u, t, x0, **kwargs) -> Callable[[TargetParams], float]:
     return _generate_system
 
 
-def l2_simulation(expected, u, t, x0, **kwargs) -> Callable[[TargetParams], float]:
+def l2_simulation(expected, u, t, x0, engine, mdl, simin, initial_soc, **kwargs) -> Callable[[TargetParams], float]:
+    names = kwargs.get("outputs")
+    only_sf = names is not None and names != "both"
+    initial_conditions_dict = {
+        "initial_soc": initial_soc,
+    }
+    if only_sf:
+        initial_conditions_dict["initial_in_temp"] = x0
+    else:
+        initial_conditions_dict["initial_in_temp"] = x0[0]
+        initial_conditions_dict["initial_air_temp"] = x0[1]
+
     def _generate_system(params: TargetParams) -> float:
-        raise NotImplementedError("Optimizing from simulation not implemented")
-        obtained = None
+        LOGGER.debug("Calling simulation")
+        params_dict = params._asdict()
+        simout = engine.py_evaluate_model(mdl, simin, params_dict, initial_conditions_dict)
+        simout_arr = np.array(simout)
+        if only_sf:
+            sf_temp = simout_arr[-1, :]
+            obtained = sf_temp
+        else:
+            air_temp = simout_arr[-2, :]
+            obtained = np.array([sf_temp, air_temp]).T
+        LOGGER.debug("Calculating error")
+        print(np.shape(expected))
+        print(np.shape(obtained))
         error = expected - obtained
         try:
             mse = np.diag(error.conjugate().T @ error).sum() / len(t)
         except ValueError:
             mse = error.conjugate().T @ error / len(t)
+        print(mse)
         return mse
     return _generate_system
 

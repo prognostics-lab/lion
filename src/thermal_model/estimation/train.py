@@ -4,6 +4,7 @@ import numpy as np
 from thermal_model.estimation.params import TargetParams, params_prefilled
 from thermal_model.estimation.models import target_lti_parameters, get_lti_params_fn
 from thermal_model.estimation import error
+from thermal_model.logger import LOGGER
 
 _GOOD_DEFAULT_PARAMS = TargetParams(cp=2288.8086878520617, cair=40.68543129463231,
                                     rair=0.05622811486407936, rin=0.29153746960754423, rout=0.09544187302807855)
@@ -31,15 +32,18 @@ def lti_from_data(y, u, t, x0, initial_guess=None, *, fixed_params=None,
         optimizer_fn = optimize.minimize
     else:
         optimizer_fn = optimizer_kwargs.pop("fn")
+    LOGGER.debug("Using '%s' as optimizer fn", optimizer_fn.__name__)
 
     if "err" not in optimizer_kwargs:
         error_functional = error.l2
     else:
         error_functional = optimizer_kwargs.pop("err")
+    LOGGER.debug("Using '%s' as error functional", error_functional.__name__)
 
     error_fn = error_functional(
         y, u, t, x0, **system_kwargs)
 
+    LOGGER.info("Starting optimization process (maybe go make some coffee?)")
     params = optimizer_fn(
         lambda p: error_fn(TargetParams(*params_prefilled(p, fixed_params))),
         np.array([*initial_guess]),
@@ -49,6 +53,7 @@ def lti_from_data(y, u, t, x0, initial_guess=None, *, fixed_params=None,
             if key in optimizer_fn.__code__.co_varnames
         }
     )
+    LOGGER.info("Finished optimization process")
     final_params = TargetParams(*params_prefilled(params.x, fixed_params))
     if "outputs" in system_kwargs:
         params_fn = get_lti_params_fn(system_kwargs["outputs"])
