@@ -124,13 +124,18 @@ print("===============================")
 
 ### Interpolation and resampling ###
 # Temperature - Low pass filtering
-temp_time = temp_time_raw
+# temp_time = temp_time_raw
 # temp_sur = temp_sur_raw
 # temp_air = temp_air_raw
+temp_time = np.linspace(temp_time_raw[0], temp_time_raw[-1], len(temp_time_raw))
 b, a = signal.butter(5, 0.1)
 _zi = signal.lfilter_zi(b, a)
-temp_sur = signal.lfilter(b, a, temp_sur_raw, zi=_zi * temp_sur_raw[0])[0]
-temp_air = signal.lfilter(b, a, temp_air_raw, zi=_zi * temp_air_raw[0])[0]
+temp_sur_filtered = signal.lfilter(b, a, temp_sur_raw, zi=_zi * temp_sur_raw[0])[0]
+temp_air_filtered = signal.lfilter(b, a, temp_air_raw, zi=_zi * temp_air_raw[0])[0]
+_sur_lerp = interpolate.interp1d(temp_time_raw, temp_sur_filtered, fill_value="extrapolate")
+_air_lerp = interpolate.interp1d(temp_time_raw, temp_air_filtered, fill_value="extrapolate")
+temp_sur = _sur_lerp(temp_time)
+temp_air = _air_lerp(temp_time)
 
 # Chamber - Interpolation
 _pv_lerp = interpolate.interp1d(chamber_time_raw, chamber_pv_raw, fill_value="extrapolate")
