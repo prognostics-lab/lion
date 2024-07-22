@@ -21,7 +21,7 @@ from lib_240716_temp_profile_C4B1 import get_data, Data
 # pylint: enable=import-error
 
 
-LAB_SLX_FILENAME = "lab_240716"
+LAB_SLX_FILENAME = "sim_noair"
 
 
 def perform_experiment(
@@ -71,7 +71,7 @@ def perform_experiment(
             "engine": eng,
             "mdl": mdl,
             "simin": simin,
-            "initial_soc": 0,
+            "initial_soc": 0.15,
         },
     )
     LOGGER.info(f"Final parameters: {params}")
