@@ -5,6 +5,7 @@ import json
 
 import numpy as np
 from scipy import optimize
+from matlab import engine
 
 src_path = pathlib.Path.joinpath(pathlib.Path(os.getcwd()), "src")
 datalib_path = pathlib.Path.joinpath(pathlib.Path(os.getcwd()), "data")
@@ -13,14 +14,21 @@ sys.path.append(str(datalib_path))
 # pylint: disable=import-error
 from thermal_model.estimation import lti_from_data, TargetParams, error
 from thermal_model.logger import LOGGER
+from thermal_model.paths import ML_PROJECTFILE
 
 from lib_240716_temp_profile_C4B1 import get_data, Data
 
 # pylint: enable=import-error
 
 
+LAB_SLX_FILENAME = "lab_240716"
+
+
 def perform_experiment(
     exp: Data,
+    eng: engine.MatlabEngine,
+    mdl,
+    simin,
     real_params=None,
     cair=0,
     rair=0,
@@ -60,6 +68,10 @@ def perform_experiment(
         },
         system_kwargs={
             "outputs": "noair",
+            "engine": eng,
+            "mdl": mdl,
+            "simin": simin,
+            "initial_soc": 0,
         },
     )
     LOGGER.info(f"Final parameters: {params}")
@@ -75,10 +87,28 @@ def perform_experiment(
 def main():
     LOGGER.info("Getting data from experiment")
     data = get_data()
+    time_delta = data.t[-1] - data.t[-2]
+    end_time = data.t[-1]
+    LOGGER.debug(f"{time_delta=}, {end_time=}")
+
+    LOGGER.info("Initializing MATLAB engine")
+    eng = engine.start_matlab()
+    LOGGER.debug("Loading project file")
+    eng.matlab.project.loadProject(ML_PROJECTFILE)
+    LOGGER.debug("Loading Simulink model")
+    mdl = LAB_SLX_FILENAME
+    simin = eng.py_load_model(
+        mdl, time_delta, end_time, data.t, data.u[:, 1], data.u[:, 0]
+    )
 
     LOGGER.info("Estimating parameters for experiment without air")
-    *_, params_noair = perform_experiment(
+    *_, params = perform_experiment(
         data,
+        eng,
+        mdl,
+        simin,
     )
-    with open(os.path.join("examples", "lab_240716", "params_est_noair.json"), "w") as f:
-        f.write(json.dumps(params_noair._asdict()))
+    with open(
+        os.path.join("examples", "lab_240716", "estimated_parameters.json"), "w"
+    ) as f:
+        f.write(json.dumps(params._asdict()))
