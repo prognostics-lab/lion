@@ -35,6 +35,7 @@ def l2_simulation(expected, u, t, x0, engine, mdl, simin, initial_soc, **kwargs)
     }
     if only_sf:
         initial_conditions_dict["initial_in_temp"] = x0
+        expected = expected[1:]
     else:
         initial_conditions_dict["initial_in_temp"] = x0[0]
         initial_conditions_dict["initial_air_temp"] = x0[1]
@@ -43,17 +44,11 @@ def l2_simulation(expected, u, t, x0, engine, mdl, simin, initial_soc, **kwargs)
         LOGGER.debug("Calling simulation")
         params_dict = params._asdict()
         simout = engine.py_evaluate_model(mdl, simin, params_dict, initial_conditions_dict)
-        simout_arr = np.array(simout)
-        if only_sf:
-            sf_temp = simout_arr[-1, :]
-            obtained = sf_temp
-        else:
-            air_temp = simout_arr[-2, :]
-            obtained = np.array([sf_temp, air_temp]).T
+        obtained = np.array(simout)[:, 0]
         LOGGER.debug("Calculating error")
-        print(np.shape(expected))
-        print(np.shape(obtained))
         error = expected - obtained
+        print(expected)
+        print(obtained)
         try:
             mse = np.diag(error.conjugate().T @ error).sum() / len(t)
         except ValueError:
