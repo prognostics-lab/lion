@@ -48,6 +48,7 @@ cap_df = pd.read_csv(
     names=["Current", "Voltage", "Capacity",
            "Cumulative_capacity", "Seconds", "Test_State", "SOC"],
 )
+INITIAL_SOC = 0.15
 
 ### Temperature data ###
 temp_time_full = (sensor_df["unix_time_utc"] -
