@@ -44,7 +44,7 @@ def l2_simulation(expected, u, t, x0, engine, mdl, simin, initial_soc, **kwargs)
         LOGGER.debug("Calling simulation")
         params_dict = params._asdict()
         simout = engine.py_evaluate_model(mdl, simin, params_dict, initial_conditions_dict)
-        obtained = np.array(simout)[:, 0]
+        obtained = np.array(simout)[:, 2]
         LOGGER.debug("Calculating error")
         error = expected - obtained
         print(expected)
