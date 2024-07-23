@@ -16,12 +16,11 @@ from thermal_model.estimation import lti_from_data, TargetParams, error
 from thermal_model.logger import LOGGER
 from thermal_model.paths import ML_PROJECTFILE
 
-from lib_240716_temp_profile_C4B1 import get_data, Data
+from lib_240716_temp_profile_C4B1 import get_data, Data, INITIAL_SOC
 
 # pylint: enable=import-error
 
-
-LAB_SLX_FILENAME = "sim_noair"
+from .constants import LAB_SLX_FILENAME
 
 
 def perform_experiment(
@@ -71,7 +70,7 @@ def perform_experiment(
             "engine": eng,
             "mdl": mdl,
             "simin": simin,
-            "initial_soc": 0.15,
+            "initial_soc": INITIAL_SOC,
         },
     )
     LOGGER.info(f"Final parameters: {params}")
