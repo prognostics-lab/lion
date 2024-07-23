@@ -4,6 +4,7 @@ import pathlib
 import json
 
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 import numpy as np
 from matlab import engine
 
@@ -21,6 +22,39 @@ from lib_240716_temp_profile_C4B1 import get_data, Data, INITIAL_SOC
 # pylint: enable=import-error
 
 from .constants import LAB_SLX_FILENAME
+
+
+### Paths
+IMG_DIR = os.path.join("img")
+IMG_EXPERIMENTAL_DIR = os.path.join(IMG_DIR, "experiments")
+SAVE_FMT = "pdf"
+SAVEFIG_PARAMS = {"dpi": 1000, "bbox_inches": "tight"}
+os.makedirs(IMG_DIR, exist_ok=True)
+os.makedirs(IMG_EXPERIMENTAL_DIR, exist_ok=True)
+
+
+### Default parameters for the plots
+SMALL_SIZE = 8
+MEDIUM_SIZE = 10
+BIGGER_SIZE = 12
+DEFAULT_FIGSIZE = (3.38765625, 3)
+GRID_ALPHA = 0.25
+
+mpl.rcParams["text.usetex"] = True
+mpl.rcParams["font.family"] = "Times"
+mpl.rcParams["font.size"] = MEDIUM_SIZE
+mpl.rcParams["axes.titlesize"] = MEDIUM_SIZE
+mpl.rcParams["axes.labelsize"] = MEDIUM_SIZE
+mpl.rcParams["axes.grid"] = True
+mpl.rcParams["grid.alpha"] = GRID_ALPHA
+mpl.rcParams["ytick.labelsize"] = SMALL_SIZE
+mpl.rcParams["ytick.labelsize"] = SMALL_SIZE
+mpl.rcParams["legend.fontsize"] = SMALL_SIZE
+mpl.rcParams["figure.titlesize"] = MEDIUM_SIZE
+mpl.rcParams["figure.figsize"] = DEFAULT_FIGSIZE
+mpl.rcParams["lines.linewidth"] = 1
+
+plt.style.use("tableau-colorblind10")
 
 
 def main(savefig=False):
@@ -70,6 +104,7 @@ def main(savefig=False):
     print(f" + MAE  -> {mae}")
 
     LOGGER.info("Generating plots")
+    LOGGER.debug("Preparing output plots")
     fig, ax = plt.subplots(2, 1, sharex=True)
 
     ax[0].plot(sim_time / 3600, sim_sf_temp, label="Estimated")
@@ -78,11 +113,47 @@ def main(savefig=False):
     ax[0].set_xlabel("Time (h)")
     ax[0].set_ylabel("Temperature (°C)")
     ax[0].set_title("Surface temperature")
+    ax[0].grid(alpha=0.25)
 
     ax[1].plot(time / 3600, (sf_temp - sim_sf_temp) ** 2, alpha=0.5, label="Square error")
     ax[1].legend()
     ax[1].set_xlabel("Time (h)")
-    ax[1].set_ylabel("Square error (°C^2)")
+    ax[1].set_ylabel("Square error")
     ax[1].set_title("Estimation error")
     ax[1].set_yscale("log")
+    ax[1].grid(alpha=0.25)
 
+    fig.tight_layout()
+    if savefig:
+        fig.savefig(os.path.join(IMG_EXPERIMENTAL_DIR, f"240716_estimated.{SAVE_FMT}"), **SAVEFIG_PARAMS)
+
+    LOGGER.debug("Preparing internal temperature plots")
+    fig, ax = plt.subplots(figsize=(DEFAULT_FIGSIZE[0], 1.5))
+    ax.plot(sim_time / 3600, sim_in_temp)
+    ax.set_xlabel("Time (h)")
+    ax.set_ylabel("Temperature (°C)")
+    ax.set_title("Estimated internal temperature")
+    ax.grid(alpha=0.25)
+
+    fig.tight_layout()
+    if savefig:
+        fig.savefig(os.path.join(IMG_EXPERIMENTAL_DIR, f"240716_estimated_internal.{SAVE_FMT}"), **SAVEFIG_PARAMS)
+
+    LOGGER.debug("Preparing inputs plots")
+    fig, ax = plt.subplots(2, 1, sharex=True)
+
+    ax[0].plot(data.t / 3600, power)
+    ax[0].set_xlabel("Time (h)")
+    ax[0].set_ylabel("Power (W)")
+    ax[0].set_title("Power profile")
+    ax[0].grid(alpha=0.25)
+
+    ax[1].plot(data.t / 3600, amb_temp)
+    ax[1].set_xlabel("Time (h)")
+    ax[1].set_ylabel("Temperature (°C)")
+    ax[1].set_title("Ambient temperature")
+    ax[1].grid(alpha=0.25)
+
+    fig.tight_layout()
+    if savefig:
+        fig.savefig(os.path.join(IMG_EXPERIMENTAL_DIR, f"240716_inputs.{SAVE_FMT}"), **SAVEFIG_PARAMS)
