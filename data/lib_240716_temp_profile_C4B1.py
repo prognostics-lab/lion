@@ -102,7 +102,6 @@ cap_soc_raw = cap_soc_full[_CAP_START:_CAP_CUTOFF]
 cap_power_raw = cap_current_raw * cap_voltage_raw
 
 cell_internal_resistance = np.max(cap_voltage_raw / cap_current_raw)
-print(f"Calculated internal resistance is {cell_internal_resistance} Ohm")
 
 _TO_UTC = "-04:00"
 sensor_idx = 0 if _TEMP_START is None else _TEMP_START
@@ -114,13 +113,6 @@ cap_start_time = datetime.datetime.strptime(cap_df["Seconds"].iloc[cap_idx][:-3]
 sensor_start_time = sensor_start_time.astimezone()
 chamber_start_time = chamber_start_time.astimezone()
 cap_start_time = cap_start_time.astimezone()
-print("===============================")
-print("Start times report (Local time)")
-print("-------------------------------")
-print(f"Sensors  : {sensor_start_time}")
-print(f"Chamber  : {chamber_start_time}")
-print(f"Capacity : {cap_start_time}")
-print("===============================")
 
 
 ### Interpolation and resampling ###
@@ -217,16 +209,10 @@ temp_sensor_std = temp_sur[30000:].std()
 temp_sensor_mean = temp_sur[30000:].mean()
 temp_sensor_snr = (temp_sensor_mean / temp_sensor_std) ** 2
 temp_sensor_snr = 10 * np.log10(temp_sensor_snr)
-print(f"Temperature sensor mean: {temp_sensor_mean}")
-print(f"Temperature sensor std: {temp_sensor_std}")
-print(f"Temperature sensor SNR: {temp_sensor_snr} dB")
 chamber_pv_std = chamber_pv[4000:].std()
 chamber_pv_mean = chamber_pv[4000:].mean()
 chamber_pv_snr = (chamber_pv_mean / chamber_pv_std) ** 2
 chamber_pv_snr = 10 * np.log10(chamber_pv_snr)
-print(f"Chamber mean: {chamber_pv_mean}")
-print(f"Chamber std: {chamber_pv_std}")
-print(f"Chamber SNR: {chamber_pv_snr} dB")
 
 
 def get_data(start=None, cutoff=None):
@@ -263,6 +249,23 @@ def get_data(start=None, cutoff=None):
 
 
 def main():
+    print(f"Calculated internal resistance is {cell_internal_resistance} Ohm")
+
+    print("===============================")
+    print("Start times report (Local time)")
+    print("-------------------------------")
+    print(f"Sensors  : {sensor_start_time}")
+    print(f"Chamber  : {chamber_start_time}")
+    print(f"Capacity : {cap_start_time}")
+    print("===============================")
+
+    print(f"Temperature sensor mean: {temp_sensor_mean}")
+    print(f"Temperature sensor std: {temp_sensor_std}")
+    print(f"Temperature sensor SNR: {temp_sensor_snr} dB")
+    print(f"Chamber mean: {chamber_pv_mean}")
+    print(f"Chamber std: {chamber_pv_std}")
+    print(f"Chamber SNR: {chamber_pv_snr} dB")
+
     ### Raw data plots ###
     fig, ax = plt.subplots(3, 1, sharex=True)
 
