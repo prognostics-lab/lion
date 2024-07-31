@@ -16,7 +16,13 @@ from thermal_model.estimation import lti_from_data, TargetParams, error
 from thermal_model.logger import LOGGER
 from thermal_model.paths import ML_PROJECTFILE
 
-from lib_240716_temp_profile_C4B1 import get_data, Data, INITIAL_SOC
+from lib_240716_temp_profile_C4B1 import (
+    get_data,
+    Data,
+    INITIAL_SOC,
+    temp_sensor_std,
+    chamber_pv_std,
+)
 
 # pylint: enable=import-error
 
@@ -44,7 +50,7 @@ def perform_experiment(
         t,
         x0,
         initial_guess=TargetParams(
-            cp=1,
+            cp=100,
             cair=cair,
             rin=1,
             rout=1,
@@ -71,6 +77,7 @@ def perform_experiment(
             "mdl": mdl,
             "simin": simin,
             "initial_soc": INITIAL_SOC,
+            "gain": 1e3,
         },
     )
     LOGGER.info(f"Final parameters: {params}")
