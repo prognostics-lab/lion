@@ -34,6 +34,7 @@ os.makedirs(IMG_EXPERIMENTAL_DIR, exist_ok=True)
 
 
 ### Default parameters for the plots
+SMALLER_SIZE = 6
 SMALL_SIZE = 8
 MEDIUM_SIZE = 10
 BIGGER_SIZE = 12
@@ -47,8 +48,8 @@ mpl.rcParams["axes.titlesize"] = MEDIUM_SIZE
 mpl.rcParams["axes.labelsize"] = MEDIUM_SIZE
 mpl.rcParams["axes.grid"] = True
 mpl.rcParams["grid.alpha"] = GRID_ALPHA
-mpl.rcParams["ytick.labelsize"] = SMALL_SIZE
-mpl.rcParams["ytick.labelsize"] = SMALL_SIZE
+mpl.rcParams["xtick.labelsize"] = SMALLER_SIZE
+mpl.rcParams["ytick.labelsize"] = SMALLER_SIZE
 mpl.rcParams["legend.fontsize"] = SMALL_SIZE
 mpl.rcParams["figure.titlesize"] = MEDIUM_SIZE
 mpl.rcParams["figure.figsize"] = DEFAULT_FIGSIZE
@@ -115,13 +116,13 @@ def main(savefig=False):
     ax[0].set_title("Surface temperature")
     ax[0].grid(alpha=0.25)
 
-    ax[1].plot(time / 3600, (sf_temp - sim_sf_temp) ** 2, alpha=0.5, label="Square error")
-    ax[1].legend()
+    ax[1].plot(time / 3600, (sf_temp - sim_sf_temp) ** 2, label="Square error")
+    # ax[1].legend()
     ax[1].set_xlabel("Time (h)")
-    ax[1].set_ylabel("Square error")
+    ax[1].set_ylabel("Square error (°C$^2$)")
     ax[1].set_title("Estimation error")
-    ax[1].set_yscale("log")
-    ax[1].grid(alpha=0.25)
+    # ax[1].set_yscale("log")
+    ax[1].grid(alpha=GRID_ALPHA)
 
     fig.tight_layout()
     if savefig:
@@ -129,11 +130,13 @@ def main(savefig=False):
 
     LOGGER.debug("Preparing internal temperature plots")
     fig, ax = plt.subplots(figsize=(DEFAULT_FIGSIZE[0], 1.5))
-    ax.plot(sim_time / 3600, sim_in_temp)
+    ax.plot(sim_time / 3600, sim_in_temp, label="Internal")
+    ax.plot(sim_time / 3600, sim_sf_temp, alpha=0.5, label="Surface")
+    ax.legend()
     ax.set_xlabel("Time (h)")
     ax.set_ylabel("Temperature (°C)")
-    ax.set_title("Estimated internal temperature")
-    ax.grid(alpha=0.25)
+    ax.set_title("Estimated temperatures")
+    ax.grid(alpha=GRID_ALPHA)
 
     fig.tight_layout()
     if savefig:
@@ -146,13 +149,13 @@ def main(savefig=False):
     ax[0].set_xlabel("Time (h)")
     ax[0].set_ylabel("Power (W)")
     ax[0].set_title("Power profile")
-    ax[0].grid(alpha=0.25)
+    ax[0].grid(alpha=GRID_ALPHA)
 
     ax[1].plot(data.t / 3600, amb_temp)
     ax[1].set_xlabel("Time (h)")
     ax[1].set_ylabel("Temperature (°C)")
     ax[1].set_title("Ambient temperature")
-    ax[1].grid(alpha=0.25)
+    ax[1].grid(alpha=GRID_ALPHA)
 
     fig.tight_layout()
     if savefig:
