@@ -22,6 +22,7 @@ from lib_240716_temp_profile_C4B1 import (
     INITIAL_SOC,
     temp_sensor_std,
     chamber_pv_std,
+    cell_internal_resistance,
 )
 
 # pylint: enable=import-error
@@ -62,7 +63,7 @@ def perform_experiment(
         },
         optimizer_kwargs={
             "fn": optimize.minimize,
-            "method": "L-BFGS-B",
+            "method": "SLSQP",
             "jac": "3-point",
             "tol": 1e-3,
             "options": {
@@ -77,7 +78,7 @@ def perform_experiment(
             "mdl": mdl,
             "simin": simin,
             "initial_soc": INITIAL_SOC,
-            "gain": 1e3,
+            "internal_resistance": cell_internal_resistance,
         },
     )
     LOGGER.info(f"Final parameters: {params}")
@@ -100,6 +101,7 @@ def main():
     power = data.u[:, 1]
     amb_temp = data.u[:, 0]
     LOGGER.debug(f"{time_delta=}, {end_time=}")
+    LOGGER.debug(f"Internal resistance = {cell_internal_resistance}")
 
     LOGGER.info("Initializing MATLAB engine")
     eng = engine.start_matlab()

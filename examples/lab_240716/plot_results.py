@@ -17,7 +17,7 @@ from thermal_model.estimation import lti_from_data, TargetParams, error
 from thermal_model.logger import LOGGER
 from thermal_model.paths import ML_PROJECTFILE
 
-from lib_240716_temp_profile_C4B1 import get_data, Data, INITIAL_SOC
+from lib_240716_temp_profile_C4B1 import get_data, Data, INITIAL_SOC, cell_internal_resistance
 
 # pylint: enable=import-error
 
@@ -72,6 +72,10 @@ def main(savefig=False):
         "initial_in_temp": data.x0,
         "initial_soc": INITIAL_SOC,
     }
+    constant_params = {
+        "internal_resistance": cell_internal_resistance,
+        "nominal_capacity": 0,
+    }
     LOGGER.debug(f"{time_delta=}, {end_time=}")
 
     LOGGER.info("Reading estimated parameters")
@@ -87,7 +91,7 @@ def main(savefig=False):
     simin = eng.py_load_model(mdl, time_delta, end_time, time, power, amb_temp)
 
     LOGGER.info("Calling simulation")
-    simout = eng.py_evaluate_model(mdl, simin, params, initial_conditions)
+    simout = eng.py_evaluate_model(mdl, simin, params, initial_conditions, constant_params)
     simout = np.array(simout)
     sim_time = simout[:, 0]
     sim_in_temp = simout[:, 1]
