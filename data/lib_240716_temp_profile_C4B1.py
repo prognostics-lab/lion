@@ -129,14 +129,11 @@ _WAVELET_MODE = "periodic"
 w = pywt.Wavelet(_WAVELET_NAME)
 coeff_sur = pywt.wavedec(temp_sur_raw, wavelet=w, mode=_WAVELET_MODE)
 coeff_air = pywt.wavedec(temp_air_raw, wavelet=w, mode=_WAVELET_MODE)
-for c in coeff_sur:
-    c[1000:] = 0
-for c in coeff_air:
-    c[1000:] = 0
-fig, ax = plt.subplots()
-for i, c in enumerate(coeff_sur):
-    ax.plot(c, label=i)
-ax.legend()
+WAVELET_CUTOFF = -5
+for i, c in enumerate(coeff_sur[WAVELET_CUTOFF:]):
+    c[:] = 0
+for i, c in enumerate(coeff_air[WAVELET_CUTOFF:]):
+    c[:] = 0
 temp_sur_filtered = pywt.waverec(coeff_sur, _WAVELET_NAME, _WAVELET_MODE)
 temp_air_filtered = pywt.waverec(coeff_air, _WAVELET_NAME, _WAVELET_MODE)
 _sur_lerp = interpolate.interp1d(temp_time_raw, temp_sur_filtered, fill_value="extrapolate")
@@ -200,6 +197,18 @@ def main():
     print(f"Chamber mean: {chamber_pv_mean}")
     print(f"Chamber std: {chamber_pv_std}")
     print(f"Chamber SNR: {chamber_pv_snr} dB")
+
+    ### Temperature filtering plots ###
+    fig, ax = plt.subplots(2, 1, sharex=True)
+    for i, c in enumerate(coeff_sur):
+        x = np.linspace(0, 1, len(c))
+        ax[0].plot(x, c, label=i)
+    for i, c in enumerate(coeff_air):
+        x = np.linspace(0, 1, len(c))
+        ax[1].plot(x, c, label=i)
+    ax[0].legend()
+    ax[1].legend()
+    fig.suptitle(f"Cutoff: {WAVELET_CUTOFF}")
 
     ### Raw data plots ###
     fig, ax = plt.subplots(4, 1, sharex=True)
