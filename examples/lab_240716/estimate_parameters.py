@@ -63,7 +63,7 @@ def perform_experiment(
         },
         optimizer_kwargs={
             "fn": optimize.minimize,
-            "method": "SLSQP",
+            "method": "L-BFGS-B",
             "jac": "3-point",
             "tol": 1e-3,
             "options": {
