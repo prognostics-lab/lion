@@ -23,6 +23,7 @@ from lib_240716_temp_profile_C4B1 import (
     temp_sensor_std,
     chamber_pv_std,
     cell_internal_resistance,
+    cell_capacity,
 )
 
 # pylint: enable=import-error
@@ -79,6 +80,7 @@ def perform_experiment(
             "simin": simin,
             "initial_soc": INITIAL_SOC,
             "internal_resistance": cell_internal_resistance,
+            "nominal_capacity": cell_capacity,
         },
     )
     LOGGER.info(f"Final parameters: {params}")
