@@ -49,7 +49,7 @@ cap_df = pd.read_csv(
     names=["Current", "Voltage", "Capacity",
            "Cumulative_capacity", "Seconds", "Test_State", "SOC"],
 )
-INITIAL_SOC = 0.1
+INITIAL_SOC = 0.0
 
 ### Temperature data ###
 temp_time_full = (sensor_df["unix_time_utc"] -
@@ -149,15 +149,35 @@ chamber_sp = _sp_lerp(temp_time)
 chamber_time = temp_time
 
 # Capacity - Interpolation
-_curr_lerp = interpolate.interp1d(cap_time_raw, cap_current_raw, fill_value="extrapolate")
-_volt_lerp = interpolate.interp1d(cap_time_raw, cap_voltage_raw, fill_value="extrapolate")
-_power_lerp = interpolate.interp1d(cap_time_raw, cap_power_raw, fill_value="extrapolate")
-_soc_lerp = interpolate.interp1d(cap_time_raw, cap_soc_raw, fill_value="extrapolate")
+_KIND = "previous"
+_curr_lerp = interpolate.interp1d(cap_time_raw, cap_current_raw, kind=_KIND, fill_value="extrapolate")
+_volt_lerp = interpolate.interp1d(cap_time_raw, cap_voltage_raw, kind=_KIND, fill_value="extrapolate")
+_power_lerp = interpolate.interp1d(cap_time_raw, cap_power_raw, kind=_KIND, fill_value="extrapolate")
+_soc_lerp = interpolate.interp1d(cap_time_raw, cap_soc_raw, kind=_KIND, fill_value="extrapolate")
 cap_current = _curr_lerp(temp_time)
 cap_voltage = _volt_lerp(temp_time)
 cap_power = _power_lerp(temp_time)
 cap_soc = _soc_lerp(temp_time)
 cap_time = cap_time_raw
+indices = []
+# These are outliers that we will replace with other values
+for i, (c, v, s, p) in enumerate(zip(cap_current, cap_voltage, cap_soc, cap_power)):
+    indices.append(i)
+    last_c = c
+    last_v = v
+    last_p = p
+    last_s = s
+    if c <= 0.2:
+        break
+cap_current[indices] = last_c
+cap_voltage[indices] = last_v
+cap_power[indices] = last_p
+cap_soc[indices] = last_s
+cap_cumsum = np.zeros(cap_current.shape)
+for i in range(1, len(cap_current)):
+    cap_cumsum[i] = cap_cumsum[i - 1] - (temp_time[i] - temp_time[i - 1]) * cap_current[i]
+cell_capacity = cap_cumsum.max()
+
 
 # Metrics of the data
 temp_sensor_std = temp_sur[30000:].std()
@@ -182,6 +202,7 @@ def get_data(start=None, cutoff=None):
 
 def main():
     print(f"Calculated internal resistance is {cell_internal_resistance} Ohm")
+    print(f"Calculated capacity is {cell_capacity} C")
 
     print("===============================")
     print("Start times report (Local time)")
@@ -213,8 +234,6 @@ def main():
     ### Raw data plots ###
     fig, ax = plt.subplots(4, 1, sharex=True)
 
-    # ax[0].scatter(temp_time, temp_sur, 1, alpha=0.5, label="Surface")
-    # ax[0].scatter(temp_time, temp_air, 1, alpha=0.5, label="Air")
     ax[0].plot(temp_time_raw, temp_sur_raw, alpha=0.5, label="Surface")
     ax[0].plot(temp_time_raw, temp_air_raw, alpha=0.5, label="Air")
     ax[0].scatter(chamber_time_raw, chamber_pv_raw, 1, alpha=0.5, label="Ambient (PV)")
@@ -239,7 +258,7 @@ def main():
     ax[3].legend()
 
     ### Plot interpolated and resampled data ###
-    fig, ax = plt.subplots(4, 1, sharex=True)
+    fig, ax = plt.subplots(5, 1, sharex=True)
     ax[0].plot(temp_time, temp_sur, alpha=0.5, label="Surface")
     ax[0].plot(temp_time, temp_air, alpha=0.5, label="Air")
     ax[0].plot(temp_time, chamber_pv, alpha=0.5, label="Ambient")
@@ -257,6 +276,10 @@ def main():
     ax[3].plot(temp_time, cap_soc, alpha=1, label="SoC")
     ax[3].grid(alpha=0.25)
     ax[3].legend()
+
+    ax[4].plot(temp_time, cap_cumsum, alpha=1, label="Coulomb count")
+    ax[4].grid(alpha=0.25)
+    ax[4].legend()
 
     ### Plot filtered temperature data ###
     # fig, axs = plt.subplots(2, segments_total)
