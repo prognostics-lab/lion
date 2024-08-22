@@ -103,7 +103,7 @@ cap_soc_raw = cap_soc_full[_CAP_START:_CAP_CUTOFF]
 cap_power_raw = cap_current_raw * cap_voltage_raw
 
 # cell_internal_resistance = np.abs(cap_voltage_raw / cap_current_raw).min()
-cell_internal_resistance = 0.12
+cell_internal_resistance = 0.5
 
 _TO_UTC = "-04:00"
 sensor_idx = 0 if _TEMP_START is None else _TEMP_START
@@ -178,7 +178,7 @@ for i in range(1, len(cap_current)):
     cap_cumsum[i] = cap_cumsum[i - 1] - (temp_time[i] - temp_time[i - 1]) * cap_current[i]
 cell_capacity = np.abs(cap_cumsum).max()
 # cell_initial_soc = cap_soc[0]
-cell_initial_soc = 1e-3
+cell_initial_soc = 1.5
 
 
 # Metrics of the data
@@ -197,6 +197,8 @@ def get_data(start=None, cutoff=None):
     y = np.array([temp_sur, temp_air]).T[start:cutoff, :]
     u = np.array([chamber_pv, cap_power]).T[start:cutoff, :]
     # For initial temperature, we assume the experiment starts after cells have rested
+    if start is None:
+        start = 0
     x0 = np.array([chamber_pv[start], chamber_pv[start]])
     data = Data(t, y, u, x0)
     return data
