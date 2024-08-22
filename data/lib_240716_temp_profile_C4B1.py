@@ -49,7 +49,7 @@ cap_df = pd.read_csv(
     names=["Current", "Voltage", "Capacity",
            "Cumulative_capacity", "Seconds", "Test_State", "SOC"],
 )
-INITIAL_SOC = 0.0
+
 
 ### Temperature data ###
 temp_time_full = (sensor_df["unix_time_utc"] -
@@ -176,7 +176,9 @@ cap_soc[indices] = last_s
 cap_cumsum = np.zeros(cap_current.shape)
 for i in range(1, len(cap_current)):
     cap_cumsum[i] = cap_cumsum[i - 1] - (temp_time[i] - temp_time[i - 1]) * cap_current[i]
-cell_capacity = cap_cumsum.max()
+cell_capacity = np.abs(cap_cumsum).max()
+# cell_initial_soc = cap_soc[0]
+cell_initial_soc = 1e-3
 
 
 # Metrics of the data
@@ -202,7 +204,8 @@ def get_data(start=None, cutoff=None):
 
 def main():
     print(f"Calculated internal resistance is {cell_internal_resistance} Ohm")
-    print(f"Calculated capacity is {cell_capacity} C")
+    print(f"Calculated capacity is {cell_capacity} C ({cell_capacity / 3600} Ah)")
+    print(f"Calculated initial SOC is {initial_soc} ({100 * initial_soc} %)")
 
     print("===============================")
     print("Start times report (Local time)")
