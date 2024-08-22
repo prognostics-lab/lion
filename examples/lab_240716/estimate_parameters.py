@@ -14,14 +14,14 @@ sys.path.append(str(datalib_path))
 # pylint: disable=import-error
 from thermal_model.estimation import lti_from_data, TargetParams, error
 from thermal_model.logger import LOGGER
-from thermal_model.paths import ML_PROJECTFILE
+from thermal_model.paths import MATLAB_PROJECTFILE
 
 from lib_240716_temp_profile_C4B1 import (
     get_data,
     Data,
-    INITIAL_SOC,
     temp_sensor_std,
     chamber_pv_std,
+    cell_initial_soc,
     cell_internal_resistance,
     cell_capacity,
 )
@@ -78,7 +78,7 @@ def perform_experiment(
             "engine": eng,
             "mdl": mdl,
             "simin": simin,
-            "initial_soc": INITIAL_SOC,
+            "initial_soc": cell_initial_soc,
             "internal_resistance": cell_internal_resistance,
             "nominal_capacity": cell_capacity,
         },
@@ -103,12 +103,14 @@ def main():
     power = data.u[:, 1]
     amb_temp = data.u[:, 0]
     LOGGER.debug(f"{time_delta=}, {end_time=}")
-    LOGGER.debug(f"Internal resistance = {cell_internal_resistance}")
+    LOGGER.debug(f"Internal resistance = {cell_internal_resistance} Ohm")
+    LOGGER.debug(f"Nominal capacity = {cell_capacity} C ({cell_capacity / 3600} Ah)")
+    LOGGER.debug(f"Initial SOC = {cell_initial_soc} ({100 * cell_initial_soc} %)")
 
     LOGGER.info("Initializing MATLAB engine")
     eng = engine.start_matlab()
     LOGGER.debug("Loading project file")
-    eng.matlab.project.loadProject(ML_PROJECTFILE)
+    eng.matlab.project.loadProject(MATLAB_PROJECTFILE)
     LOGGER.debug("Loading Simulink model")
     mdl = LAB_SLX_FILENAME
     simin = eng.py_load_model(mdl, time_delta, end_time, time, power, amb_temp)

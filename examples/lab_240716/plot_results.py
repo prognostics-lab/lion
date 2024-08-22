@@ -15,9 +15,14 @@ sys.path.append(str(datalib_path))
 # pylint: disable=import-error
 from thermal_model.estimation import lti_from_data, TargetParams, error
 from thermal_model.logger import LOGGER
-from thermal_model.paths import ML_PROJECTFILE
+from thermal_model.paths import MATLAB_PROJECTFILE
 
-from lib_240716_temp_profile_C4B1 import get_data, Data, INITIAL_SOC, cell_internal_resistance
+from lib_240716_temp_profile_C4B1 import (
+    get_data,
+    Data,
+    cell_initial_soc,
+    cell_internal_resistance,
+)
 
 # pylint: enable=import-error
 
@@ -70,7 +75,7 @@ def main(savefig=False):
     sf_temp = data.y[1:, 0]
     initial_conditions = {
         "initial_in_temp": data.x0,
-        "initial_soc": INITIAL_SOC,
+        "initial_soc": cell_initial_soc,
     }
     constant_params = {
         "internal_resistance": cell_internal_resistance,
@@ -79,19 +84,23 @@ def main(savefig=False):
     LOGGER.debug(f"{time_delta=}, {end_time=}")
 
     LOGGER.info("Reading estimated parameters")
-    with open(os.path.join("examples", "lab_240716", "estimated_parameters.json"), "r") as f:
+    with open(
+        os.path.join("examples", "lab_240716", "estimated_parameters.json"), "r"
+    ) as f:
         params = json.load(f)
 
     LOGGER.info("Initializing MATLAB engine")
     eng = engine.start_matlab()
     LOGGER.debug("Loading project file")
-    eng.matlab.project.loadProject(ML_PROJECTFILE)
+    eng.matlab.project.loadProject(MATLAB_PROJECTFILE)
     LOGGER.debug("Loading Simulink model")
     mdl = LAB_SLX_FILENAME
     simin = eng.py_load_model(mdl, time_delta, end_time, time, power, amb_temp)
 
     LOGGER.info("Calling simulation")
-    simout = eng.py_evaluate_model(mdl, simin, params, initial_conditions, constant_params)
+    simout = eng.py_evaluate_model(
+        mdl, simin, params, initial_conditions, constant_params
+    )
     simout = np.array(simout)
     sim_time = simout[:, 0]
     sim_in_temp = simout[:, 1]
@@ -100,7 +109,7 @@ def main(savefig=False):
 
     LOGGER.info("Calculating error metrics")
     error = sf_temp - sim_sf_temp
-    mse = np.mean(error ** 2)
+    mse = np.mean(error**2)
     rmse = np.sqrt(mse)
     mae = np.mean(np.abs(error))
     print("Error metrics")
@@ -130,7 +139,10 @@ def main(savefig=False):
 
     fig.tight_layout()
     if savefig:
-        fig.savefig(os.path.join(IMG_EXPERIMENTAL_DIR, f"240716_estimated.{SAVE_FMT}"), **SAVEFIG_PARAMS)
+        fig.savefig(
+            os.path.join(IMG_EXPERIMENTAL_DIR, f"240716_estimated.{SAVE_FMT}"),
+            **SAVEFIG_PARAMS,
+        )
 
     LOGGER.debug("Preparing internal temperature plots")
     fig, ax = plt.subplots(figsize=(DEFAULT_FIGSIZE[0], 1.5))
@@ -144,7 +156,10 @@ def main(savefig=False):
 
     fig.tight_layout()
     if savefig:
-        fig.savefig(os.path.join(IMG_EXPERIMENTAL_DIR, f"240716_estimated_internal.{SAVE_FMT}"), **SAVEFIG_PARAMS)
+        fig.savefig(
+            os.path.join(IMG_EXPERIMENTAL_DIR, f"240716_estimated_internal.{SAVE_FMT}"),
+            **SAVEFIG_PARAMS,
+        )
 
     LOGGER.debug("Preparing inputs plots")
     fig, ax = plt.subplots(2, 1, sharex=True)
@@ -163,4 +178,7 @@ def main(savefig=False):
 
     fig.tight_layout()
     if savefig:
-        fig.savefig(os.path.join(IMG_EXPERIMENTAL_DIR, f"240716_inputs.{SAVE_FMT}"), **SAVEFIG_PARAMS)
+        fig.savefig(
+            os.path.join(IMG_EXPERIMENTAL_DIR, f"240716_inputs.{SAVE_FMT}"),
+            **SAVEFIG_PARAMS,
+        )
