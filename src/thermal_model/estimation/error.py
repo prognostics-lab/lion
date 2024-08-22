@@ -69,13 +69,11 @@ def l2_simulation(
         obtained = np.array(simout)[:, 2]
         LOGGER.debug("Calculating error")
         error = expected - obtained
-        print(expected)
-        print(obtained)
         try:
             mse = np.diag(error.conjugate().T @ error).sum() / len(t)
         except ValueError:
             mse = error.conjugate().T @ error / len(t)
-        print(mse)
+        print(f"MSE = {mse}")
         return gain * mse
 
     return _generate_system
