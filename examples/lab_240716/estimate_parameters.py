@@ -95,7 +95,7 @@ def perform_experiment(
 
 def main():
     LOGGER.info("Getting data from experiment")
-    data = get_data()
+    data = get_data(cutoff=None)
     time_delta = data.t[-1] - data.t[-2]
     end_time = data.t[-1]
 

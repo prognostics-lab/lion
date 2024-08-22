@@ -22,6 +22,7 @@ from lib_240716_temp_profile_C4B1 import (
     Data,
     cell_initial_soc,
     cell_internal_resistance,
+    cell_capacity,
 )
 
 # pylint: enable=import-error
@@ -65,7 +66,7 @@ plt.style.use("tableau-colorblind10")
 
 def main(savefig=False):
     LOGGER.info("Getting data from experiment")
-    data = get_data()
+    data = get_data(cutoff=None)
     time_delta = data.t[-1] - data.t[-2]
     end_time = data.t[-1]
 
@@ -79,7 +80,7 @@ def main(savefig=False):
     }
     constant_params = {
         "internal_resistance": cell_internal_resistance,
-        "nominal_capacity": 0,
+        "nominal_capacity": cell_capacity,
     }
     LOGGER.debug(f"{time_delta=}, {end_time=}")
 
@@ -105,6 +106,7 @@ def main(savefig=False):
     sim_time = simout[:, 0]
     sim_in_temp = simout[:, 1]
     sim_sf_temp = simout[:, 2]
+    sim_true_soc = simout[:, 3]
     time = time[1:]  # why???
 
     LOGGER.info("Calculating error metrics")
@@ -119,6 +121,8 @@ def main(savefig=False):
 
     LOGGER.info("Generating plots")
     LOGGER.debug("Preparing output plots")
+
+    ### Temperature plots ###
     fig, ax = plt.subplots(2, 1, sharex=True)
 
     ax[0].plot(sim_time / 3600, sim_sf_temp, label="Estimated")
@@ -144,10 +148,11 @@ def main(savefig=False):
             **SAVEFIG_PARAMS,
         )
 
+    ### Internal temperature plots ###
     LOGGER.debug("Preparing internal temperature plots")
     fig, ax = plt.subplots(figsize=(DEFAULT_FIGSIZE[0], 1.5))
     ax.plot(sim_time / 3600, sim_in_temp, label="Internal")
-    ax.plot(sim_time / 3600, sim_sf_temp, alpha=0.5, label="Surface")
+    ax.plot(sim_time / 3600, sim_sf_temp, alpha=0.5, label="Surface", linestyle="--")
     ax.legend()
     ax.set_xlabel("Time (h)")
     ax.set_ylabel("Temperature (°C)")
@@ -161,6 +166,7 @@ def main(savefig=False):
             **SAVEFIG_PARAMS,
         )
 
+    ### Inputs plots ###
     LOGGER.debug("Preparing inputs plots")
     fig, ax = plt.subplots(2, 1, sharex=True)
 
@@ -180,5 +186,21 @@ def main(savefig=False):
     if savefig:
         fig.savefig(
             os.path.join(IMG_EXPERIMENTAL_DIR, f"240716_inputs.{SAVE_FMT}"),
+            **SAVEFIG_PARAMS,
+        )
+
+    ### Electrical plots ###
+    LOGGER.debug("Preparing SOC plots")
+    fig, ax = plt.subplots()
+
+    ax.plot(sim_time / 3600, 100 * sim_true_soc)
+    ax.set_xlabel("Time (h)")
+    ax.set_ylabel("SOC (\%)")
+    ax.set_title("State of charge")
+
+    fig.tight_layout()
+    if savefig:
+        fig.savefig(
+            os.path.join(IMG_EXPERIMENTAL_DIR, f"240716_soc.{SAVE_FMT}"),
             **SAVEFIG_PARAMS,
         )
