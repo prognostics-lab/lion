@@ -103,7 +103,7 @@ cap_soc_raw = cap_soc_full[_CAP_START:_CAP_CUTOFF]
 cap_power_raw = cap_current_raw * cap_voltage_raw
 
 # cell_internal_resistance = np.abs(cap_voltage_raw / cap_current_raw).min()
-cell_internal_resistance = 0.5
+cell_internal_resistance = 0.1
 
 _TO_UTC = "-04:00"
 sensor_idx = 0 if _TEMP_START is None else _TEMP_START
@@ -178,7 +178,7 @@ for i in range(1, len(cap_current)):
     cap_cumsum[i] = cap_cumsum[i - 1] - (temp_time[i] - temp_time[i - 1]) * cap_current[i]
 cell_capacity = np.abs(cap_cumsum).max()
 # cell_initial_soc = cap_soc[0]
-cell_initial_soc = 1.5
+cell_initial_soc = 0.1
 
 
 # Metrics of the data
