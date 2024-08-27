@@ -107,6 +107,11 @@ def main(savefig=False):
     sim_in_temp = simout[:, 1]
     sim_sf_temp = simout[:, 2]
     sim_true_soc = simout[:, 3]
+    sim_nominal_soc = simout[:, 4]
+    sim_voltage = simout[:, 5]
+    sim_oc_voltage = simout[:, 6]
+    sim_current = simout[:, 7]
+    sim_polarization_resistance = simout[:, 8]
     time = time[1:]  # why???
 
     LOGGER.info("Calculating error metrics")
@@ -191,12 +196,26 @@ def main(savefig=False):
 
     ### Electrical plots ###
     LOGGER.debug("Preparing SOC plots")
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(4, 1)
 
-    ax.plot(sim_time / 3600, 100 * sim_true_soc)
-    ax.set_xlabel("Time (h)")
-    ax.set_ylabel("SOC (\%)")
-    ax.set_title("State of charge")
+    ax[0].plot(sim_time / 3600, 100 * sim_true_soc)
+    ax[0].set_xlabel("Time (h)")
+    ax[0].set_ylabel("SOC (\%)")
+
+    ax[1].plot(sim_time / 3600, sim_current)
+    ax[1].set_xlabel("Time (h)")
+    ax[1].set_ylabel("Current (A)")
+
+    ax[2].plot(sim_time / 3600, sim_oc_voltage, label="Open-circuit")
+    ax[2].plot(sim_time / 3600, sim_voltage, label="Terminal")
+    ax[2].set_xlabel("Time (h)")
+    ax[2].set_ylabel("Voltage (V)")
+    ax[2].legend()
+
+    ax[3].plot(sim_time / 3600, sim_polarization_resistance)
+    ax[3].set_xlabel("Time (h)")
+    ax[3].set_ylabel("Resistance ($\\Ohm$)")
+    ax[3].set_title("Polarization resistance")
 
     fig.tight_layout()
     if savefig:
