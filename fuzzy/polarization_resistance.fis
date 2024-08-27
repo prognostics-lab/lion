@@ -1,0 +1,34 @@
+[System]
+Name='polarization_resistance'
+Type='sugeno'
+Version=2.0
+NumInputs=1
+NumOutputs=1
+NumRules=1
+AndMethod='prod'
+OrMethod='probor'
+ImpMethod='prod'
+AggMethod='sum'
+DefuzzMethod='wtaver'
+
+[Input1]
+Name='current'
+Range=[-40 40]
+NumMFs=8
+MF1='d1':'gaussmf',[2 5]
+MF2='d2':'gaussmf',[3.1631 10]
+MF3='d3':'gaussmf',[2 15]
+MF4='d4':'sigmf',[15.9494 17.3438]
+MF5='c1':'gaussmf',[2.1623 -4]
+MF6='c2':'gaussmf',[2.3876 -10]
+MF7='c3':'gaussmf',[3 -20]
+MF8='c4':'sigmf',[-19.9748 -26.5422]
+
+[Output1]
+Name='empty'
+Range=[0 1]
+NumMFs=1
+MF1='mf1':'constant',[0.5]
+
+[Rules]
+1, 1 (1) : 1
