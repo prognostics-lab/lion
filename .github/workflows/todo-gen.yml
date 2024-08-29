@@ -1,8 +1,8 @@
 name: Generate TODO file
 on:
   push:
-    branches-ignore:
-      - "gh-pages"
+    branches:
+      - main
 
 jobs:
   deploy:
