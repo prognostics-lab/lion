@@ -26,3 +26,6 @@
 *.pdf binary
 *.png binary
 *.xlsx binary
+
+### Linguist attributes ###
+*.gcode linguist-vendored
