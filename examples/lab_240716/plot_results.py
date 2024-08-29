@@ -214,7 +214,7 @@ def main(savefig=False):
 
     ax[3].plot(sim_time / 3600, sim_polarization_resistance)
     ax[3].set_xlabel("Time (h)")
-    ax[3].set_ylabel("Resistance ($\\Ohm$)")
+    ax[3].set_ylabel(r"Resistance ($\Omega$)")
     ax[3].set_title("Polarization resistance")
 
     fig.tight_layout()
