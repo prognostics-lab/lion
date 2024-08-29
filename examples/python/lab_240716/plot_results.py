@@ -86,7 +86,7 @@ def main(savefig=False):
 
     LOGGER.info("Reading estimated parameters")
     with open(
-        os.path.join("examples", "lab_240716", "estimated_parameters.json"), "r"
+        os.path.join("examples", "python", "lab_240716", "estimated_parameters.json"), "r"
     ) as f:
         params = json.load(f)
 

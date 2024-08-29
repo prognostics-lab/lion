@@ -123,6 +123,6 @@ def main():
         simin,
     )
     with open(
-        os.path.join("examples", "lab_240716", "estimated_parameters.json"), "w"
+        os.path.join("examples", "python", "lab_240716", "estimated_parameters.json"), "w"
     ) as f:
         f.write(json.dumps(params._asdict()))

@@ -5,7 +5,7 @@ import importlib
 import argparse
 
 # Change the import path
-src_path = pathlib.Path.joinpath(pathlib.Path(__file__).parent.parent, "src")
+src_path = pathlib.Path.joinpath(pathlib.Path(__file__).parent.parent, "pysrc")
 os.environ["PYTHONPATH"] = str(src_path)
 sys.path.append(str(src_path))
 
@@ -76,6 +76,6 @@ print(
 with args {ex_args} and kwargs {ex_kwargs}\n"
 )
 LOGGER.info("Importing example %s", name)
-mod = importlib.import_module(f"examples.{name}")
+mod = importlib.import_module(f"examples.python.{name}")
 LOGGER.info("Running main function")
 mod.main(*ex_args, **ex_kwargs)
