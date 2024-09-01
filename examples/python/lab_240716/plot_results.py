@@ -138,10 +138,10 @@ def main(savefig=False):
     ax[0].set_title("Surface temperature")
     ax[0].grid(alpha=0.25)
 
-    ax[1].plot(time / 3600, (sf_temp - sim_sf_temp) ** 2, label="Square error")
+    ax[1].plot(time / 3600, np.abs(sf_temp - sim_sf_temp), label="Absolute error")
     # ax[1].legend()
     ax[1].set_xlabel("Time (h)")
-    ax[1].set_ylabel("Square error (°C$^2$)")
+    ax[1].set_ylabel("Absolute error (°C)")
     ax[1].set_title("Estimation error")
     # ax[1].set_yscale("log")
     ax[1].grid(alpha=GRID_ALPHA)
