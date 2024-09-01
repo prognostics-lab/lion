@@ -5,7 +5,7 @@
 #include <lionu/macros.h>
 
 #define LION_CALL_I(x, msg, ...)                                               \
-  if (x.status != LION_SUCCESS) {                                              \
+  if (x != LION_STATUS_SUCCESS) {                                              \
     logi_error(msg, #__VA_ARGS__);                                             \
-    return LION_STATUS_FAILURE(msg);                                           \
+    return LION_STATUS_FAILURE;                                                \
   }
