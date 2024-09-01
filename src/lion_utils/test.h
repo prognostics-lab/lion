@@ -34,9 +34,9 @@
     log_debug("TEST_FAIL: Expected different than %s, found %s", v2, v1);      \
     return OTTO_STATUS_FAILURE(NULL);                                          \
   }
-#define OTTO_ASSERT_FAILS(x)                                               \
+#define OTTO_ASSERT_FAILS(x)                                                   \
   if (x.status != OTTO_FAILURE) {                                              \
-    log_debug("TEST_FAIL: Expected failure, got success");                                  \
+    log_debug("TEST_FAIL: Expected failure, got success");                     \
     return OTTO_STATUS_FAILURE(NULL);                                          \
   }
 

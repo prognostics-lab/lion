@@ -9,4 +9,3 @@
     logi_error(msg, #__VA_ARGS__);                                             \
     return LION_STATUS_FAILURE(msg);                                           \
   }
-
