@@ -12,8 +12,9 @@ foreach(filepath ${TESTS_QUICK})
   target_link_libraries(${filename_we} PUBLIC ${PROJECT_CORE_NAME}
                                               ${PROJECT_UTILS_NAME})
   target_include_directories(
-    ${filename_we} PUBLIC ${PROJECT_BINARY_DIR} ${PROJECT_SOURCE_DIR}
-                          ${PROJECT_HEADERS} ${CMAKE_SOURCE_DIR} ${PROJECT_SOURCE_DIR_LOCATION})
+    ${filename_we}
+    PUBLIC ${PROJECT_BINARY_DIR} ${PROJECT_SOURCE_DIR} ${PROJECT_HEADERS}
+           ${CMAKE_SOURCE_DIR} ${PROJECT_SOURCE_DIR_LOCATION})
   set_target_properties(
     ${filename_we}
     PROPERTIES RUNTIME_OUTPUT_DIRECTORY_DEBUG
