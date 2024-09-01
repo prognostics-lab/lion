@@ -19,6 +19,7 @@ lion_status_t lion_vector_zero(lion_app_t *app, const size_t len,
                                const size_t data_size, lion_vector_t *out) {
   void *data = lionu_calloc(app, len, data_size);
   if (data == NULL) {
+    logi_error("Could not allocate enough data");
     return LION_STATUS_FAILURE;
   }
 
@@ -37,6 +38,7 @@ lion_status_t lion_vector_with_capacity(lion_app_t *app, const size_t capacity,
                                         lion_vector_t *out) {
   void *data = lionu_malloc(app, data_size * capacity);
   if (data == NULL) {
+    logi_error("Could not allocate enough data");
     return LION_STATUS_FAILURE;
   }
 
@@ -55,6 +57,7 @@ lion_status_t lion_vector_from_array(lion_app_t *app, const void *data,
                                      lion_vector_t *out) {
   void *new_data = lionu_malloc(app, len * data_size);
   if (new_data == NULL) {
+    logi_error("Could not allocate enough data");
     return LION_STATUS_FAILURE;
   }
 
@@ -78,6 +81,7 @@ lion_status_t lion_vector_cleanup(lion_app_t *app,
 lion_status_t lion_vector_get(lion_app_t *app, const lion_vector_t *vec,
                               const size_t i, void *out) {
   if (vec->data == NULL || i >= vec->len || out == NULL) {
+    logi_error("Out of bounds or output is NULL");
     return LION_STATUS_FAILURE;
   }
   memcpy(out, (char *)vec->data + i * vec->data_size, vec->data_size);
@@ -87,6 +91,7 @@ lion_status_t lion_vector_get(lion_app_t *app, const lion_vector_t *vec,
 lion_status_t lion_vector_set(lion_app_t *app, lion_vector_t *vec,
                               const size_t i, const void *src) {
   if (vec->data == NULL || i >= vec->len || src == NULL) {
+    logi_error("Out of bounds or source is NULL");
     return LION_STATUS_FAILURE;
   }
   memcpy((char *)vec->data + i * vec->data_size, src, vec->data_size);
@@ -97,6 +102,7 @@ lion_status_t lion_vector_resize(lion_app_t *app, lion_vector_t *vec,
                                  const size_t new_capacity) {
   void *data = lionu_realloc(app, vec->data, new_capacity * vec->data_size);
   if (data == NULL) {
+    logi_error("Could not allocate enough data");
     return LION_STATUS_FAILURE;
   }
 
@@ -111,6 +117,7 @@ lion_status_t lion_vector_resize(lion_app_t *app, lion_vector_t *vec,
 lion_status_t lion_vector_push(lion_app_t *app, lion_vector_t *vec,
                                const void *src) {
   if (src == NULL) {
+    logi_error("Source is NULL");
     return LION_STATUS_FAILURE;
   }
 
@@ -125,6 +132,7 @@ lion_status_t lion_vector_push(lion_app_t *app, lion_vector_t *vec,
     logi_debug("Reallocating for %d B", new_size);
     void *new_data = lionu_realloc(app, vec->data, new_size);
     if (new_data == NULL) {
+      logi_error("Could not allocate enough data");
       return LION_STATUS_FAILURE;
     }
     memcpy((char *)new_data + vec->len * vec->data_size, src, vec->data_size);
@@ -143,6 +151,7 @@ lion_status_t lion_vector_push(lion_app_t *app, lion_vector_t *vec,
 lion_status_t lion_vector_extend_array(lion_app_t *app, lion_vector_t *vec,
                                        const void *src, const size_t len) {
   if (src == NULL) {
+    logi_error("Source is NULL");
     return LION_STATUS_FAILURE;
   }
 

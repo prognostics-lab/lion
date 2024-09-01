@@ -7,6 +7,10 @@
 #include <stdio.h>
 #include <time.h>
 
+#define LION_ENGINE_VERSION_MAJOR 0
+#define LION_ENGINE_VERSION_MINOR 1
+#define LION_ENGINE_VERSION_PATCH 0
+
 #define _LION_LOGFILE_MAX 64
 
 #ifdef __cplusplus
@@ -40,6 +44,10 @@ size_t heapinfo_count(lion_app_t *app);
 // Application declarations
 
 typedef struct terra_app_config {
+  /* App metadata */
+
+  const char *app_name;
+
   /* Logging configuration */
 
   const char *log_dir;

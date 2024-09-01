@@ -1,6 +1,7 @@
 #pragma once
 
 #include "vendor/log.h"
+
 #include <lion/status.h>
 #include <lionu/macros.h>
 
@@ -8,4 +9,9 @@
   if (x != LION_STATUS_SUCCESS) {                                              \
     logi_error(msg, #__VA_ARGS__);                                             \
     return LION_STATUS_FAILURE;                                                \
+  }
+
+#define LION_CALLDF_I(x, msg, ...)                                             \
+  if (x != LION_STATUS_SUCCESS) {                                              \
+    logi_error(msg, #__VA_ARGS__);                                             \
   }
