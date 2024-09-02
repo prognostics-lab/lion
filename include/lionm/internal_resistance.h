@@ -1,3 +1,3 @@
 #pragma once
 
-double lionm_resistance(double current);
+double lion_resistance(double current);

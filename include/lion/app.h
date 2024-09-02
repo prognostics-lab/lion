@@ -59,7 +59,7 @@ typedef struct terra_app_config {
 
 typedef struct lion_app {
   lion_app_config_t *conf;
-  lionm_params_t *params;
+  lion_params_t *params;
 
   /* Data handles */
 

@@ -1,6 +1,4 @@
 #pragma once
 
-double lionm_ehc(double soc) {
-
-}
+double lion_ehc(double soc);
 

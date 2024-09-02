@@ -17,7 +17,7 @@ lion_status_t lion_vector_new(lion_app_t *app, const size_t data_size,
 
 lion_status_t lion_vector_zero(lion_app_t *app, const size_t len,
                                const size_t data_size, lion_vector_t *out) {
-  void *data = lionu_calloc(app, len, data_size);
+  void *data = lion_calloc(app, len, data_size);
   if (data == NULL) {
     logi_error("Could not allocate enough data");
     return LION_STATUS_FAILURE;
@@ -36,7 +36,7 @@ lion_status_t lion_vector_zero(lion_app_t *app, const size_t len,
 lion_status_t lion_vector_with_capacity(lion_app_t *app, const size_t capacity,
                                         const size_t data_size,
                                         lion_vector_t *out) {
-  void *data = lionu_malloc(app, data_size * capacity);
+  void *data = lion_malloc(app, data_size * capacity);
   if (data == NULL) {
     logi_error("Could not allocate enough data");
     return LION_STATUS_FAILURE;
@@ -55,7 +55,7 @@ lion_status_t lion_vector_with_capacity(lion_app_t *app, const size_t capacity,
 lion_status_t lion_vector_from_array(lion_app_t *app, const void *data,
                                      const size_t len, const size_t data_size,
                                      lion_vector_t *out) {
-  void *new_data = lionu_malloc(app, len * data_size);
+  void *new_data = lion_malloc(app, len * data_size);
   if (new_data == NULL) {
     logi_error("Could not allocate enough data");
     return LION_STATUS_FAILURE;
@@ -74,7 +74,7 @@ lion_status_t lion_vector_from_array(lion_app_t *app, const void *data,
 
 lion_status_t lion_vector_cleanup(lion_app_t *app,
                                   const lion_vector_t *const vec) {
-  lionu_free(app, vec->data);
+  lion_free(app, vec->data);
   return LION_STATUS_SUCCESS;
 }
 
@@ -100,7 +100,7 @@ lion_status_t lion_vector_set(lion_app_t *app, lion_vector_t *vec,
 
 lion_status_t lion_vector_resize(lion_app_t *app, lion_vector_t *vec,
                                  const size_t new_capacity) {
-  void *data = lionu_realloc(app, vec->data, new_capacity * vec->data_size);
+  void *data = lion_realloc(app, vec->data, new_capacity * vec->data_size);
   if (data == NULL) {
     logi_error("Could not allocate enough data");
     return LION_STATUS_FAILURE;
@@ -130,7 +130,7 @@ lion_status_t lion_vector_push(lion_app_t *app, lion_vector_t *vec,
       new_size = vec->data_size;
     }
     logi_debug("Reallocating for %d B", new_size);
-    void *new_data = lionu_realloc(app, vec->data, new_size);
+    void *new_data = lion_realloc(app, vec->data, new_size);
     if (new_data == NULL) {
       logi_error("Could not allocate enough data");
       return LION_STATUS_FAILURE;
@@ -167,7 +167,7 @@ lion_status_t lion_vector_extend_array(lion_app_t *app, lion_vector_t *vec,
     logi_info("Allocating memory for extension of vector");
     logi_debug("Allocating %d more bytes", delta * vec->data_size);
     void *new_data =
-        lionu_realloc(app, vec->data, (vec->capacity + delta) * vec->data_size);
+        lion_realloc(app, vec->data, (vec->capacity + delta) * vec->data_size);
     if (new_data == NULL) {
       logi_error("Reallocation failed");
       return LION_STATUS_FAILURE;

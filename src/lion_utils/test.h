@@ -1,6 +1,6 @@
 #pragma once
 #include "vendor/log.h"
-#include <otto/status.h>
+#include <lion/status.h>
 #include <string.h>
 
 #define TEST_FAIL 1
@@ -8,43 +8,43 @@
 
 /* Assert macros */
 
-#define OTTO_ASSERT(cond)                                                      \
+#define LION_ASSERT(cond)                                                      \
   if (!(cond))                                                                 \
-  return OTTO_STATUS_FAILURE(NULL)
-#define OTTO_ASSERT_FALSE(cond)                                                \
+  return LION_STATUS_FAILURE
+#define LION_ASSERT_FALSE(cond)                                                \
   if (cond)                                                                    \
-  return OTTO_STATUS_FAILURE(NULL)
-#define OTTO_ASSERT_EQI(v1, v2)                                                \
+  return LION_STATUS_FAILURE
+#define LION_ASSERT_EQI(v1, v2)                                                \
   if ((v1) != (v2)) {                                                          \
     log_debug("TEST_FAIL: Expected %i, found %i", v2, v1);                     \
-    return OTTO_STATUS_FAILURE(NULL);                                          \
+    return LION_STATUS_FAILURE;                                                \
   }
-#define OTTO_ASSERT_NEI(v1, v2)                                                \
+#define LION_ASSERT_NEI(v1, v2)                                                \
   if ((v1) == (v2)) {                                                          \
     log_debug("TEST_FAIL: Expected different than %i, found %i", v2, v1);      \
-    return OTTO_STATUS_FAILURE(NULL);                                          \
+    return LION_STATUS_FAILURE;                                                \
   }
-#define OTTO_ASSERT_STREQ(v1, v2)                                              \
+#define LION_ASSERT_STREQ(v1, v2)                                              \
   if (strcmp((v1), (v2))) {                                                    \
     log_debug("TEST_FAIL: Expected %s, found %s", v2, v1);                     \
-    return OTTO_STATUS_FAILURE(NULL);                                          \
+    return LION_STATUS_FAILURE;                                                \
   }
-#define OTTO_ASSERT_STRNE(v1, v2)                                              \
+#define LION_ASSERT_STRNE(v1, v2)                                              \
   if (!strcmp((v1), (v2))) {                                                   \
     log_debug("TEST_FAIL: Expected different than %s, found %s", v2, v1);      \
-    return OTTO_STATUS_FAILURE(NULL);                                          \
+    return LION_STATUS_FAILURE;                                                \
   }
-#define OTTO_ASSERT_FAILS(x)                                                   \
-  if (x.status != OTTO_FAILURE) {                                              \
+#define LION_ASSERT_FAILS(x)                                                   \
+  if (x != LION_STATUS_FAILURE) {                                              \
     log_debug("TEST_FAIL: Expected failure, got success");                     \
-    return OTTO_STATUS_FAILURE(NULL);                                          \
+    return LION_STATUS_FAILURE;                                                \
   }
 
 /* Test utilities */
 
-#define OTTO_CALL_TEST(test)                                                   \
+#define LION_CALL_TEST(test)                                                   \
   log_info("TEST: *" #test "*");                                               \
-  if (test().status == TEST_FAIL) {                                            \
+  if (test() == TEST_FAIL) {                                                   \
     log_error("Found failing test");                                           \
     return TEST_FAIL;                                                          \
   }

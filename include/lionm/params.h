@@ -1,6 +1,6 @@
 #pragma once
 
-typedef struct lionm_params {
+typedef struct lion_params {
   // Entropic heat coefficient
   struct {
     double a;
@@ -33,4 +33,4 @@ typedef struct lionm_params {
     double rin;
     double rout;
   } t;
-} lionm_params_t;
+} lion_params_t;
