@@ -37,6 +37,7 @@ set(PROJECT_SOURCE_DIR_LOCATION ${CMAKE_SOURCE_DIR}/src)
 # Names for the different libraries in the project
 set(PROJECT_CORE_NAME ${PROJECT_NAME}_core)
 set(PROJECT_UTILS_NAME ${PROJECT_NAME}_utils)
+set(PROJECT_MATH_NAME ${PROJECT_NAME}_math)
 set(PROJECT_HEADERS ${CMAKE_SOURCE_DIR}/include)
 
 option(LION_BUILD_EXAMPLES "Build the examples that come with the package." OFF)
