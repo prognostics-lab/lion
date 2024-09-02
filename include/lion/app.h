@@ -1,11 +1,13 @@
 #pragma once
 
-#include "status.h"
-#include "vector.h"
-
 #include <stdint.h>
 #include <stdio.h>
 #include <time.h>
+
+#include <lionm/params.h>
+
+#include "status.h"
+#include "vector.h"
 
 #define LION_ENGINE_VERSION_MAJOR 0
 #define LION_ENGINE_VERSION_MINOR 1
@@ -57,6 +59,7 @@ typedef struct terra_app_config {
 
 typedef struct lion_app {
   lion_app_config_t *conf;
+  lionm_params_t *params;
 
   /* Data handles */
 
