@@ -74,6 +74,51 @@ const lion_params_t LION_APP_PARAMS_DEFAULT = {
             .rin = 0.3,
             .rout = 0.1,
         },
+    .rint =
+        {
+            // Charge
+            .c40 =
+                {
+                    .a = -19.9748,
+                    .c = -26.5422,
+                },
+            .c20 =
+                {
+                    .mean = -20.0,
+                    .sigma = 3.0,
+                },
+            .c10 =
+                {
+                    .mean = -10.0,
+                    .sigma = 2.3875,
+                },
+            .c4 =
+                {
+                    .mean = -4.0,
+                    .sigma = 2.1623,
+                },
+            // Discharge
+            .d5 =
+                {
+                    .mean = 5.0,
+                    .sigma = 2.0,
+                },
+            .d10 =
+                {
+                    .mean = 10.0,
+                    .sigma = 3.1631,
+                },
+            .d15 =
+                {
+                    .mean = 15.0,
+                    .sigma = 2.0,
+                },
+            .d30 =
+                {
+                    .a = 15.9494,
+                    .c = 17.3438,
+                },
+        },
 };
 
 lion_status_t lion_app_config_new(lion_app_config_t *out) {
