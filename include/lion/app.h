@@ -82,9 +82,10 @@ extern const lion_app_config_t LION_APP_CONFIG_DEFAULT;
 // Functions
 
 lion_status_t lion_app_config_new(lion_app_config_t *out);
-lion_app_config_t terra_app_config_default(void);
+lion_app_config_t lion_app_config_default(void);
+lion_params_t lion_app_params_default(void);
 
-lion_status_t lion_app_new(lion_app_config_t *conf, lion_app_t *out);
+lion_status_t lion_app_new(lion_app_config_t *conf, lion_params_t *params, lion_app_t *out);
 lion_status_t lion_app_run(lion_app_t *app);
 
 int lion_app_should_close(lion_app_t *app);

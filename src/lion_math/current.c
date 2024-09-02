@@ -2,7 +2,7 @@
 #include <lionm/lionm.h>
 
 double lion_current(double power, double open_circuit_voltage,
-                     double internal_resistance) {
+                    double internal_resistance, lion_params_t *params) {
   // Aliases for equations
   double p = power;
   double voc = open_circuit_voltage;

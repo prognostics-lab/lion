@@ -44,6 +44,38 @@ const lion_app_config_t LION_APP_CONFIG_DEFAULT = {
     .log_filelvl = LOG_TRACE,
 };
 
+const lion_params_t LION_APP_PARAMS_DEFAULT = {
+    .ehc =
+        {
+            .a = 4e-5,
+            .b = 5e-5,
+            .mu = 0.4,
+            .kappa = 3,
+            .sigma = 0.05,
+            .lambda = 7,
+        },
+    .ocv =
+        {
+            .alpha = 0.15,
+            .beta = 17,
+            .gamma = 10.5,
+            .v0 = 4.14,
+            .vl = 3.977,
+        },
+    .vft =
+        {
+            .k1 = -5.738,
+            .k2 = 209.9,
+            .tref = 298,
+        },
+    .t =
+        {
+            .cp = 2000,
+            .rin = 0.3,
+            .rout = 0.1,
+        },
+};
+
 lion_status_t lion_app_config_new(lion_app_config_t *out) {
   lion_app_config_t conf = LION_APP_CONFIG_DEFAULT;
   *out = conf;
@@ -53,6 +85,8 @@ lion_status_t lion_app_config_new(lion_app_config_t *out) {
 lion_app_config_t lion_app_config_default(void) {
   return LION_APP_CONFIG_DEFAULT;
 }
+
+lion_params_t lion_app_params_default(void) { return LION_APP_PARAMS_DEFAULT; }
 
 static lion_status_t create_directory(const char *dirname) {
 #ifdef _WIN32
@@ -81,9 +115,11 @@ static lion_status_t create_directory(const char *dirname) {
   return LION_STATUS_SUCCESS;
 }
 
-lion_status_t lion_app_new(lion_app_config_t *conf, lion_app_t *out) {
+lion_status_t lion_app_new(lion_app_config_t *conf, lion_params_t *params,
+                           lion_app_t *out) {
   lion_app_t app = {
       .conf = conf,
+      .params = params,
 
 #ifndef NDEBUG // Internal debug information
       ._idebug_malloced_total = 0,

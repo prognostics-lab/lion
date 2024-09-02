@@ -1,4 +1,5 @@
 #pragma once
 
-double lion_ehc(double soc);
+#include "params.h"
 
+double lion_ehc(double soc, lion_params_t *params);
