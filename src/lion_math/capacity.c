@@ -7,7 +7,7 @@ double lion_kappa(double internal_temperature, lion_params_t *params) {
 }
 
 double lion_soc_usable(double soc, double kappa, lion_params_t *params) {
-  return 1.0 + kappa * (soc - 1.0);
+  return 1.0 + (soc - 1.0) / kappa;
 }
 
 double lion_capacity_usable(double capacity, double kappa,
