@@ -3,6 +3,9 @@
 #include "fuzzy/gaussian.h"
 #include "fuzzy/sigmoid.h"
 
+#define LION_FUZZY_SETS_COUNT 8
+#define LION_FUZZY_SETS_DEGREE 4
+
 typedef struct lion_params {
   // Entropic heat coefficient
   struct {
@@ -48,5 +51,7 @@ typedef struct lion_params {
     lion_mf_gaussian_params_t d10;
     lion_mf_gaussian_params_t d15;
     lion_mf_sigmoid_params_t d30;
+
+    double poly[LION_FUZZY_SETS_COUNT][LION_FUZZY_SETS_DEGREE];
   } rint;
 } lion_params_t;
