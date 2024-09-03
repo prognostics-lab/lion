@@ -196,7 +196,7 @@ def main(savefig=False):
 
     ### Electrical plots ###
     LOGGER.debug("Preparing SOC plots")
-    fig, ax = plt.subplots(4, 1)
+    fig, ax = plt.subplots(4, 1, figsize=(DEFAULT_FIGSIZE[0], 1.5 * 4))
 
     ax[0].plot(sim_time / 3600, 100 * sim_true_soc)
     ax[0].set_xlabel("Time (h)")
