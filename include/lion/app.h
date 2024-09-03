@@ -4,8 +4,7 @@
 #include <stdio.h>
 #include <time.h>
 
-#include <lionm/params.h>
-
+#include "params.h"
 #include "status.h"
 #include "vector.h"
 
@@ -85,7 +84,8 @@ lion_status_t lion_app_config_new(lion_app_config_t *out);
 lion_app_config_t lion_app_config_default(void);
 lion_params_t lion_app_params_default(void);
 
-lion_status_t lion_app_new(lion_app_config_t *conf, lion_params_t *params, lion_app_t *out);
+lion_status_t lion_app_new(lion_app_config_t *conf, lion_params_t *params,
+                           lion_app_t *out);
 lion_status_t lion_app_run(lion_app_t *app);
 
 int lion_app_should_close(lion_app_t *app);

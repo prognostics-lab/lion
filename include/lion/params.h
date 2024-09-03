@@ -1,7 +1,6 @@
 #pragma once
 
-#include "fuzzy/gaussian.h"
-#include "fuzzy/sigmoid.h"
+#include <lionu/fuzzy.h>
 
 #define LION_FUZZY_SETS_COUNT 8
 #define LION_FUZZY_SETS_DEGREE 4

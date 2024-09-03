@@ -1,6 +1,9 @@
-#include <lionm/lionm.h>
-
 #include <gsl/gsl_math.h>
+#include <math.h>
+
+#include <lion/lion.h>
+
+#include "generated_heat.h"
 
 double lion_generated_heat(double current, double internal_temperature,
                            double internal_resistance, double ehc,

@@ -1,4 +1,6 @@
-#include <lionm/lionm.h>
+#include <lion/lion.h>
+
+#include "soc.h"
 
 double lion_soc_d(double current, double usable_capacity,
                   lion_params_t *params) {

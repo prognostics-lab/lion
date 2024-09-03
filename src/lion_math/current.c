@@ -1,5 +1,7 @@
 #include <gsl/gsl_math.h>
-#include <lionm/lionm.h>
+#include <lion/lion.h>
+
+#include "current.h"
 
 double lion_current(double power, double open_circuit_voltage,
                     double internal_resistance, lion_params_t *params) {

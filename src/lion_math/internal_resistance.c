@@ -1,5 +1,8 @@
-#include <lionm/lionm.h>
+#include <lion/lion.h>
+#include <lionu/fuzzy.h>
 #include <lionu/math.h>
+
+#include "internal_resistance.h"
 
 double lion_resistance(double current, lion_params_t *params) {
   // Evaluate memberships

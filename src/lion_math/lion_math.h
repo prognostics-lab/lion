@@ -2,7 +2,6 @@
 
 #include <math.h>
 
-#include "capacity.h"
 #include "current.h"
 #include "dynamics/dynamics.h"
 #include "ehc.h"

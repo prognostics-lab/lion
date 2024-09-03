@@ -1,4 +1,7 @@
-#include <lionm/lionm.h>
+#include <lion/lion.h>
+
+#include "current.h"
+#include "voltage.h"
 
 double lion_voltage(double power, double open_circuit_voltage,
                     double internal_resistance, lion_params_t *params) {

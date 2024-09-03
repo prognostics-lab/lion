@@ -1,6 +1,6 @@
 #pragma once
 
-#include "params.h"
+#include <lion/params.h>
 
 double lion_kappa(double internal_temperature, lion_params_t *params);
 double lion_soc_usable(double soc, double kappa, lion_params_t *params);

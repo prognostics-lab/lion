@@ -1,4 +1,8 @@
-#include <lionm/lionm.h>
+#include <math.h>
+
+#include <lion/lion.h>
+
+#include "open_circuit.h"
 
 double lion_voc(double soc, lion_params_t *params) {
   double term1_ct = params->ocv.v0 - params->ocv.vl;

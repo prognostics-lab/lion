@@ -1,4 +1,6 @@
-#include <lionm/lionm.h>
+#include <math.h>
+
+#include <lionu/fuzzy.h>
 
 double lion_mf_sigmoid(double x, lion_mf_sigmoid_params_t *params) {
   double exp_term = -params->a * (x - params->c);

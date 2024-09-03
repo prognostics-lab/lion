@@ -1,6 +1,6 @@
 #pragma once
 
-#include <lionm/params.h>
+#include <lion/params.h>
 
 double lion_internal_temperature_d(double internal_temperature, double heat,
                                    double ambient_temperature,

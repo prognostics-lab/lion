@@ -1,4 +1,6 @@
-#include <lionm/lionm.h>
+#include <lion/lion.h>
+
+#include "temperature.h"
 
 double lion_internal_temperature_d(double internal_temperature, double heat,
                                    double ambient_temperature,

@@ -1,6 +1,9 @@
-#include <lionm/lionm.h>
-
 #include <gsl/gsl_math.h>
+#include <math.h>
+
+#include <lion/lion.h>
+
+#include "ehc.h"
 
 double lion_ehc(double soc, lion_params_t *params) {
   double exp_num = soc - params->ehc.mu;

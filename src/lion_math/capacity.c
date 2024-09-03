@@ -1,4 +1,8 @@
-#include <lionm/lionm.h>
+#include <math.h>
+
+#include <lion/lion.h>
+
+#include "capacity.h"
 
 double lion_kappa(double internal_temperature, lion_params_t *params) {
   double left = params->vft.k1 / (internal_temperature - params->vft.k2);
