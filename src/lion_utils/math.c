@@ -5,7 +5,7 @@
 #include <lionu/math.h>
 
 // clang-format off
-#define __lion_generator_alltypes(macro)                                       \
+#define __LION_GENERATOR_ALLTYPES(macro)                                       \
   macro(i8)                                                                    \
   macro(i16)                                                                   \
   macro(i32)                                                                   \
@@ -18,7 +18,7 @@
   macro(double)
 // clang-format on
 
-#define _sum_generator(T)                                                      \
+#define _SUM_GENERATOR(T)                                                      \
   T lion_sum_##T(T *vals, size_t count) {                                      \
     T res = 0;                                                                 \
     for (size_t i = 0; i < count; i++) {                                       \
@@ -27,7 +27,7 @@
     return res;                                                                \
   }
 
-#define _polyval_generator(T)                                                  \
+#define _POLYVAL_GENERATOR(T)                                                  \
   T lion_polyval_##T(T x, T *coeffs, u32 count) {                              \
     T res = 0;                                                                 \
     for (u32 i = 0; i < count; i++) {                                          \
@@ -37,6 +37,6 @@
   }
 
 // clang-format off
-__lion_generator_alltypes(_sum_generator)
-__lion_generator_alltypes(_polyval_generator)
+__LION_GENERATOR_ALLTYPES(_SUM_GENERATOR)
+__LION_GENERATOR_ALLTYPES(_POLYVAL_GENERATOR)
 // clang-format on
