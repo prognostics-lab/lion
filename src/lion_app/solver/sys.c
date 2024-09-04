@@ -6,9 +6,9 @@
 #include <lion/solver/sys.h>
 #include <lion_math/capacity.h>
 #include <lion_math/current.h>
-#include <lion_math/internal_resistance.h>
 #include <lion_math/dynamics/soc.h>
 #include <lion_math/dynamics/temperature.h>
+#include <lion_math/internal_resistance.h>
 #include <lion_math/open_circuit.h>
 
 int lion_slv_system(double t, double state[], double out[], void *inputs) {
@@ -57,6 +57,7 @@ int lion_slv_jac(double t, double state[], double *dfdy, double dfdt[],
   (void)t;
   gsl_matrix_view dfdy_mat = gsl_matrix_view_array(dfdy, 2, 2);
   gsl_matrix *m = &dfdy_mat.matrix;
+  // TODO: Finish Jacobian calculation
   gsl_matrix_set(m, 0, 0, 0.0);
   gsl_matrix_set(m, 0, 1, 1.0);
   dfdt[0] = 0.0;
