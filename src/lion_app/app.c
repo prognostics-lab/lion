@@ -1,13 +1,16 @@
-#include "init.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
+#include <gsl/gsl_odeiv2.h>
+
 #include <lion/lion.h>
 #include <lion_utils/macros.h>
 #include <lion_utils/vendor/log.h>
 #include <lionu/mem.h>
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
+#include "app_run.h"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -38,7 +41,17 @@
 #endif
 
 const lion_app_config_t LION_APP_CONFIG_DEFAULT = {
+    // Metadata
     .app_name = "Application",
+
+    // Simulation parameters
+    .sim_stepper = TERRA_STEPPER_RK8PD,
+    .sim_time_seconds = 10.0,
+    .sim_step_seconds = 1e-3,
+    .sim_epsabs = 1e-8,
+    .sim_epsrel = 1e-8,
+
+    // Logging
     .log_dir = NULL,
     .log_stdlvl = LOG_INFO,
     .log_filelvl = LOG_TRACE,
@@ -177,6 +190,8 @@ lion_status_t lion_app_new(lion_app_config_t *conf, lion_params_t *params,
       .conf = conf,
       .params = params,
 
+      .driver = NULL,
+
 #ifndef NDEBUG // Internal debug information
       ._idebug_malloced_total = 0,
 #endif
@@ -235,14 +250,15 @@ lion_status_t lion_app_run(lion_app_t *app) {
   logi_info("Application start");
   lion_app_log_startup_info(app);
 #ifndef NDEBUG
-  LION_CALL_I(lion_init_debug(app), "Failed initializing debug information");
+  LION_CALL_I(lion_app_init_debug(app),
+              "Failed initializing debug information");
 #endif
 
   logi_info("Initializing application");
-  LION_CALL_I(lion_init(app), "Failed initializing app");
+  LION_CALL_I(lion_app_init(app), "Failed initializing app");
 
   logi_debug("Running application");
-  // TODO: Implement application logic
+  LION_CALL_I(lion_app_simulate(app), "Failed simulating system");
 
   logi_debug("Cleaning up application");
   LION_CALL_I(lion_app_cleanup(app), "Failed cleaning app");
@@ -250,6 +266,13 @@ lion_status_t lion_app_run(lion_app_t *app) {
 }
 
 lion_status_t lion_app_cleanup(lion_app_t *app) {
+  if (app->driver != NULL) {
+    logi_info("GSL driver detected, freeing it");
+    gsl_odeiv2_driver_free(app->driver);
+  } else {
+    logi_info("No GSL driver detected");
+  }
+
 #ifndef NDEBUG
   if (app->_idebug_malloced_total != 0) {
     logi_warn("MEMORY LEAK: Found %lli elements (%d B) in heap after cleanup",

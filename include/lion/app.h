@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <time.h>
 
+#include <gsl/gsl_odeiv2.h>
+
 #include "params.h"
 #include "status.h"
 #include "vector.h"
@@ -44,10 +46,39 @@ size_t heapinfo_count(lion_app_t *app);
 
 // Application declarations
 
+typedef enum terra_app_regimes {
+  TERRA_APP_ONLYSF = 0,
+  TERRA_APP_ONLYAIR = 1,
+  TERRA_APP_BOTH = 2,
+} terra_app_regimes_t;
+
+typedef enum terra_app_steppers {
+  TERRA_STEPPER_RK2 = 0,
+  TERRA_STEPPER_RK4 = 1,
+  TERRA_STEPPER_RKF45 = 2,
+  TERRA_STEPPER_RKCK = 3,
+  TERRA_STEPPER_RK8PD = 4,
+  TERRA_STEPPER_RK1IMP = 5,
+  TERRA_STEPPER_RK2IMP = 6,
+  TERRA_STEPPER_RK4IMP = 7,
+  TERRA_STEPPER_BSIMP = 8,
+  TERRA_STEPPER_MSADAMS = 9,
+  TERRA_STEPPER_MSBDF = 10,
+} terra_app_steppers_t;
+
 typedef struct terra_app_config {
   /* App metadata */
 
   const char *app_name;
+
+  /* Simulation metadata */
+
+  terra_app_regimes_t sim_regime;
+  terra_app_steppers_t sim_stepper;
+  double sim_time_seconds;
+  double sim_step_seconds;
+  double sim_epsabs;
+  double sim_epsrel;
 
   /* Logging configuration */
 
@@ -61,6 +92,10 @@ typedef struct lion_app {
   lion_params_t *params;
 
   /* Data handles */
+
+  gsl_odeiv2_system sys;
+  gsl_odeiv2_driver *driver;
+  gsl_odeiv2_step_type *step_type;
 
   char log_filename[FILENAME_MAX + _LION_LOGFILE_MAX];
   FILE *log_file;

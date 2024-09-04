@@ -1,5 +1,7 @@
 #include <gsl/gsl_errno.h>
 
+#include <lion/params.h>
+#include <lion/solver/inputs.h>
 #include <lion/solver/sys.h>
 #include <lion_math/dynamics/soc.h>
 #include <lion_math/dynamics/temperature.h>
@@ -14,11 +16,14 @@ int lion_slv_system(double t, double state[], double out[], void *inputs) {
      inputs[1] -> *system parameters
    */
 
-  void **p = (void **)inputs;
-  void *sys_inputs_p = p[0];
-  void *sys_params_p = p[1];
-  double *sys_inputs = (double *)sys_inputs_p;
-  lion_params_t *sys_params = (lion_params_t *)sys_params_p;
+  // void **p = (void **)inputs;
+  // void *sys_inputs_p = p[0];
+  // void *sys_params_p = p[1];
+  // double *sys_inputs = (double *)sys_inputs_p;
+  // lion_params_t *sys_params = (lion_params_t *)sys_params_p;
+  lion_slv_inputs_t *p = inputs;
+  double *sys_inputs = p->sys_inputs;
+  lion_params_t *sys_params = p->sys_params;
 
   (void)t;
   out[0] = lion_soc_d(sys_inputs[1], sys_inputs[3], sys_params);
@@ -28,4 +33,11 @@ int lion_slv_system(double t, double state[], double out[], void *inputs) {
 }
 
 // TODO: Implement calculating the Jacobian
+int lion_slv_jac(double t, double state[], double *dfdy, double dfdt[],
+                 void *inputs) {
+  lion_slv_inputs_t *p = inputs;
+  double *sys_inputs = p->sys_inputs;
+  lion_params_t *sys_params = p->sys_params;
 
+  return GSL_SUCCESS;
+}
