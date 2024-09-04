@@ -6,6 +6,12 @@
 #define LION_FUZZY_SETS_DEGREE 4
 
 typedef struct lion_params {
+  // Initial values
+  struct {
+    double initial_soh;
+    double initial_capacity;
+  } init;
+
   // Entropic heat coefficient
   struct {
     double a;
