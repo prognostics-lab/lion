@@ -88,6 +88,61 @@ lion_status_t lion_vector_get(lion_app_t *app, const lion_vector_t *vec,
   return LION_STATUS_SUCCESS;
 }
 
+int8_t lion_vector_get_i8(lion_app_t *app, const lion_vector_t *vec,
+                          const size_t i) {
+  return *(int8_t *)((char *)vec->data + i * vec->data_size);
+}
+
+int16_t lion_vector_get_i16(lion_app_t *app, const lion_vector_t *vec,
+                            const size_t i) {
+  return *(int16_t *)((char *)vec->data + i * vec->data_size);
+}
+
+int32_t lion_vector_get_i32(lion_app_t *app, const lion_vector_t *vec,
+                            const size_t i) {
+  return *(int32_t *)((char *)vec->data + i * vec->data_size);
+}
+
+int64_t lion_vector_get_i64(lion_app_t *app, const lion_vector_t *vec,
+                            const size_t i) {
+  return *(int64_t *)((char *)vec->data + i * vec->data_size);
+}
+
+uint8_t lion_vector_get_u8(lion_app_t *app, const lion_vector_t *vec,
+                           const size_t i) {
+  return *(uint8_t *)((char *)vec->data + i * vec->data_size);
+}
+
+uint16_t lion_vector_get_u16(lion_app_t *app, const lion_vector_t *vec,
+                             const size_t i) {
+  return *(uint16_t *)((char *)vec->data + i * vec->data_size);
+}
+
+uint32_t lion_vector_get_u32(lion_app_t *app, const lion_vector_t *vec,
+                             const size_t i) {
+  return *(uint32_t *)((char *)vec->data + i * vec->data_size);
+}
+
+uint64_t lion_vector_get_u64(lion_app_t *app, const lion_vector_t *vec,
+                             const size_t i) {
+  return *(uint64_t *)((char *)vec->data + i * vec->data_size);
+}
+
+float lion_vector_get_f(lion_app_t *app, const lion_vector_t *vec,
+                        const size_t i) {
+  return *(float *)((char *)vec->data + i * vec->data_size);
+}
+
+double lion_vector_get_d(lion_app_t *app, const lion_vector_t *vec,
+                         const size_t i) {
+  return *(double *)((char *)vec->data + i * vec->data_size);
+}
+
+void *lion_vector_get_p(lion_app_t *app, const lion_vector_t *vec,
+                        const size_t i) {
+  return (void *)((char *)vec->data + i * vec->data_size);
+}
+
 lion_status_t lion_vector_set(lion_app_t *app, lion_vector_t *vec,
                               const size_t i, const void *src) {
   if (vec->data == NULL || i >= vec->len || src == NULL) {
