@@ -8,8 +8,11 @@
 typedef struct lion_params {
   // Initial values
   struct {
+    double initial_soc;
+    double initial_internal_temperature;
     double initial_soh;
     double initial_capacity;
+    double initial_current_guess;
   } init;
 
   // Entropic heat coefficient
