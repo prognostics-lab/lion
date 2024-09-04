@@ -136,8 +136,8 @@ typedef struct lion_app {
 
   gsl_odeiv2_system sys;
   gsl_odeiv2_driver *driver;
-  gsl_odeiv2_step_type *step_type;
-  gsl_min_fminimizer_type *minimizer;
+  const gsl_odeiv2_step_type *step_type;
+  const gsl_min_fminimizer_type *minimizer;
 
   char log_filename[FILENAME_MAX + _LION_LOGFILE_MAX];
   FILE *log_file;
