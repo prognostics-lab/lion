@@ -45,7 +45,8 @@ const lion_app_config_t LION_APP_CONFIG_DEFAULT = {
     .app_name = "Application",
 
     // Simulation parameters
-    .sim_stepper = TERRA_STEPPER_RK8PD,
+    .sim_stepper = LION_STEPPER_RK8PD,
+    .sim_minimizer = LION_MINIMIZER_BRENT,
     .sim_time_seconds = 10.0,
     .sim_step_seconds = 1e-3,
     .sim_epsabs = 1e-8,
@@ -190,6 +191,10 @@ lion_status_t lion_app_new(lion_app_config_t *conf, lion_params_t *params,
       .conf = conf,
       .params = params,
 
+      .init_hook = NULL,
+      .update_hook = NULL,
+      .finished_hook = NULL,
+
       .driver = NULL,
 
 #ifndef NDEBUG // Internal debug information
@@ -246,7 +251,8 @@ static void lion_app_log_startup_info(lion_app_t *app) {
   logi_info("+-------------------------------------------------------+");
 }
 
-lion_status_t lion_app_run(lion_app_t *app) {
+lion_status_t lion_app_run(lion_app_t *app, lion_vector_t *power,
+                           lion_vector_t *ambient_temperature) {
   logi_info("Application start");
   lion_app_log_startup_info(app);
 #ifndef NDEBUG
@@ -255,10 +261,13 @@ lion_status_t lion_app_run(lion_app_t *app) {
 #endif
 
   logi_info("Initializing application");
-  LION_CALL_I(lion_app_init(app), "Failed initializing app");
+  LION_CALL_I(lion_app_init(app, lion_vector_get_d(app, power, 0),
+                            lion_vector_get_d(app, ambient_temperature, 0)),
+              "Failed initializing app");
 
   logi_debug("Running application");
-  LION_CALL_I(lion_app_simulate(app), "Failed simulating system");
+  LION_CALL_I(lion_app_simulate(app, power, ambient_temperature),
+              "Failed simulating system");
 
   logi_debug("Cleaning up application");
   LION_CALL_I(lion_app_cleanup(app), "Failed cleaning app");
@@ -309,3 +318,7 @@ lion_status_t lion_app_cleanup(lion_app_t *app) {
 }
 
 int lion_app_should_close(lion_app_t *app) { return 0; }
+
+uint64_t lion_app_max_iters(lion_app_t *app) {
+  return (uint64_t)(app->conf->sim_time_seconds / app->conf->sim_step_seconds);
+}
