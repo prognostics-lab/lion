@@ -55,7 +55,7 @@ int lion_slv_jac(double t, const double state[], double *dfdy, double dfdt[],
 
   double kappa = lion_kappa(state[1], sys_params);
   double soc_use = lion_soc_usable(state[0], kappa, sys_params);
-  double rint = lion_resistance(sys_inputs->current, sys_params);
+  double rint = lion_resistance(soc_use, sys_inputs->current, sys_params);
 
   (void)t;
   gsl_matrix_view dfdy_mat = gsl_matrix_view_array(dfdy, 2, 2);
