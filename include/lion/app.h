@@ -88,6 +88,7 @@ typedef struct lion_app_config {
   double sim_step_seconds;
   double sim_epsabs;
   double sim_epsrel;
+  double sim_min_max_iter;
 
   /* Logging configuration */
 
@@ -110,6 +111,7 @@ typedef struct lion_app_state {
   double internal_resistance;
 
   // Thermal state
+  double ehc;
   double generated_heat;
   double internal_temperature;
   double surface_temperature;
@@ -138,6 +140,7 @@ typedef struct lion_app {
 
   gsl_odeiv2_system sys;
   gsl_odeiv2_driver *driver;
+  gsl_min_fminimizer *sys_min;
   const gsl_odeiv2_step_type *step_type;
   const gsl_min_fminimizer_type *minimizer;
 
@@ -172,6 +175,10 @@ int lion_app_should_close(lion_app_t *app);
 uint64_t lion_app_max_iters(lion_app_t *app);
 
 lion_status_t lion_app_cleanup(lion_app_t *app);
+
+const char *lion_app_regime_name(lion_app_regime_t regime);
+const char *lion_app_stepper_name(lion_app_stepper_t stepper);
+const char *lion_app_minimizer_name(lion_app_minimizer_t minimizer);
 
 #ifdef __cplusplus
 }
