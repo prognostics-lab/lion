@@ -140,10 +140,10 @@ lion_status_t lion_app_simulate(lion_app_t *app, lion_vector_t *power,
   for (uint64_t i = 0; i < max_iters; i++) {
     // app->state contains state(k)
     double partial_result[2];
-    LION_GSL_CALL_I(gsl_odeiv2_driver_apply_fixed_step(
-                        app->driver, &app->state.time,
-                        app->conf->sim_step_seconds, 1, partial_result),
-                    "Failed at step %d (t = %f)", i, app->state.time);
+    LION_GSL_VCALL_I(gsl_odeiv2_driver_apply_fixed_step(
+                         app->driver, &app->state.time,
+                         app->conf->sim_step_seconds, 1, partial_result),
+                     "Failed at step %d (t = %f)", i, app->state.time);
     // state(k + 1) is stored in partial_result
     app->state.soc_nominal = partial_result[0];
     app->state.internal_temperature = partial_result[1];
