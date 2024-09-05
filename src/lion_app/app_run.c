@@ -6,10 +6,7 @@
 
 #include "app_run.h"
 
-lion_status_t lion_app_init(lion_app_t *app, double initial_power,
-                            double initial_amb_temp) {
-  // Simulation stepper configuration
-  logi_debug("Configuring simulation stepper");
+lion_status_t _init_simulation_stepper(lion_app_t *app) {
   switch (app->conf->sim_stepper) {
   case LION_STEPPER_RK2:
     app->step_type = gsl_odeiv2_step_rk2;
@@ -48,9 +45,10 @@ lion_status_t lion_app_init(lion_app_t *app, double initial_power,
     logi_error("Desired step type not implemented");
     return LION_STATUS_FAILURE;
   }
+  return LION_STATUS_SUCCESS;
+}
 
-  // Optimization problem minimizer
-  logi_debug("Configuring optimization minimizer");
+lion_status_t _init_simulation_minimizer(lion_app_t *app) {
   switch (app->conf->sim_minimizer) {
   case LION_MINIMIZER_GOLDENSECTION:
     app->minimizer = gsl_min_fminimizer_goldensection;
@@ -62,9 +60,11 @@ lion_status_t lion_app_init(lion_app_t *app, double initial_power,
     logi_error("Desired minimizer not implemented");
     return LION_STATUS_FAILURE;
   }
+  return LION_STATUS_SUCCESS;
+}
 
-  // Initial conditions
-  logi_info("Configuring initial state");
+lion_status_t _init_initial_state(lion_app_t *app, double initial_power,
+                                  double initial_amb_temp) {
   logi_debug("Setting up initial conditions");
   app->state.soc_nominal = app->params->init.initial_soc;
   app->state.internal_temperature =
@@ -74,9 +74,10 @@ lion_status_t lion_app_init(lion_app_t *app, double initial_power,
   app->state.power = initial_power;
   app->state.ambient_temperature = initial_amb_temp;
   LION_CALL_I(lion_slv_update(app), "Failed spreading initial condition");
+  return LION_STATUS_SUCCESS;
+}
 
-  // System configuration
-  logi_info("Configuring ode system");
+lion_status_t _init_ode_system(lion_app_t *app) {
   logi_debug("Setting up GSL inputs");
   app->inputs.sys_inputs = &app->state;
   app->inputs.sys_params = app->params;
@@ -88,12 +89,35 @@ lion_status_t lion_app_init(lion_app_t *app, double initial_power,
       .params = &app->inputs,
   };
   app->sys = sys;
+  return LION_STATUS_SUCCESS;
+}
 
-  // Set up driver
-  logi_info("Configuring simulation driver");
+lion_status_t _init_ode_driver(lion_app_t *app) {
   app->driver = gsl_odeiv2_driver_alloc_y_new(
       &app->sys, app->step_type, app->conf->sim_step_seconds,
       app->conf->sim_epsabs, app->conf->sim_epsrel);
+  return LION_STATUS_SUCCESS;
+}
+
+lion_status_t lion_app_init(lion_app_t *app, double initial_power,
+                            double initial_amb_temp) {
+  logi_debug("Configuring simulation stepper");
+  LION_CALL_I(_init_simulation_stepper(app),
+              "Failed initializing simulation stepper");
+
+  logi_debug("Configuring optimization minimizer");
+  LION_CALL_I(_init_simulation_minimizer(app),
+              "Failed initializing simulation minimizer");
+
+  logi_info("Configuring initial state");
+  LION_CALL_I(_init_initial_state(app, initial_power, initial_amb_temp),
+              "Failed initializing initial state");
+
+  logi_info("Configuring ode system");
+  LION_CALL_I(_init_ode_system(app), "Failed initializing ode system");
+
+  logi_info("Configuring simulation driver");
+  LION_CALL_I(_init_ode_driver(app), "Failed initializing ode driver");
   return LION_STATUS_SUCCESS;
 }
 
