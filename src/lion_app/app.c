@@ -241,11 +241,25 @@ static void lion_app_log_startup_info(lion_app_t *app) {
   logi_info("+-------------------------------------------------------+");
   logi_info("|################# STARTUP INFORMATION #################|");
   logi_info("+-------------------------------------------------------+");
-  logi_info(" * Application name            : %s", app->conf->app_name);
-  logi_info(" * Engine version              : %u.%u.%u",
+  logi_info(" * Application name               : %s", app->conf->app_name);
+  logi_info(" * Engine version                 : %u.%u.%u",
             LION_ENGINE_VERSION_MAJOR, LION_ENGINE_VERSION_MINOR,
             LION_ENGINE_VERSION_PATCH);
-  logi_info(" * `lion_app_t` struct size   : %d B", sizeof(lion_app_t));
+  logi_info(" * `lion_app_t` struct size       : %d B", sizeof(lion_app_t));
+  logi_info(" * Regime                         : %s",
+            lion_app_regime_name(app->conf->sim_regime));
+  logi_info(" * Stepper                        : %s",
+            lion_app_stepper_name(app->conf->sim_stepper));
+  logi_info(" * Minimizer                      : %s",
+            lion_app_minimizer_name(app->conf->sim_minimizer));
+  logi_info(" * Total simulation time          : %d s",
+            app->conf->sim_time_seconds);
+  logi_info(" * Simulation step time           : %d s",
+            app->conf->sim_step_seconds);
+  logi_info(" * Absolute epsilon               : %f", app->conf->sim_epsabs);
+  logi_info(" * Relative epsilon               : %f", app->conf->sim_epsrel);
+  logi_info(" * Minimization max iterations    : %d iterations",
+            app->conf->sim_min_max_iter);
   logi_info("+-------------------------------------------------------+");
   logi_info("|################# END OF INFORMATION ##################|");
   logi_info("+-------------------------------------------------------+");
@@ -279,7 +293,14 @@ lion_status_t lion_app_cleanup(lion_app_t *app) {
     logi_info("GSL driver detected, freeing it");
     gsl_odeiv2_driver_free(app->driver);
   } else {
-    logi_info("No GSL driver detected");
+    logi_warn("No GSL driver detected");
+  }
+
+  if (app->sys_min != NULL) {
+    logi_info("GSL minimizer detected, freeing it");
+    gsl_min_fminimizer_free(app->sys_min);
+  } else {
+    logi_warn("No GSL minimizer detected");
   }
 
 #ifndef NDEBUG
@@ -321,4 +342,62 @@ int lion_app_should_close(lion_app_t *app) { return 0; }
 
 uint64_t lion_app_max_iters(lion_app_t *app) {
   return (uint64_t)(app->conf->sim_time_seconds / app->conf->sim_step_seconds);
+}
+
+const char *lion_app_regime_name(lion_app_regime_t regime) {
+  switch (regime) {
+  case LION_APP_ONLYSF:
+    return "LION_APP_ONLYSF";
+  case LION_APP_ONLYAIR:
+    return "LION_APP_ONLYAIR";
+  case LION_APP_BOTH:
+    return "LION_APP_BOTH";
+  default:
+    return "Regime not found";
+  }
+  return "Unexpected return";
+}
+
+const char *lion_app_stepper_name(lion_app_stepper_t stepper) {
+  switch (stepper) {
+  case LION_STEPPER_RK2:
+    return "LION_STEPPER_RK2";
+  case LION_STEPPER_RK4:
+    return "LION_STEPPER_RK4";
+  case LION_STEPPER_RKF45:
+    return "LION_STEPPER_RKF45";
+  case LION_STEPPER_RKCK:
+    return "LION_STEPPER_RKCK";
+  case LION_STEPPER_RK8PD:
+    return "LION_STEPPER_RK8PD";
+  case LION_STEPPER_RK1IMP:
+    return "LION_STEPPER_RK1IMP";
+  case LION_STEPPER_RK2IMP:
+    return "LION_STEPPER_RK2IMP";
+  case LION_STEPPER_RK4IMP:
+    return "LION_STEPPER_RK4IMP";
+  case LION_STEPPER_BSIMP:
+    return "LION_STEPPER_BSIMP";
+  case LION_STEPPER_MSADAMS:
+    return "LION_STEPPER_MSADAMS";
+  case LION_STEPPER_MSBDF:
+    return "LION_STEPPER_MSBDF";
+  default:
+    return "Stepper not found";
+  }
+  return "Unexpected return";
+}
+
+const char *lion_app_minimizer_name(lion_app_minimizer_t minimizer) {
+  switch (minimizer) {
+  case LION_MINIMIZER_GOLDENSECTION:
+    return "LION_MINIMIZER_GOLDENSECTION";
+  case LION_MINIMIZER_BRENT:
+    return "LION_MINIMIZER_BRENT";
+  case LION_MINIMIZER_QUADGOLDEN:
+    return "LION_MINIMIZER_QUADGOLDEN";
+  default:
+    return "Minimizer not found";
+  }
+  return "Unexpected return";
 }
