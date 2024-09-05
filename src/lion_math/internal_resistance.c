@@ -4,7 +4,7 @@
 
 #include "internal_resistance.h"
 
-double lion_resistance(double current, lion_params_t *params) {
+double lion_resistance(double soc, double current, lion_params_t *params) {
   // Evaluate memberships
   double c40 = lion_mf_sigmoid(current, &params->rint.c40);
   double c20 = lion_mf_gaussian(current, &params->rint.c20);
@@ -22,7 +22,7 @@ double lion_resistance(double current, lion_params_t *params) {
   // Calculate resulting internal resistance
   double num = 0;
   for (int i = 0; i < LION_FUZZY_SETS_COUNT; i++) {
-    num += memberships[i] * lion_polyval_double(current, params->rint.poly[i],
+    num += memberships[i] * lion_polyval_double(soc, params->rint.poly[i],
                                                 LION_FUZZY_SETS_DEGREE);
   }
   return num / memberships_sum;
