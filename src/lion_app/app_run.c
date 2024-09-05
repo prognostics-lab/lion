@@ -63,18 +63,34 @@ lion_status_t lion_app_init(lion_app_t *app, double initial_power,
     return LION_STATUS_FAILURE;
   }
 
-  // System configuration
-  logi_debug("Configuring initial state");
-  app->state->soc_nominal = app->params->init.initial_soc;
-  app->state->internal_temperature =
+  // Initial conditions
+  logi_info("Configuring initial state");
+  logi_debug("Setting up initial conditions");
+  app->state.soc_nominal = app->params->init.initial_soc;
+  app->state.internal_temperature =
       app->params->init.initial_internal_temperature;
-  app->state->time = 0.0;
-  LION_CALL_I(lion_slv_update(app, initial_power, initial_amb_temp),
-              "Failed spreading initial condition");
-  // TODO: Implement setting up ODE system
+  app->state.time = 0.0;
+  logi_debug("Setting first inputs");
+  app->state.power = initial_power;
+  app->state.ambient_temperature = initial_amb_temp;
+  LION_CALL_I(lion_slv_update(app), "Failed spreading initial condition");
+
+  // System configuration
+  logi_info("Configuring ode system");
+  logi_debug("Setting up GSL inputs");
+  app->inputs.sys_inputs = &app->state;
+  app->inputs.sys_params = app->params;
+  logi_debug("Creating GSL system");
+  gsl_odeiv2_system sys = {
+      .function = &lion_slv_system,
+      .jacobian = &lion_slv_jac,
+      .dimension = LION_SLV_DIMENSION,
+      .params = &app->inputs,
+  };
+  app->sys = sys;
 
   // Set up driver
-  logi_debug("Configuring simulation driver");
+  logi_info("Configuring simulation driver");
   app->driver = gsl_odeiv2_driver_alloc_y_new(
       &app->sys, app->step_type, app->conf->sim_step_seconds,
       app->conf->sim_epsabs, app->conf->sim_epsrel);
@@ -93,18 +109,25 @@ lion_status_t lion_app_simulate(lion_app_t *app, lion_vector_t *power,
 
   logi_debug("Starting iterations");
   for (uint64_t i = 0; i < max_iters; i++) {
+    // app->state contains state(k)
     double partial_result[2];
     LION_GSL_CALL_I(gsl_odeiv2_driver_apply_fixed_step(
-                        app->driver, &app->state->time,
+                        app->driver, &app->state.time,
                         app->conf->sim_step_seconds, 1, partial_result),
-                    "Failed at step %d (t = %f)", i, app->state->time);
-    app->state->soc_nominal = partial_result[0];
-    app->state->internal_temperature = partial_result[1];
-    LION_CALL_I(lion_slv_update(app, lion_vector_get_d(app, power, i),
-                                lion_vector_get_d(app, amb_temp, i)),
-                "Failed updating state");
+                    "Failed at step %d (t = %f)", i, app->state.time);
+    // state(k + 1) is stored in partial_result
+    app->state.soc_nominal = partial_result[0];
+    app->state.internal_temperature = partial_result[1];
+    app->state.power = lion_vector_get_d(app, power, i);
+    app->state.ambient_temperature = lion_vector_get_d(app, amb_temp, i);
+    LION_CALL_I(lion_slv_update(app), "Failed updating state");
+    // partial results are spread over the state, meaning at this
+    // point app->state contains state(k + 1) leaving it ready for the
+    // next time iteration
 
     if (app->update_hook != NULL) {
+      // TODO: Evaluate implementation of concurrency
+      // TODO: Add some mechanism to avoid race conditions
       LION_CALLDF_I(app->update_hook(app, i), "Failed calling update hook");
     }
   }

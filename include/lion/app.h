@@ -8,6 +8,7 @@
 #include <gsl/gsl_odeiv2.h>
 
 #include "params.h"
+#include "solver/inputs.h"
 #include "status.h"
 #include "vector.h"
 
@@ -124,7 +125,8 @@ typedef struct lion_app_state {
 typedef struct lion_app {
   lion_app_config_t *conf;
   lion_params_t *params;
-  lion_app_state_t *state;
+  lion_app_state_t state;
+  lion_slv_inputs_t inputs;
 
   /* Hooks */
 
