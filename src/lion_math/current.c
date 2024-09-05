@@ -45,7 +45,7 @@ double lion_current_optimize_targetfn(double current, void *params) {
   struct _optimization_params *p = params;
   double rint = lion_resistance(p->soc, current, p->params);
   double pred_current = lion_current(p->power, p->voc, rint, p->params);
-  return gsl_pow_2(abs(current - pred_current));
+  return gsl_pow_2(fabs(current - pred_current));
 }
 
 double lion_current_optimize(gsl_min_fminimizer *s, double power, double soc,
@@ -67,8 +67,11 @@ double lion_current_optimize(gsl_min_fminimizer *s, double power, double soc,
   double opt_min = LION_CURRENT_OPTMIN;
   double opt_max = LION_CURRENT_OPTMAX;
 
-  gsl_min_fminimizer_set(s, &lion_current_optimize_targetfn, initial_guess,
-                         opt_min, opt_max);
+  gsl_function F;
+
+  F.function = &lion_current_optimize_targetfn;
+  F.params = &opt_params;
+  gsl_min_fminimizer_set(s, &F, initial_guess, opt_min, opt_max);
 
   int status;
   int iter = 0;
