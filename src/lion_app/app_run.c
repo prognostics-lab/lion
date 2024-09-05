@@ -60,12 +60,17 @@ lion_status_t _init_simulation_minimizer(lion_app_t *app) {
     logi_error("Desired minimizer not implemented");
     return LION_STATUS_FAILURE;
   }
+  app->sys_min = gsl_min_fminimizer_alloc(app->minimizer);
+  logi_info("Using minimizer %s", gsl_min_fminimizer_name(app->sys_min));
   return LION_STATUS_SUCCESS;
 }
 
 lion_status_t _init_initial_state(lion_app_t *app, double initial_power,
                                   double initial_amb_temp) {
   logi_debug("Setting up initial conditions");
+  // The current is set at first because it is used as an initial guess
+  // for the optimization problem
+  app->state.current = 0.0;
   app->state.soc_nominal = app->params->init.initial_soc;
   app->state.internal_temperature =
       app->params->init.initial_internal_temperature;
