@@ -1,34 +1,30 @@
-import os
-import sys
-import pathlib
 import json
+import os
+import pathlib
+import sys
 
 import numpy as np
-from scipy import optimize
+# import optimparallel
 from matlab import engine
+from scipy import optimize
 
-src_path = pathlib.Path.joinpath(pathlib.Path(os.getcwd()), "src")
+src_path = pathlib.Path.joinpath(pathlib.Path(os.getcwd()), "pysrc")
 datalib_path = pathlib.Path.joinpath(pathlib.Path(os.getcwd()), "data")
 sys.path.append(str(src_path))
 sys.path.append(str(datalib_path))
+from lib_240716_temp_profile_C4B1 import (Data, cell_capacity,
+                                          cell_initial_soc,
+                                          cell_internal_resistance,
+                                          chamber_pv_std, get_data,
+                                          temp_sensor_std)
 # pylint: disable=import-error
-from thermal_model.estimation import lti_from_data, TargetParams, error
+from thermal_model.estimation import TargetParams, error, lti_from_data
 from thermal_model.logger import LOGGER
 from thermal_model.paths import MATLAB_PROJECTFILE
 
-from lib_240716_temp_profile_C4B1 import (
-    get_data,
-    Data,
-    temp_sensor_std,
-    chamber_pv_std,
-    cell_initial_soc,
-    cell_internal_resistance,
-    cell_capacity,
-)
+from .constants import LAB_SLX_FILENAME
 
 # pylint: enable=import-error
-
-from .constants import LAB_SLX_FILENAME
 
 
 def perform_experiment(
@@ -65,13 +61,14 @@ def perform_experiment(
         optimizer_kwargs={
             "fn": optimize.minimize,
             "method": "L-BFGS-B",
+            # "fn": optimparallel.minimize_parallel,
             "jac": "3-point",
             "tol": 1e-3,
             "options": {
                 "disp": True,
                 "maxiter": 1e3,
             },
-            "err": error.l2_simulation,
+            "err": error.ErrorL2Simulation,
         },
         system_kwargs={
             "outputs": "noair",
@@ -123,6 +120,7 @@ def main():
         simin,
     )
     with open(
-        os.path.join("examples", "python", "lab_240716", "estimated_parameters.json"), "w"
+        os.path.join("examples", "python", "lab_240716", "estimated_parameters.json"),
+        "w",
     ) as f:
         f.write(json.dumps(params._asdict()))
