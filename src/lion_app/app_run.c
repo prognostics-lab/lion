@@ -131,9 +131,9 @@ lion_status_t lion_app_simulate(lion_app_t *app, lion_vector_t *power,
   uint64_t max_iters = lion_app_max_iters(app);
   logi_debug("Considering %d max iterations", max_iters);
 
-  if (app->init_hook != NULL) {
+  if (app->conf->init_hook != NULL) {
     logi_debug("Found init hook");
-    LION_CALLDF_I(app->init_hook(app), "Failed calling init hook");
+    LION_CALLDF_I(app->conf->init_hook(app), "Failed calling init hook");
   }
 
   logi_debug("Starting iterations");
@@ -154,17 +154,19 @@ lion_status_t lion_app_simulate(lion_app_t *app, lion_vector_t *power,
     // point app->state contains state(k + 1) leaving it ready for the
     // next time iteration
 
-    if (app->update_hook != NULL) {
+    if (app->conf->update_hook != NULL) {
       // TODO: Evaluate implementation of concurrency
       // TODO: Add some mechanism to avoid race conditions
-      LION_CALLDF_I(app->update_hook(app, i), "Failed calling update hook");
+      LION_CALLDF_I(app->conf->update_hook(app, i),
+                    "Failed calling update hook");
     }
   }
 
   logi_debug("Finished iterations");
-  if (app->finished_hook != NULL) {
+  if (app->conf->finished_hook != NULL) {
     logi_debug("Found finished hook");
-    LION_CALLDF_I(app->finished_hook(app), "Failed calling finished hook");
+    LION_CALLDF_I(app->conf->finished_hook(app),
+                  "Failed calling finished hook");
   }
   return LION_STATUS_SUCCESS;
 }
