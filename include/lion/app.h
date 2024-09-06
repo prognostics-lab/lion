@@ -78,6 +78,9 @@ typedef struct lion_app_config {
   /* App metadata */
 
   const char *app_name;
+  lion_status_t (*init_hook)(lion_app_t *app);
+  lion_status_t (*update_hook)(lion_app_t *app, uint64_t i);
+  lion_status_t (*finished_hook)(lion_app_t *app);
 
   /* Simulation metadata */
 
@@ -129,12 +132,6 @@ typedef struct lion_app {
   lion_params_t *params;
   lion_app_state_t state;
   lion_slv_inputs_t inputs;
-
-  /* Hooks */
-
-  lion_status_t (*init_hook)(lion_app_t *app);
-  lion_status_t (*update_hook)(lion_app_t *app, uint64_t i);
-  lion_status_t (*finished_hook)(lion_app_t *app);
 
   /* Data handles */
 

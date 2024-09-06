@@ -43,6 +43,9 @@
 const lion_app_config_t LION_APP_CONFIG_DEFAULT = {
     // Metadata
     .app_name = "Application",
+    .init_hook = NULL,
+    .update_hook = NULL,
+    .finished_hook = NULL,
 
     // Simulation parameters
     .sim_stepper = LION_STEPPER_RK8PD,
@@ -101,11 +104,10 @@ lion_status_t lion_app_new(lion_app_config_t *conf, lion_params_t *params,
       .conf = conf,
       .params = params,
 
-      .init_hook = NULL,
-      .update_hook = NULL,
-      .finished_hook = NULL,
-
       .driver = NULL,
+      .sys_min = NULL,
+      .step_type = NULL,
+      .minimizer = NULL,
 
 #ifndef NDEBUG // Internal debug information
       ._idebug_malloced_total = 0,
@@ -156,6 +158,11 @@ static void lion_app_log_startup_info(lion_app_t *app) {
             LION_ENGINE_VERSION_MAJOR, LION_ENGINE_VERSION_MINOR,
             LION_ENGINE_VERSION_PATCH);
   logi_info(" * `lion_app_t` struct size       : %d B", sizeof(lion_app_t));
+  if (app->conf->log_dir != NULL) {
+    logi_info(" * Log directory                  : %s", app->conf->log_dir);
+    logi_info(" * Log std level                  : %d", app->conf->log_stdlvl);
+    logi_info(" * Log file level                 : %d", app->conf->log_filelvl);
+  }
   logi_info(" * Regime                         : %s",
             lion_app_regime_name(app->conf->sim_regime));
   logi_info(" * Stepper                        : %s",
@@ -184,14 +191,18 @@ lion_status_t lion_app_run(lion_app_t *app, lion_vector_t *power,
               "Failed initializing debug information");
 #endif
 
-  logi_info("Initializing application");
-  LION_CALL_I(lion_app_init(app, lion_vector_get_d(app, power, 0),
-                            lion_vector_get_d(app, ambient_temperature, 0)),
-              "Failed initializing app");
+  if (power != NULL && ambient_temperature != NULL) {
+    logi_info("Initializing application");
+    LION_CALL_I(lion_app_init(app, lion_vector_get_d(app, power, 0),
+                              lion_vector_get_d(app, ambient_temperature, 0)),
+                "Failed initializing app");
 
-  logi_debug("Running application");
-  LION_CALL_I(lion_app_simulate(app, power, ambient_temperature),
-              "Failed simulating system");
+    logi_debug("Running application");
+    LION_CALL_I(lion_app_simulate(app, power, ambient_temperature),
+                "Failed simulating system");
+  } else {
+    logi_error("Null arguments were passed, skipping application running");
+  }
 
   logi_debug("Cleaning up application");
   LION_CALL_I(lion_app_cleanup(app), "Failed cleaning app");
