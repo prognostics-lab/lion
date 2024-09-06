@@ -40,32 +40,62 @@ int lion_slv_system(double t, const double state[], double out[],
   return GSL_SUCCESS;
 }
 
-double jac_0_1(double soc_use, double kappa, double r, double voc, double p,
-               double q_use, lion_params_t *params) {
-  double term1 = lion_current_grad_voc(p, voc, r, params);
-  double term2 = lion_voc_grad(soc_use, params);
-  return -term1 * term2 * kappa / q_use;
+double jac_0_0(lion_app_state_t *state, lion_params_t *params) {
+  double term1 =
+      lion_current_grad_voc(state->power, state->open_circuit_voltage,
+                            state->internal_resistance, params);
+  double term2 = lion_voc_grad(state->soc_use, params);
+  return -term1 * term2 * state->kappa / state->capacity_use;
+}
+
+double jac_0_1(lion_app_state_t *state, lion_params_t *params) {
+  double numl_term1 =
+      lion_current_grad_voc(state->power, state->open_circuit_voltage,
+                            state->internal_resistance, params);
+  double numl_term2 = lion_voc_grad(state->soc_use, params);
+  double numl_term3 = state->soc_nominal;
+  double numl_term4 = lion_kappa_grad(state->internal_temperature, params);
+  double numl_coeff = numl_term1 * numl_term2 * numl_term3 * numl_term4;
+  double numl = state->capacity_use * numl_coeff;
+
+  double numr_term1 = numl_term4;
+  double numr = state->current * state->capacity_nominal * numr_term1;
+
+  double den = gsl_pow_2(state->capacity_use);
+  return (numl - numr) / den;
+}
+
+double jac_1_0(lion_app_state_t *state, lion_params_t *params) {
+  double term1_1 = 2.0 * state->internal_resistance * state->current;
+  double term1_2 = state->internal_temperature * state->ehc;
+  double term1 = term1_1 - term1_2;
+  double term2 =
+      lion_current_grad_voc(state->power, state->open_circuit_voltage,
+                            state->internal_resistance, params);
+  double term3 = lion_voc_grad(state->soc_use, params);
+  return term1 * term2 * term3 * state->kappa / params->t.cp;
+}
+
+double jac_1_1(lion_app_state_t *state, lion_params_t *params) {
+  double rt = params->t.rin + params->t.rout;
+  double t = 1.0 / (params->t.cp * rt);
+  return -t - state->ehc / params->t.cp;
 }
 
 int lion_slv_jac(double t, const double state[], double *dfdy, double dfdt[],
                  void *inputs) {
   lion_slv_inputs_t *p = inputs;
-  lion_app_state_t *sys_inputs = p->sys_inputs;
+  lion_app_state_t *sys_state = p->sys_inputs;
   lion_params_t *sys_params = p->sys_params;
-
-  double kappa = lion_kappa(state[1], sys_params);
-  double soc_use = lion_soc_usable(state[0], kappa, sys_params);
-  double rint = lion_resistance(soc_use, sys_inputs->current, sys_params);
 
   (void)t;
   gsl_matrix_view dfdy_mat = gsl_matrix_view_array(dfdy, 2, 2);
   gsl_matrix *m = &dfdy_mat.matrix;
-  // TODO: Finish Jacobian calculation
-  gsl_matrix_set(m, 0, 0, 0.0);
-  gsl_matrix_set(m, 0, 1, 1.0);
+  gsl_matrix_set(m, 0, 0, jac_0_0(sys_state, sys_params));
+  gsl_matrix_set(m, 0, 1, jac_0_1(sys_state, sys_params));
+  gsl_matrix_set(m, 1, 0, jac_1_0(sys_state, sys_params));
+  gsl_matrix_set(m, 1, 1, jac_1_1(sys_state, sys_params));
   dfdt[0] = 0.0;
   dfdt[1] = 0.0;
-  return GSL_SUCCESS;
-
   return GSL_SUCCESS;
 }
