@@ -15,7 +15,8 @@ set_param(mdl, "SimulationCommand", "Update");
 disp("[DEBUG] Setting model parameters");
 disp("[DEBUG] end_time = " + end_time);
 disp("[DEBUG] time_delta = " + time_delta);
-SOLVER_ = "ode5";
+% SOLVER_ = "ode5";
+SOLVER_ = "ode14x";
 disp("[DEBUG] Using solver '" + SOLVER_ + "'");
 simin = setModelParameter(simin, ...
     Solver=SOLVER_, ...
