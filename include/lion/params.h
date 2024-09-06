@@ -63,3 +63,5 @@ typedef struct lion_params {
     double poly[LION_FUZZY_SETS_COUNT][LION_FUZZY_SETS_DEGREE];
   } rint;
 } lion_params_t;
+
+lion_params_t lion_params_default(void);
