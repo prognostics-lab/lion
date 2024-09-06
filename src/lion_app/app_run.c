@@ -139,6 +139,10 @@ lion_status_t lion_app_simulate(lion_app_t *app, lion_vector_t *power,
 
   logi_debug("Starting iterations");
   for (uint64_t i = 1; i < max_iters; i++) {
+    if (i == power->len || i == amb_temp->len) {
+      logi_error("Ran out of inputs before reaching end of simulation");
+      break;
+    }
     LION_VCALL_I(lion_app_step(app, lion_vector_get_d(app, power, i),
                                lion_vector_get_d(app, amb_temp, i)),
                  "Failed at iteration %i", i);
