@@ -43,16 +43,21 @@ set(PROJECT_HEADERS ${CMAKE_SOURCE_DIR}/include)
 option(LION_BUILD_EXAMPLES "Build the examples that come with the package." OFF)
 option(LION_BUILD_TESTS "Build the tests that come with the package." OFF)
 option(LION_INSTALL "Install target." OFF)
-option(BUILD_SHARED_LIBS "Build using shared libraries." ON)
 
+# Constants for the project
 if(MSVC)
-  set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
-  # The MSVC warnings are annoying and uninformative
+  set(PROJECT_COMPILE_OPTIONS /WX /W4)
 else()
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pedantic")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic")
+  set(PROJECT_COMPILE_OPTIONS
+      -Wall
+      -Wextra
+      -Werror
+      -Wno-unused-parameter
+      -Wno-unused-function
+      -Wconversion
+      -Wsign-conversion
+      -pedantic
+      -pedantic-errors)
 endif()
 
 add_compile_definitions(LOG_USE_COLOR)
