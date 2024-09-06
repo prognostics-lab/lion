@@ -72,6 +72,12 @@ lion_status_t lion_vector_from_array(lion_app_t *app, const void *data,
   return LION_STATUS_SUCCESS;
 }
 
+lion_status_t lion_vector_from_csv(lion_app_t *app, const char *filename,
+                                   const size_t data_size, lion_vector_t *out) {
+  // TODO: Implement creation of vectors from csv files
+  return LION_STATUS_FAILURE;
+}
+
 lion_status_t lion_vector_cleanup(lion_app_t *app,
                                   const lion_vector_t *const vec) {
   lion_free(app, vec->data);

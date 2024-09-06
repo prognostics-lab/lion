@@ -30,6 +30,8 @@ lion_status_t lion_vector_with_capacity(lion_app_t *app, const size_t capacity,
 lion_status_t lion_vector_from_array(lion_app_t *app, const void *data,
                                      const size_t len, const size_t data_size,
                                      lion_vector_t *out);
+lion_status_t lion_vector_from_csv(lion_app_t *app, const char *filename,
+                                   const size_t data_size, lion_vector_t *out);
 
 /* Vector finalization */
 
