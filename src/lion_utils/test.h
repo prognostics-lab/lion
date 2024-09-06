@@ -1,7 +1,8 @@
 #pragma once
-#include "vendor/log.h"
 #include <lion/status.h>
 #include <string.h>
+
+#include "vendor/log.h"
 
 #define TEST_FAIL 1
 #define TEST_PASS 0
@@ -42,9 +43,9 @@
 
 /* Test utilities */
 
-#define LION_CALL_TEST(test)                                                   \
+#define LION_CALL_TEST(app, test)                                              \
   log_info("TEST: *" #test "*");                                               \
-  if (test() == TEST_FAIL) {                                                   \
+  if (test(app) == TEST_FAIL) {                                                \
     log_error("Found failing test");                                           \
     return TEST_FAIL;                                                          \
   }
