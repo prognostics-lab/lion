@@ -1,21 +1,48 @@
-from scipy import optimize
 import numpy as np
-
-from thermal_model.estimation.params import TargetParams, params_prefilled
-from thermal_model.estimation.models import target_lti_parameters, get_lti_params_fn
+from scipy import optimize
 from thermal_model.estimation import error
+from thermal_model.estimation.models import (get_lti_params_fn,
+                                             target_lti_parameters)
+from thermal_model.estimation.params import TargetParams, params_prefilled
 from thermal_model.logger import LOGGER
 
-_GOOD_DEFAULT_PARAMS = TargetParams(cp=2288.8086878520617, cair=40.68543129463231,
-                                    rair=0.05622811486407936, rin=0.29153746960754423, rout=0.09544187302807855)
+_GOOD_DEFAULT_PARAMS = TargetParams(
+    cp=2288.8086878520617,
+    cair=40.68543129463231,
+    rair=0.05622811486407936,
+    rin=0.29153746960754423,
+    rout=0.09544187302807855,
+)
 _EPSILON = 1e-12
 
 
-def lti_from_data(y, u, t, x0, initial_guess=None, *, fixed_params=None,
-                  system_kwargs=None, optimizer_kwargs=None) -> tuple[
-                      tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray],
-                      TargetParams
-]:
+def generate_costfn(errorfn, fixed_params):
+    def f(p):
+        return errorfn(TargetParams(*params_prefilled(p, fixed_params)))
+
+    return f
+
+
+class CostFunction:
+    def __init__(self, errorfn, fixed_params):
+        self.errorfn = errorfn
+        self.fixed_params = fixed_params
+
+    def __call__(self, p):
+        return self.errorfn(TargetParams(*params_prefilled(p, self.fixed_params)))
+
+
+def lti_from_data(
+    y,
+    u,
+    t,
+    x0,
+    initial_guess=None,
+    *,
+    fixed_params=None,
+    system_kwargs=None,
+    optimizer_kwargs=None
+) -> tuple[tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray], TargetParams]:
     if fixed_params is None:
         fixed_params = {}
     if initial_guess is None:
@@ -35,17 +62,17 @@ def lti_from_data(y, u, t, x0, initial_guess=None, *, fixed_params=None,
     LOGGER.debug("Using '%s' as optimizer fn", optimizer_fn.__name__)
 
     if "err" not in optimizer_kwargs:
-        error_functional = error.l2
+        error_cls = error.ErrorL2
     else:
-        error_functional = optimizer_kwargs.pop("err")
-    LOGGER.debug("Using '%s' as error functional", error_functional.__name__)
+        error_cls = optimizer_kwargs.pop("err")
+    LOGGER.debug("Using '%s' as error cls", error_cls.__name__)
 
-    error_fn = error_functional(
-        y, u, t, x0, **system_kwargs)
+    error_fn = error_cls(y, u, t, x0, **system_kwargs)
 
     LOGGER.info("Starting optimization process (maybe go make some coffee?)")
     params = optimizer_fn(
-        lambda p: error_fn(TargetParams(*params_prefilled(p, fixed_params))),
+        # lambda p: error_fn(TargetParams(*params_prefilled(p, fixed_params))),
+        CostFunction(error_fn, fixed_params),
         np.array([*initial_guess]),
         **{
             key: val
