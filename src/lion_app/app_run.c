@@ -75,6 +75,7 @@ lion_status_t _init_initial_state(lion_app_t *app, double initial_power,
   app->state.internal_temperature =
       app->params->init.initial_internal_temperature;
   app->state.time = 0.0;
+  app->state.step = 0;
   logi_debug("Setting first inputs");
   app->state.power = initial_power;
   app->state.ambient_temperature = initial_amb_temp;
@@ -137,29 +138,10 @@ lion_status_t lion_app_simulate(lion_app_t *app, lion_vector_t *power,
   }
 
   logi_debug("Starting iterations");
-  for (uint64_t i = 0; i < max_iters; i++) {
-    // app->state contains state(k)
-    double partial_result[2];
-    LION_GSL_VCALL_I(gsl_odeiv2_driver_apply_fixed_step(
-                         app->driver, &app->state.time,
-                         app->conf->sim_step_seconds, 1, partial_result),
-                     "Failed at step %d (t = %f)", i, app->state.time);
-    // state(k + 1) is stored in partial_result
-    app->state.soc_nominal = partial_result[0];
-    app->state.internal_temperature = partial_result[1];
-    app->state.power = lion_vector_get_d(app, power, i);
-    app->state.ambient_temperature = lion_vector_get_d(app, amb_temp, i);
-    LION_CALL_I(lion_slv_update(app), "Failed updating state");
-    // partial results are spread over the state, meaning at this
-    // point app->state contains state(k + 1) leaving it ready for the
-    // next time iteration
-
-    if (app->conf->update_hook != NULL) {
-      // TODO: Evaluate implementation of concurrency
-      // TODO: Add some mechanism to avoid race conditions
-      LION_CALLDF_I(app->conf->update_hook(app, i),
-                    "Failed calling update hook");
-    }
+  for (uint64_t i = 1; i < max_iters; i++) {
+    LION_VCALL_I(lion_app_step(app, lion_vector_get_d(app, power, i),
+                               lion_vector_get_d(app, amb_temp, i)),
+                 "Failed at iteration %i", i);
   }
 
   logi_debug("Finished iterations");

@@ -182,6 +182,32 @@ static void lion_app_log_startup_info(lion_app_t *app) {
   logi_info("+-------------------------------------------------------+");
 }
 
+lion_status_t lion_app_step(lion_app_t *app, double power,
+                            double ambient_temperature) {
+  // app->state contains state(k)
+  double partial_result[2];
+  LION_GSL_VCALL_I(gsl_odeiv2_driver_apply_fixed_step(
+                       app->driver, &app->state.time,
+                       app->conf->sim_step_seconds, 1, partial_result),
+                   "Failed at step %d (t = %f)", i, app->state.time);
+  // state(k + 1) is stored in partial_result
+  app->state.soc_nominal = partial_result[0];
+  app->state.internal_temperature = partial_result[1];
+  app->state.power = power;
+  app->state.ambient_temperature = ambient_temperature;
+  LION_CALL_I(lion_slv_update(app), "Failed updating state");
+  // partial results are spread over the state, meaning at this
+  // point app->state contains state(k + 1) leaving it ready for the
+  // next time iteration
+
+  if (app->conf->update_hook != NULL) {
+    // TODO: Evaluate implementation of concurrency
+    // TODO: Add some mechanism to avoid race conditions
+    LION_CALLDF_I(app->conf->update_hook(app), "Failed calling update hook");
+  }
+  return LION_STATUS_SUCCESS;
+}
+
 lion_status_t lion_app_run(lion_app_t *app, lion_vector_t *power,
                            lion_vector_t *ambient_temperature) {
   logi_info("Application start");
