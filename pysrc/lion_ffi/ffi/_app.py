@@ -27,6 +27,10 @@ typedef enum lion_app_minimizer {
   LION_MINIMIZER_QUADGOLDEN = 2,
 } lion_app_minimizer_t;
 
+extern "Python" lion_status_t init_pythoncb(void *);
+extern "Python" lion_status_t update_pythoncb(void *);
+extern "Python" lion_status_t finished_pythoncb(void *);
+
 typedef struct lion_app_config {
   const char *app_name;
   lion_status_t (*init_hook)(lion_app_t *app);
@@ -40,7 +44,7 @@ typedef struct lion_app_config {
   double sim_step_seconds;
   double sim_epsabs;
   double sim_epsrel;
-  double sim_min_max_iter;
+  uint64_t sim_min_max_iter;
 
   const char *log_dir;
   int log_stdlvl;
