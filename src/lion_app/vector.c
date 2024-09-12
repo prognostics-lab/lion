@@ -75,6 +75,8 @@ lion_status_t lion_vector_from_array(lion_app_t *app, const void *data,
 lion_status_t lion_vector_from_csv(lion_app_t *app, const char *filename,
                                    const size_t data_size, lion_vector_t *out) {
   // TODO: Implement creation of vectors from csv files
+  logi_warn("This function assumes only one column with a header");
+
   logi_error("Creation of vectors from csv files not yet implemented");
   return LION_STATUS_FAILURE;
 }
