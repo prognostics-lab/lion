@@ -1,6 +1,9 @@
 #include <lion/lion.h>
+#include <lion_utils/macros.h>
 #include <lion_utils/vendor/log.h>
+#include <lionu/files.h>
 #include <lionu/mem.h>
+#include <stdio.h>
 #include <string.h>
 
 lion_status_t lion_vector_new(lion_app_t *app, const size_t data_size,
@@ -74,11 +77,60 @@ lion_status_t lion_vector_from_array(lion_app_t *app, const void *data,
 
 lion_status_t lion_vector_from_csv(lion_app_t *app, const char *filename,
                                    const size_t data_size, lion_vector_t *out) {
-  // TODO: Implement creation of vectors from csv files
   logi_warn("This function assumes only one column with a header");
 
-  logi_error("Creation of vectors from csv files not yet implemented");
-  return LION_STATUS_FAILURE;
+  logi_debug("Opening file '%s'", filename);
+  FILE *f = fopen(filename, "r");
+  if (f == NULL) {
+    logi_error("Could not open file '%s'", filename);
+    return LION_STATUS_FAILURE;
+  }
+
+  logi_debug("Allocating line buffer");
+  char *line_buffer = lion_malloc(app, sizeof(char) * 128);
+  if (line_buffer == NULL) {
+    logi_error("Could not allocate line buffer");
+    fclose(f);
+    return LION_STATUS_FAILURE;
+  }
+  logi_debug("Reading number of lines");
+  int lines = lion_count_lines(f) - 1;
+  logi_debug("Input file has %i lines", lines);
+  if (fseek(f, 0, SEEK_SET) != 0) {
+    logi_error("Error seeking beginning, found errno %i", errno);
+    fclose(f);
+    return LION_STATUS_FAILURE;
+  }
+  logi_debug("Initializing output vector");
+  lion_vector_t values;
+  LION_CALL_I(lion_vector_with_capacity(app, lines, sizeof(double), &values),
+              "Could not initialize vector");
+
+  logi_debug("Creating temporary retainers");
+  float val;
+  char *buffer;
+  logi_debug("Discarding first line");
+  LION_VCALL_I(lion_readline(app, f, line_buffer, &buffer),
+               "Failed reading first line");
+
+  logi_debug("Reading values");
+  for (int i = 0; i < lines; i++) {
+    LION_VCALL_I(lion_readline(app, f, line_buffer, &buffer),
+                 "Failed reading line %i", i);
+    int ret = sscanf(line_buffer, "%f", &val);
+    if (ret != 1) {
+      logi_error("Found failure at %i-th value, ret = %i", i, ret);
+      fclose(f);
+      return LION_STATUS_FAILURE;
+    }
+    LION_VCALL_I(lion_vector_push(app, &values, &val),
+                 "Failed pushing %i-th value", i);
+  }
+
+  logi_debug("Finished reading values");
+  *out = values;
+  fclose(f);
+  return LION_STATUS_SUCCESS;
 }
 
 lion_status_t lion_vector_cleanup(lion_app_t *app,
