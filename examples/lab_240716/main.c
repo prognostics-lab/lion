@@ -11,6 +11,7 @@ lion_vector_t sf_temp;
 lion_vector_t in_temp;
 
 lion_status_t update_hook(lion_app_t *app) {
+  log_trace("Iteration %d", app->state.step);
   LION_CALL(lion_vector_push(app, &sf_temp, &app->state.surface_temperature),
             "Failed pushing");
   LION_CALL(lion_vector_push(app, &in_temp, &app->state.internal_temperature),
