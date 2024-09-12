@@ -132,7 +132,8 @@ lion_status_t lion_app_init(lion_app_t *app, double initial_power,
 
 lion_status_t lion_app_simulate(lion_app_t *app, lion_vector_t *power,
                                 lion_vector_t *amb_temp) {
-  uint64_t max_iters = lion_app_max_iters(app);
+  // uint64_t max_iters = lion_app_max_iters(app);
+  uint64_t max_iters = power->len;
   logi_debug("Considering %d max iterations", max_iters);
 
   if (app->conf->init_hook != NULL) {

@@ -88,5 +88,6 @@ double lion_current_optimize(gsl_min_fminimizer *s, double power, double soc,
   if (status != GSL_SUCCESS) {
     logi_error("Current did not converge");
   }
+  logi_trace("Current optimization result %f", initial_guess);
   return initial_guess;
 }
