@@ -173,14 +173,29 @@ static void lion_app_log_startup_info(lion_app_t *app) {
             lion_app_stepper_name(app->conf->sim_stepper));
   logi_info(" * Minimizer                      : %s",
             lion_app_minimizer_name(app->conf->sim_minimizer));
-  logi_info(" * Total simulation time          : %d s",
+  logi_info(" * Total simulation time          : %f s",
             app->conf->sim_time_seconds);
-  logi_info(" * Simulation step time           : %d s",
+  logi_info(" * Simulation step time           : %f s",
             app->conf->sim_step_seconds);
   logi_info(" * Absolute epsilon               : %f", app->conf->sim_epsabs);
   logi_info(" * Relative epsilon               : %f", app->conf->sim_epsrel);
   logi_info(" * Minimization max iterations    : %d iterations",
             app->conf->sim_min_max_iter);
+  if (app->conf->init_hook != NULL) {
+    logi_info(" * Init hook                      : YES");
+  } else {
+    logi_info(" * Init hook                      : NO");
+  }
+  if (app->conf->update_hook != NULL) {
+    logi_info(" * Update hook                    : YES");
+  } else {
+    logi_info(" * Update hook                    : NO");
+  }
+  if (app->conf->finished_hook != NULL) {
+    logi_info(" * Finished hook                  : YES");
+  } else {
+    logi_info(" * Finished hook                  : NO");
+  }
   logi_info("+-------------------------------------------------------+");
   logi_info("|################# END OF INFORMATION ##################|");
   logi_info("+-------------------------------------------------------+");
