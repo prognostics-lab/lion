@@ -6,6 +6,7 @@ from typing import List, Self
 
 import lion_ffi as _
 import numpy as np
+import pandas as pd
 from _lion import ffi
 from _lion import lib as _lionl
 from lion import dtypes
@@ -141,6 +142,15 @@ class Vector:
                         type(vals[0]).__name__}' not implemented"
                 )
         return cls.from_list(vals, dtype)
+
+    @classmethod
+    def from_csv(
+        cls, filename: str, field: str, dtype: dtypes.DataType | None = None, **kwargs
+    ):
+        # TODO: Implemented reading csv directly instead of using pandas
+        df = pd.read_csv(filename, **kwargs)
+        target = df[field].to_numpy()
+        return cls.from_numpy(target, dtype)
 
     @singledispatchmethod
     @classmethod
