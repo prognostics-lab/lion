@@ -19,9 +19,13 @@ CSOURCES_PATH = Path.joinpath(ROOT_PATH, "src")
 
 CLIB_SO_NAMES = [
     "liblion_app.so",
+    "liblion_math.so",
+    "liblion_utils.so",
 ]
 CLIB_DLL_NAMES = [
     "lion_app.dll",
+    "lion_math.dll",
+    "lion_utils.dll",
 ]
 
 INCLUDE_DIRS = [

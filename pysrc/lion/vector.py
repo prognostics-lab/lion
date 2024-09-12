@@ -17,9 +17,13 @@ from lion_utils.logger import LOGGER
 class Vector:
     """Buffer of data allocated in a given device"""
 
-    __slots__ = ("_cdata", "_dtype", "_dsize", "_index")
+    __slots__ = ("_cdata", "_app", "_dtype", "_dsize", "_index")
 
-    def __init__(self, dtype: dtypes.DataType):
+    def __init__(self, dtype: dtypes.DataType, app=None):
+        if app is None:
+            self._app = ffi.NULL
+        else:
+            self._app = app._cdata
         self._cdata = ffi.new("lion_vector_t *")
         self._dtype = dtype
         self._dsize = self._dtype.size
@@ -29,7 +33,7 @@ class Vector:
         """Create an empty vector"""
         buf = cls(dtype)
         ffi_call(
-            _lionl.lion_vector_new(buf._dsize, buf._cdata),
+            _lionl.lion_vector_new(buf._app, buf._dsize, buf._cdata),
             "Failed creating empty vector",
         )
         return buf
@@ -39,7 +43,7 @@ class Vector:
         """Create a zero-initialized vector"""
         buf = cls(dtype)
         ffi_call(
-            _lionl.lion_vector_zero(size, buf._dsize, buf._cdata),
+            _lionl.lion_vector_zero(buf._app, size, buf._dsize, buf._cdata),
             "Failed creating zero initialized vector",
         )
         return buf
@@ -53,7 +57,9 @@ class Vector:
         """Create an empty buffer with a given capacity"""
         buf = cls(dtype)
         ffi_call(
-            _lionl.lion_vector_with_capacity(capacity, buf._dsize, buf._cdata),
+            _lionl.lion_vector_with_capacity(
+                buf._app, capacity, buf._dsize, buf._cdata
+            ),
             f"Failed creating vector with capacity {capacity}",
         )
         return buf
@@ -83,7 +89,7 @@ class Vector:
         size = len(target)
         val = ffi.new(f"{dtype.long_name}[]", target)
         ffi_call(
-            _lionl.lion_vector_from_array(val, size, dtype.size, buf._cdata),
+            _lionl.lion_vector_from_array(buf._app, val, size, dtype.size, buf._cdata),
             "Failed creating vector from list",
         )
         return buf
@@ -108,7 +114,7 @@ class Vector:
         size = len(target.flatten())
         val = ffi.new(f"{dtype.long_name}[]", list(target.flatten()))
         ffi_call(
-            _lionl.lion_vector_from_array(val, size, dtype.size, buf._cdata),
+            _lionl.lion_vector_from_array(buf._app, val, size, dtype.size, buf._cdata),
             "Failed creating vector from numpy array",
         )
         return buf
@@ -217,7 +223,8 @@ class Vector:
     def __del__(self):
         try:
             ffi_call(
-                _lionl.lion_vector_cleanup(self._cdata), "Failed cleanup of vector"
+                _lionl.lion_vector_cleanup(self._app, self._cdata),
+                "Failed cleanup of vector",
             )
         except LionException as e:
             LOGGER.error(f"Cleaning up vector failed with exception '{e}'")
@@ -280,7 +287,7 @@ class Vector:
         key = self.validate_index(key)
         val = ffi.new(f"{self._dtype.long_name} *")
         ffi_call(
-            _lionl.lion_vector_get(self._cdata, key, val),
+            _lionl.lion_vector_get(self._app, self._cdata, key, val),
             f"Failed getting element at index {key}",
         )
         return val[0]
@@ -291,7 +298,7 @@ class Vector:
         val = ffi.new(f"{self._dtype.long_name} *")
         val[0] = value
         ffi_call(
-            _lionl.lion_vector_set(self._cdata, key, val),
+            _lionl.lion_vector_set(self._app, self._cdata, key, val),
             f"Failed setting element at key {key}",
         )
 
@@ -306,21 +313,25 @@ class Vector:
     def resize(self, new_capacity: int) -> None:
         """Resize this buffer"""
         ffi_call(
-            _lionl.lion_vector_resize(self._cdata, new_capacity), "Failed resizing"
+            _lionl.lion_vector_resize(self._app, self._cdata, new_capacity),
+            "Failed resizing",
         )
 
     def push(self, element) -> None:
         """Push an element into the vector"""
         val = ffi.new(f"{self._dtype.long_name} *")
         val[0] = element
-        ffi_call(_lionl.lion_vector_push(self._cdata, val), "Failed pushing element")
+        ffi_call(
+            _lionl.lion_vector_push(self._app, self._cdata, val),
+            "Failed pushing element",
+        )
 
     def extend_from_list(self, target: List):
         """Extend this vector by a given list"""
         size = len(target)
         val = ffi.new(f"{self._dtype.long_name}[]", target)
         ffi_call(
-            _lionl.lion_vector_extend_array(self._cdata, val, size),
+            _lionl.lion_vector_extend_array(self._app, self._cdata, val, size),
             "Failed extending from list",
         )
 
@@ -330,7 +341,7 @@ class Vector:
         size = len(target)
         val = ffi.new(f"{self._dtype.long_name}[]", target)
         ffi_call(
-            _lionl.lion_vector_extend_array(self._cdata, val, size),
+            _lionl.lion_vector_extend_array(self._app, self._cdata, val, size),
             "Failed extending from numpy array",
         )
 
