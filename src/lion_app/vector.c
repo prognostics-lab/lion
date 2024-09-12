@@ -130,6 +130,7 @@ lion_status_t lion_vector_from_csv(lion_app_t *app, const char *filename,
   logi_debug("Finished reading values");
   *out = values;
   fclose(f);
+  lion_free(app, line_buffer);
   return LION_STATUS_SUCCESS;
 }
 
