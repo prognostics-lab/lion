@@ -106,7 +106,7 @@ ffi_builder.cdef(FFI_CDEF)
 ffi_builder.set_source(
     "_lion",
     LIB_SOURCE,
-    libraries=["lion_app"],
+    libraries=["lion_app", "lion_math", "lion_utils"],
     library_dirs=[
         str(CBIN_DEBUG_PATH),
         str(CLIB_DEBUG_PATH),
@@ -114,5 +114,5 @@ ffi_builder.set_source(
         str(CLIB_RELEASE_PATH),
     ],
     include_dirs=INCLUDE_DIRS,
-    # extra_link_args=["-Wl,-rpath,."],
+    extra_link_args=["-Wl,-rpath=lib/:lib/debug/"],
 )
