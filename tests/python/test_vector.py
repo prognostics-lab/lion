@@ -20,7 +20,7 @@ def test_zero_i32():
     a.push(8)
     assert a.to_list() == new_list
     assert a.len == 13
-    assert a.capacity == 13
+    assert a.capacity == 20
 
     new_list = [*new_list, 6, 1, 8, 2]
     a.extend_from_list([6, 1, 8, 2])
@@ -53,7 +53,7 @@ def test_zero_f64():
     a.push(8)
     assert a.to_list() == new_list
     assert a.len == 13
-    assert a.capacity == 13
+    assert a.capacity == 20
 
     new_list = [*new_list, 6.0, 1.0, 8.0, 2.0]
     a.extend_from_list([6, 1, 8, 2])
