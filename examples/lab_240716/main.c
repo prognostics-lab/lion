@@ -2,8 +2,9 @@
 #include <lionu/log.h>
 #include <lionu/macros.h>
 
-#define POWER_FILENAME "data/240716_temp_profile_C4B1/TestData.csv"
-#define AMBTEMP_FILENAME "data/240716_temp_profile_C4B1/chamber.csv"
+#define POWER_FILENAME "data/240716_temp_profile_C4B1/processed/data_power.csv"
+#define AMBTEMP_FILENAME                                                       \
+  "data/240716_temp_profile_C4B1/processed/data_amb_pv_temp.csv"
 
 int main(void) {
   log_info("Setting up configuration");
