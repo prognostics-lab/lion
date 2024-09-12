@@ -142,6 +142,10 @@ lion_status_t lion_app_new(lion_app_config_t *conf, lion_params_t *params,
     }
   }
 
+#ifndef NDEBUG
+  LION_CALL_I(lion_app_init_debug(&app),
+              "Failed initializing debug information");
+#endif
   *out = app;
   return LION_STATUS_SUCCESS;
 }
@@ -213,8 +217,9 @@ lion_status_t lion_app_run(lion_app_t *app, lion_vector_t *power,
   logi_info("Application start");
   lion_app_log_startup_info(app);
 #ifndef NDEBUG
-  LION_CALL_I(lion_app_init_debug(app),
-              "Failed initializing debug information");
+  if (app->_idebug_heap_head == NULL)
+    LION_CALL_I(lion_app_init_debug(app),
+                "Failed initializing debug information");
 #endif
 
   if (power != NULL && ambient_temperature != NULL) {
