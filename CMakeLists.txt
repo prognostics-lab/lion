@@ -61,6 +61,7 @@ else()
 endif()
 
 add_compile_definitions(LOG_USE_COLOR)
+add_compile_definitions(LION_PROJECT_ROOT_DIR="${CMAKE_SOURCE_DIR}/")
 
 if(${CMAKE_BUILD_TYPE} STREQUAL "Release")
   add_compile_definitions(LION_BUILD_TYPE_RELEASE)
