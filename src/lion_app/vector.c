@@ -77,10 +77,12 @@ lion_status_t lion_vector_from_array(lion_app_t *app, const void *data,
 }
 
 lion_status_t lion_vector_from_csv(lion_app_t *app, const char *filename,
-                                   const size_t data_size, lion_vector_t *out) {
+                                   const size_t data_size, const char *format,
+                                   lion_vector_t *out) {
   logi_warn("This function assumes only one column with a header");
 
   logi_debug("Opening file '%s'", filename);
+  logi_debug("Using format '%s'", format);
   FILE *f = fopen(filename, "r");
   if (f == NULL) {
     logi_error("Could not open file '%s'", filename);
@@ -108,7 +110,7 @@ lion_status_t lion_vector_from_csv(lion_app_t *app, const char *filename,
               "Could not initialize vector");
 
   logi_debug("Creating temporary retainers");
-  float val;
+  double val;
   char *buffer;
   logi_debug("Discarding first line");
   LION_VCALL_I(lion_readline(app, f, line_buffer, &buffer),
@@ -118,7 +120,7 @@ lion_status_t lion_vector_from_csv(lion_app_t *app, const char *filename,
   for (int i = 0; i < lines; i++) {
     LION_VCALL_I(lion_readline(app, f, line_buffer, &buffer),
                  "Failed reading line %i", i);
-    int ret = sscanf(line_buffer, "%f", &val);
+    int ret = sscanf(line_buffer, format, &val);
     if (ret != 1) {
       logi_error("Found failure at %i-th value, ret = %i", i, ret);
       fclose(f);
