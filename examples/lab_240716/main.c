@@ -25,8 +25,8 @@ int main(void) {
   conf.log_dir = "logs";
   conf.log_stdlvl = LOG_DEBUG;
   // Simulation parameters
-  conf.sim_time_seconds = 100.0;
-  conf.sim_step_seconds = 0.1;
+  conf.sim_time_seconds = 7500.0;
+  conf.sim_step_seconds = 1.0;
   conf.sim_epsabs = 1e-3;
   conf.sim_epsrel = 1e-3;
   conf.sim_min_max_iter = 100;
@@ -48,20 +48,20 @@ int main(void) {
   log_info("Configuring system inputs");
   lion_vector_t power;
   lion_vector_t amb_temp;
-  LION_VCALL(lion_vector_from_csv(&app, POWER_FILENAME, sizeof(double), &power),
-             "Failed creating power profile from csv file '%s'",
-             POWER_FILENAME);
   LION_VCALL(
-      lion_vector_from_csv(&app, AMBTEMP_FILENAME, sizeof(double), &amb_temp),
-      "Failed creating ambient temperature profile from csv file '%s'",
-      AMBTEMP_FILENAME);
+      lion_vector_from_csv(&app, POWER_FILENAME, sizeof(double), "%lf", &power),
+      "Failed creating power profile from csv file '%s'", POWER_FILENAME);
+  LION_VCALL(lion_vector_from_csv(&app, AMBTEMP_FILENAME, sizeof(double), "%lf",
+                                  &amb_temp),
+             "Failed creating ambient temperature profile from csv file '%s'",
+             AMBTEMP_FILENAME);
 
   log_info("Configuring system outputs");
   LION_CALL(
-      lion_vector_with_capacity(&app, power.capacity, sizeof(double), &sf_temp),
+      lion_vector_with_capacity(&app, power.len, sizeof(double), &sf_temp),
       "Failed creating surface temperature vector");
   LION_CALL(
-      lion_vector_with_capacity(&app, power.capacity, sizeof(double), &in_temp),
+      lion_vector_with_capacity(&app, power.len, sizeof(double), &in_temp),
       "Failed creating internal temperature vector");
 
   log_info("Running application");
@@ -69,9 +69,10 @@ int main(void) {
 
   log_info("Printing stuff");
   for (int i = 0; i < sf_temp.len; i++) {
+    double p = lion_vector_get_d(&app, &power, i);
     double sf = lion_vector_get_d(&app, &sf_temp, i);
     double in = lion_vector_get_d(&app, &in_temp, i);
-    printf("%d -> %f/%f\n", i, sf, in);
+    printf("%d, %f -> %f/%f\n", i, p, sf, in);
   }
 
   log_info("Cleaning up");
@@ -80,4 +81,6 @@ int main(void) {
             "Failed cleaning ambient temperature vector");
   LION_CALL(lion_vector_cleanup(&app, &sf_temp),
             "Failed cleaning surface temperature vector");
+  LION_CALL(lion_vector_cleanup(&app, &in_temp),
+            "Failed cleaning internal temperature vector");
 }
