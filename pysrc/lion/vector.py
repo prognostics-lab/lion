@@ -16,7 +16,7 @@ from lion_utils.logger import LOGGER
 
 
 class Vector:
-    """Buffer of data allocated in a given device"""
+    """Vector of data allocated in a given device"""
 
     __slots__ = ("_cdata", "_app", "_dtype", "_dsize", "_index")
 
@@ -55,7 +55,7 @@ class Vector:
         capacity: int,
         dtype: dtypes.DataType,
     ):
-        """Create an empty buffer with a given capacity"""
+        """Create an empty vector with a given capacity"""
         buf = cls(dtype)
         ffi_call(
             _lionl.lion_vector_with_capacity(
@@ -101,7 +101,7 @@ class Vector:
         target: np.ndarray,
         dtype: dtypes.DataType | None = None,
     ):
-        """Create a buffer from a numpy array, using size as capacity"""
+        """Create a vector from a numpy array, using size as capacity"""
         # TODO: Determine a more efficient way of creating from numpy array
         LOGGER.debug("Creating from numpy array")
         if dtype is None:
@@ -217,17 +217,17 @@ class Vector:
 
     @property
     def len(self) -> int:
-        """Length of the buffer"""
+        """Length of the vector"""
         return self._cdata.len
 
     @property
     def capacity(self) -> int:
-        """Allocated capacity of the buffer"""
+        """Allocated capacity of the vector"""
         return self._cdata.capacity
 
     @property
     def data_size(self) -> int:
-        """Size in bytes of each element in the buffer"""
+        """Size in bytes of each element in the vector"""
         return self._cdata.data_size
 
     def __del__(self):
@@ -313,15 +313,15 @@ class Vector:
         )
 
     def to_list(self) -> List:
-        """Turn buffer to a list"""
+        """Turn vector to a list"""
         return list(self)
 
     def to_numpy(self) -> np.ndarray:
-        """Turn buffer to a numpy array"""
+        """Turn vector to a numpy array"""
         return np.array(self)
 
     def resize(self, new_capacity: int) -> None:
-        """Resize this buffer"""
+        """Resize this vector"""
         ffi_call(
             _lionl.lion_vector_resize(self._app, self._cdata, new_capacity),
             "Failed resizing",
