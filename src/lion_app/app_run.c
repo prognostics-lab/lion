@@ -52,10 +52,13 @@ lion_status_t _init_simulation_minimizer(lion_app_t *app) {
   switch (app->conf->sim_minimizer) {
   case LION_MINIMIZER_GOLDENSECTION:
     app->minimizer = gsl_min_fminimizer_goldensection;
+    break;
   case LION_MINIMIZER_BRENT:
     app->minimizer = gsl_min_fminimizer_brent;
+    break;
   case LION_MINIMIZER_QUADGOLDEN:
     app->minimizer = gsl_min_fminimizer_quad_golden;
+    break;
   default:
     logi_error("Desired minimizer not implemented");
     return LION_STATUS_FAILURE;
