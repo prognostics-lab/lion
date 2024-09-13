@@ -38,7 +38,7 @@ int main(void) {
   log_info("Setting up simulation parameters");
   lion_params_t params = lion_params_default();
   params.init.initial_soc = 0.1;
-  params.init.initial_internal_temperature = 293.0;
+  params.init.initial_internal_temperature = 296.0;
   params.init.initial_soh = 1.0;
   params.init.initial_capacity = 14400.0;
   params.init.initial_current_guess = 10.0;
