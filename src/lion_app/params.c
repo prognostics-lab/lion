@@ -26,9 +26,9 @@ const lion_params_t LION_APP_PARAMS_DEFAULT = {
         },
     .t =
         {
-            .cp = 2000,
-            .rin = 0.3,
-            .rout = 0.1,
+            .cp = 100.0,
+            .rin = 3.0,
+            .rout = 9.0,
         },
     .rint =
         {
