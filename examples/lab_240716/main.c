@@ -40,7 +40,7 @@ int main(void) {
   params.init.initial_internal_temperature = 293.0;
   params.init.initial_soh = 1.0;
   params.init.initial_capacity = 14400.0;
-  params.init.initial_current_guess = 0.0;
+  params.init.initial_current_guess = 10.0;
 
   log_info("Creating application");
   lion_app_t app;
