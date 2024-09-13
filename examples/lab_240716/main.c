@@ -26,11 +26,12 @@ int main(void) {
   conf.log_dir = "logs";
   conf.log_stdlvl = LOG_DEBUG;
   // Simulation parameters
+  conf.sim_stepper = LION_STEPPER_RK4;
   conf.sim_time_seconds = 7500.0;
   conf.sim_step_seconds = 1.0;
-  conf.sim_epsabs = 1e-3;
-  conf.sim_epsrel = 1e-3;
-  conf.sim_min_max_iter = 100;
+  conf.sim_epsabs = 1e-1;
+  conf.sim_epsrel = 1e-1;
+  conf.sim_min_max_iter = 10000;
   // Hooks
   conf.update_hook = &update_hook;
 
