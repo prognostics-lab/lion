@@ -210,8 +210,8 @@ static void lion_app_log_startup_info(lion_app_t *app) {
   logi_info(" |-> Current guess                : %f A",
             app->params->init.initial_current_guess);
   logi_info(" * Entropic heat coefficient parameters");
-  logi_info(" |-> a                            : %f", app->params->ehc.a);
-  logi_info(" |-> b                            : %f", app->params->ehc.b);
+  logi_info(" |-> a                            : %f V/K", app->params->ehc.a);
+  logi_info(" |-> b                            : %f V/K", app->params->ehc.b);
   logi_info(" |-> kappa                        : %f", app->params->ehc.kappa);
   logi_info(" |-> mu                           : %f", app->params->ehc.mu);
   logi_info(" |-> sigma                        : %f", app->params->ehc.sigma);
@@ -220,11 +220,11 @@ static void lion_app_log_startup_info(lion_app_t *app) {
   logi_info(" |-> alpha                        : %f", app->params->ocv.alpha);
   logi_info(" |-> beta                         : %f", app->params->ocv.beta);
   logi_info(" |-> gamma                        : %f", app->params->ocv.gamma);
-  logi_info(" |-> v0                           : %f", app->params->ocv.v0);
-  logi_info(" |-> vl                           : %f", app->params->ocv.vl);
+  logi_info(" |-> v0                           : %f V", app->params->ocv.v0);
+  logi_info(" |-> vl                           : %f V", app->params->ocv.vl);
   logi_info(" * Vogel-Fulcher-Tammann");
-  logi_info(" |-> k1                           : %f", app->params->vft.k1);
-  logi_info(" |-> k2                           : %f", app->params->vft.k2);
+  logi_info(" |-> k1                           : %f K", app->params->vft.k1);
+  logi_info(" |-> k2                           : %f K", app->params->vft.k2);
   logi_info(" |-> Reference temperature        : %f K", app->params->vft.tref);
   logi_info(" * Temperature model");
   logi_info(" |-> Heat capacity                : %f J K-1", app->params->t.cp);

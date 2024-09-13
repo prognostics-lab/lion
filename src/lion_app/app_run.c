@@ -108,6 +108,26 @@ lion_status_t _init_ode_driver(lion_app_t *app) {
   return LION_STATUS_SUCCESS;
 }
 
+lion_status_t _show_init_information(lion_app_t *app) {
+  logi_debug("Initial state");
+  logi_debug("|-> P                : %f W", app->state.power);
+  logi_debug("|-> T_amb            : %f °C", app->state.ambient_temperature);
+  logi_debug("|-> V_terminal       : %f V", app->state.voltage);
+  logi_debug("|-> I                : %f A", app->state.current);
+  logi_debug("|-> V_oc             : %f V", app->state.open_circuit_voltage);
+  logi_debug("|-> R_int            : %f Ohm", app->state.internal_resistance);
+  logi_debug("|-> EHC              : %f V/K", app->state.ehc);
+  logi_debug("|-> q_gen            : %f W", app->state.generated_heat);
+  logi_debug("|-> T_in             : %f °C", app->state.internal_temperature);
+  logi_debug("|-> T_s              : %f °C", app->state.surface_temperature);
+  logi_debug("|-> kappa            : %f", app->state.kappa);
+  logi_debug("|-> SoC_0            : %f", app->state.soc_nominal);
+  logi_debug("|-> SoC_use          : %f", app->state.soc_use);
+  logi_debug("|-> Q_0              : %f C", app->state.capacity_nominal);
+  logi_debug("|-> Q_use            : %f C", app->state.capacity_use);
+  return LION_STATUS_SUCCESS;
+}
+
 lion_status_t lion_app_init(lion_app_t *app, double initial_power,
                             double initial_amb_temp) {
   logi_debug("Configuring simulation stepper");
@@ -127,6 +147,9 @@ lion_status_t lion_app_init(lion_app_t *app, double initial_power,
 
   logi_info("Configuring simulation driver");
   LION_CALL_I(_init_ode_driver(app), "Failed initializing ode driver");
+
+  LION_CALL_I(_show_init_information(app),
+              "Failed showing initialization information");
   return LION_STATUS_SUCCESS;
 }
 
@@ -143,6 +166,7 @@ lion_status_t lion_app_simulate(lion_app_t *app, lion_vector_t *power,
 
   logi_debug("Starting iterations");
   for (uint64_t i = 1; i < max_iters; i++) {
+    logi_debug("Step %d", i);
     if (i == power->len || i == amb_temp->len) {
       logi_error("Ran out of inputs before reaching end of simulation");
       break;
