@@ -6,7 +6,7 @@
 #include "ehc.h"
 
 double lion_ehc(double soc, lion_params_t *params) {
-  double exp_num = soc - params->ehc.mu;
+  double exp_num = gsl_pow_2(soc - params->ehc.mu);
   double exp_den = 2.0 * gsl_pow_2(params->ehc.sigma);
   double exp_term = -exp_num / exp_den;
   double first_term =
