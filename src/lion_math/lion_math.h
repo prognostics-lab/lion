@@ -2,6 +2,7 @@
 
 #include <math.h>
 
+// TODO: Double check implementation of each model
 #include "capacity.h"
 #include "current.h"
 #include "dynamics/dynamics.h"
