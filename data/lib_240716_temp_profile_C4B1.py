@@ -167,8 +167,8 @@ _sur_lerp = interpolate.interp1d(
 _air_lerp = interpolate.interp1d(
     temp_time_raw, temp_air_filtered, fill_value="extrapolate"
 )
-temp_sur = _sur_lerp(temp_time)
-temp_air = _air_lerp(temp_time)
+temp_sur = _sur_lerp(temp_time) + 273  # K
+temp_air = _air_lerp(temp_time) + 273  # K
 
 # Chamber - Interpolation
 _pv_lerp = interpolate.interp1d(
@@ -177,8 +177,8 @@ _pv_lerp = interpolate.interp1d(
 _sp_lerp = interpolate.interp1d(
     chamber_time_raw, chamber_sp_raw, fill_value="extrapolate"
 )
-chamber_pv = _pv_lerp(temp_time)
-chamber_sp = _sp_lerp(temp_time)
+chamber_pv = _pv_lerp(temp_time) + 273  # K
+chamber_sp = _sp_lerp(temp_time) + 273  # K
 chamber_time = temp_time
 
 # Capacity - Interpolation
