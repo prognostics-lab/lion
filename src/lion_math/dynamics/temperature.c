@@ -7,13 +7,12 @@ double lion_internal_temperature_d(double internal_temperature, double heat,
                                    double ambient_temperature,
                                    lion_params_t *params) {
   double rt = params->t.rin + params->t.rout;
-  double time_constant = 1 / (params->t.cp * rt);
+  double delta = ambient_temperature - internal_temperature;
+  double term1 = delta / rt;
 
-  double term1 = -time_constant * internal_temperature;
+  double term2 = heat;
 
-  double heat_term = heat / params->t.cp;
-  double amb_term = time_constant * ambient_temperature;
-  double diff = term1 + heat_term + amb_term;
+  double diff = (term1 + term2) / params->t.cp;
   return diff;
 }
 
