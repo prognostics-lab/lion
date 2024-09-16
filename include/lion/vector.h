@@ -34,6 +34,11 @@ lion_status_t lion_vector_from_csv(lion_app_t *app, const char *filename,
                                    const size_t data_size, const char *format,
                                    lion_vector_t *out);
 
+/* Vector saving */
+
+lion_status_t lion_vector_to_csv(lion_app_t *app, lion_vector_t *vec,
+                                 const char *header, const char *filename);
+
 /* Vector finalization */
 
 lion_status_t lion_vector_cleanup(lion_app_t *app,
