@@ -31,7 +31,7 @@ int lion_slv_system(double t, const double state[], double out[],
   out[0] =
       lion_soc_d(sys_inputs->current, sys_inputs->capacity_use, sys_params);
   out[1] =
-      lion_internal_temperature_d(state[1], sys_inputs->internal_temperature,
+      lion_internal_temperature_d(state[1], sys_inputs->generated_heat,
                                   sys_inputs->ambient_temperature, sys_params);
   logi_trace("ode call done, dsoc=%f, dtin=%f", out[0], out[1]);
   return GSL_SUCCESS;
