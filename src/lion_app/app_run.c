@@ -193,6 +193,8 @@ void _update_progressbar(FILE *buf, int i, int max, int width, int *c,
   *last_c = *c;
 }
 
+void _finish_progressbar(FILE *buf) { fprintf(stderr, "\033[EDone\n"); }
+
 lion_status_t lion_app_simulate(lion_app_t *app, lion_vector_t *power,
                                 lion_vector_t *amb_temp) {
 
@@ -223,6 +225,7 @@ lion_status_t lion_app_simulate(lion_app_t *app, lion_vector_t *power,
                                lion_vector_get_d(app, amb_temp, i)),
                  "Failed at iteration %i", i);
   }
+  _finish_progressbar(stderr);
 
   logi_debug("Finished iterations");
   if (app->conf->finished_hook != NULL) {

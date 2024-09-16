@@ -287,8 +287,6 @@ lion_status_t lion_app_run(lion_app_t *app, lion_vector_t *power,
     logi_error("Null arguments were passed, skipping application running");
   }
 
-  logi_debug("Cleaning up application");
-  LION_CALL_I(lion_app_cleanup(app), "Failed cleaning app");
   return LION_STATUS_SUCCESS;
 }
 

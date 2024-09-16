@@ -137,6 +137,13 @@ lion_status_t lion_vector_from_csv(lion_app_t *app, const char *filename,
   return LION_STATUS_SUCCESS;
 }
 
+lion_status_t lion_vector_to_csv(lion_app_t *app, lion_vector_t *vec,
+                                 const char *header, const char *filename) {
+  // TODO: Implement saving vector to csv file
+  logi_error("Saving to csv not currently implemented");
+  return LION_STATUS_FAILURE;
+}
+
 lion_status_t lion_vector_cleanup(lion_app_t *app,
                                   const lion_vector_t *const vec) {
   lion_free(app, vec->data);
