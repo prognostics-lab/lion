@@ -1,4 +1,5 @@
 #include <lion/lion.h>
+#include <lion_utils/vendor/log.h>
 
 #include "temperature.h"
 
@@ -12,7 +13,8 @@ double lion_internal_temperature_d(double internal_temperature, double heat,
 
   double heat_term = heat / params->t.cp;
   double amb_term = time_constant * ambient_temperature;
-  return term1 + heat_term + amb_term;
+  double diff = term1 + heat_term + amb_term;
+  return diff;
 }
 
 double lion_surface_temperature(double internal_temperature,

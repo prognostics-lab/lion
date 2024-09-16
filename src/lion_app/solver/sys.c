@@ -11,6 +11,7 @@
 #include <lion_math/dynamics/temperature.h>
 #include <lion_math/internal_resistance.h>
 #include <lion_math/open_circuit.h>
+#include <lion_utils/vendor/log.h>
 
 int lion_slv_system(double t, const double state[], double out[],
                     void *inputs) {
@@ -21,12 +22,7 @@ int lion_slv_system(double t, const double state[], double out[],
      inputs[0] -> *lion_app_state_t
      inputs[1] -> *lion_params_t
    */
-
-  // void **p = (void **)inputs;
-  // void *sys_inputs_p = p[0];
-  // void *sys_params_p = p[1];
-  // double *sys_inputs = (double *)sys_inputs_p;
-  // lion_params_t *sys_params = (lion_params_t *)sys_params_p;
+  logi_debug("ode call, soc=%f, tin=%f", state[0], state[1]);
   lion_slv_inputs_t *p = inputs;
   lion_app_state_t *sys_inputs = p->sys_inputs;
   lion_params_t *sys_params = p->sys_params;
@@ -37,6 +33,7 @@ int lion_slv_system(double t, const double state[], double out[],
   out[1] =
       lion_internal_temperature_d(state[1], sys_inputs->internal_temperature,
                                   sys_inputs->ambient_temperature, sys_params);
+  logi_debug("ode call done, dsoc=%f, dtin=%f", out[0], out[1]);
   return GSL_SUCCESS;
 }
 
@@ -84,6 +81,7 @@ double jac_1_1(lion_app_state_t *state, lion_params_t *params) {
 
 int lion_slv_jac(double t, const double state[], double *dfdy, double dfdt[],
                  void *inputs) {
+  logi_debug("jac call, soc=%f, tin=%f", state[0], state[1]);
   lion_slv_inputs_t *p = inputs;
   lion_app_state_t *sys_state = p->sys_inputs;
   lion_params_t *sys_params = p->sys_params;
@@ -91,11 +89,17 @@ int lion_slv_jac(double t, const double state[], double *dfdy, double dfdt[],
   (void)t;
   gsl_matrix_view dfdy_mat = gsl_matrix_view_array(dfdy, 2, 2);
   gsl_matrix *m = &dfdy_mat.matrix;
-  gsl_matrix_set(m, 0, 0, jac_0_0(sys_state, sys_params));
-  gsl_matrix_set(m, 0, 1, jac_0_1(sys_state, sys_params));
-  gsl_matrix_set(m, 1, 0, jac_1_0(sys_state, sys_params));
-  gsl_matrix_set(m, 1, 1, jac_1_1(sys_state, sys_params));
+  double jac00 = jac_0_0(sys_state, sys_params);
+  double jac01 = jac_0_1(sys_state, sys_params);
+  double jac10 = jac_1_0(sys_state, sys_params);
+  double jac11 = jac_1_1(sys_state, sys_params);
+  gsl_matrix_set(m, 0, 0, jac00);
+  gsl_matrix_set(m, 0, 1, jac01);
+  gsl_matrix_set(m, 1, 0, jac10);
+  gsl_matrix_set(m, 1, 1, jac11);
   dfdt[0] = 0.0;
   dfdt[1] = 0.0;
+  logi_debug("jac call done, jac={{%f, %f}, {%f, %f}}", jac00, jac01, jac10,
+             jac11);
   return GSL_SUCCESS;
 }
