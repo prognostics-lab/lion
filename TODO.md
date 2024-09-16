@@ -1,6 +1,7 @@
 # TODO
 This file contains a list of the TODO tasks found within the source code.
 - **(`./cffi_build.py`)** Implement building the C library from Python
+- **(`./include/lion/solver/sys.h`)** Add logic to change dimension depending on simtype
 - **(`./include/lion/status.h`)** Evaluate removal of runtime error detection on release builds
 - **(`./pysrc/lion/vector.py`)** Fix the bug that happens when the first element is less general than the rest
 - **(`./pysrc/lion/vector.py`)** Determine a more efficient way of creating from numpy array
@@ -12,6 +13,7 @@ This file contains a list of the TODO tasks found within the source code.
 - **(`./src/lion_app/app.c`)** Evaluate implementation of concurrency
 - **(`./src/lion_app/app.c`)** Add some mechanism to avoid race conditions
 - **(`./src/lion_math/lion_math.h`)** Double check implementation of each model
-- **(`./tests/unittest/quick/test_math_differential.c`)** Add tests for differential equations
+- **(`./tests/unittest/quick/test_math_differential.c`)** Add tests for all calculations
+- **(`./tests/unittest/quick/test_math_differential.c`)** Add calculation of current
 - **(`./tests/unittest/quick/test_math_algebraic.c`)** Add tests for algebraic equations
 - **(`./tools/gen_todo.sh`)** Ignore TODOs in dependencies
