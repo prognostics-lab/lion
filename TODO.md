@@ -9,6 +9,7 @@ This file contains a list of the TODO tasks found within the source code.
 - **(`./pysrc/lion/vector.py`)** Determine a more efficient way of converting to numpy array
 - **(`./pysrc/lion/app.py`)** Figure out how to handle parameters
 - **(`./src/lion_app/vector.c`)** This is leaking??? Fix it
+- **(`./src/lion_app/vector.c`)** Implement saving vector to csv file
 - **(`./src/lion_app/app.c`)** Add missing units of measurement
 - **(`./src/lion_app/app.c`)** Evaluate the logic of the state updates
 - **(`./src/lion_app/app.c`)** Evaluate implementation of concurrency
