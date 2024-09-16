@@ -8,6 +8,7 @@ FILENAME = "simdata/lab_240716/data.csv"
 
 def main():
     df = pd.read_csv(FILENAME)
+    print(df)
     time = df["time"]
 
     fig, ax = plt.subplots(3, 1)
@@ -19,12 +20,14 @@ def main():
     ax[1].set_title("OCV")
     ax[2].set_title("Current")
 
-    fig, ax = plt.subplots(2, 1)
+    fig, ax = plt.subplots(3, 1)
     fig.suptitle("Charge and stuff")
     ax[0].plot(time, df["internal_resistance"])
     ax[1].plot(time, df["soc_use"])
+    ax[2].plot(time, df["soc_nominal"])
     ax[0].set_title("Internal resistance")
     ax[1].set_title("Usable SoC")
+    ax[2].set_title("Nominal SoC")
 
     fig, ax = plt.subplots(3, 1)
     fig.suptitle("Temperature")
