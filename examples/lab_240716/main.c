@@ -6,6 +6,8 @@
 #define POWER_FILENAME "data/240716_temp_profile_C4B1/processed/data_power.csv"
 #define AMBTEMP_FILENAME                                                       \
   "data/240716_temp_profile_C4B1/processed/data_amb_pv_temp.csv"
+#define SFTEMP_FILENAME "tmp/lab_240716/sf_temp.csv"
+#define INTEMP_FILENAME "tmp/lab_240716/in_temp.csv"
 
 lion_vector_t sf_temp;
 lion_vector_t in_temp;
@@ -69,13 +71,11 @@ int main(void) {
   log_info("Running application");
   LION_CALL(lion_app_run(&app, &power, &amb_temp), "Failed running app");
 
-  log_info("Printing stuff");
-  for (int i = 0; i < sf_temp.len; i++) {
-    double p = lion_vector_get_d(&app, &power, i);
-    double sf = lion_vector_get_d(&app, &sf_temp, i);
-    double in = lion_vector_get_d(&app, &in_temp, i);
-    printf("%d, %f -> %f/%f\n", i, p, sf, in);
-  }
+  log_info("Saving results to csv");
+  LION_CALLDF(lion_vector_to_csv(&app, &sf_temp, "sf_temp", SFTEMP_FILENAME),
+              "Failed exporting to csv");
+  LION_CALLDF(lion_vector_to_csv(&app, &in_temp, "in_temp", INTEMP_FILENAME),
+              "Failed exporting to csv");
 
   log_info("Cleaning up");
   LION_CALL(lion_vector_cleanup(&app, &power), "Failed cleaning power vector");
@@ -85,4 +85,5 @@ int main(void) {
             "Failed cleaning surface temperature vector");
   LION_CALL(lion_vector_cleanup(&app, &in_temp),
             "Failed cleaning internal temperature vector");
+  LION_CALL(lion_app_cleanup(&app), "Failed cleaning app");
 }
