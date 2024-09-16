@@ -236,10 +236,12 @@ static void lion_app_log_startup_info(lion_app_t *app) {
   logi_info("+-------------------------------------------------------+");
 }
 
+// TODO: Evaluate the logic of the state updates
 lion_status_t lion_app_step(lion_app_t *app, double power,
                             double ambient_temperature) {
   // app->state contains state(k)
   double partial_result[2];
+  LION_CALL_I(lion_app_show_state_trace(app), "Failed showing current state");
   LION_GSL_VCALL_I(gsl_odeiv2_driver_apply_fixed_step(
                        app->driver, &app->state.time,
                        app->conf->sim_step_seconds, 1, partial_result),

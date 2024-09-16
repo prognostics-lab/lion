@@ -1,4 +1,5 @@
 #include <gsl/gsl_odeiv2.h>
+#include <math.h>
 
 #include <lion/lion.h>
 #include <lion_utils/macros.h>
@@ -108,23 +109,36 @@ lion_status_t _init_ode_driver(lion_app_t *app) {
   return LION_STATUS_SUCCESS;
 }
 
-lion_status_t _show_init_information(lion_app_t *app) {
-  logi_debug("Initial state");
-  logi_debug("|-> P                : %f W", app->state.power);
-  logi_debug("|-> T_amb            : %f °C", app->state.ambient_temperature);
-  logi_debug("|-> V_terminal       : %f V", app->state.voltage);
-  logi_debug("|-> I                : %f A", app->state.current);
-  logi_debug("|-> V_oc             : %f V", app->state.open_circuit_voltage);
-  logi_debug("|-> R_int            : %f Ohm", app->state.internal_resistance);
-  logi_debug("|-> EHC              : %f V/K", app->state.ehc);
-  logi_debug("|-> q_gen            : %f W", app->state.generated_heat);
-  logi_debug("|-> T_in             : %f °C", app->state.internal_temperature);
-  logi_debug("|-> T_s              : %f °C", app->state.surface_temperature);
-  logi_debug("|-> kappa            : %f", app->state.kappa);
-  logi_debug("|-> SoC_0            : %f", app->state.soc_nominal);
-  logi_debug("|-> SoC_use          : %f", app->state.soc_use);
-  logi_debug("|-> Q_0              : %f C", app->state.capacity_nominal);
-  logi_debug("|-> Q_use            : %f C", app->state.capacity_use);
+#define _SHOW_STATE(app, f)                                                    \
+  f("Cell state");                                                             \
+  f("|-> P                : %f W", app->state.power);                          \
+  f("|-> T_amb            : %f K", app->state.ambient_temperature);            \
+  f("|-> V_terminal       : %f V", app->state.voltage);                        \
+  f("|-> I                : %f A", app->state.current);                        \
+  f("|-> V_oc             : %f V", app->state.open_circuit_voltage);           \
+  f("|-> R_int            : %f Ohm", app->state.internal_resistance);          \
+  f("|-> EHC              : %f V/K", app->state.ehc);                          \
+  f("|-> q_gen            : %f W", app->state.generated_heat);                 \
+  f("|-> T_in             : %f K", app->state.internal_temperature);           \
+  f("|-> T_s              : %f K", app->state.surface_temperature);            \
+  f("|-> kappa            : %f", app->state.kappa);                            \
+  f("|-> SoC_0            : %f", app->state.soc_nominal);                      \
+  f("|-> SoC_use          : %f", app->state.soc_use);                          \
+  f("|-> Q_0              : %f C", app->state.capacity_nominal);               \
+  f("|-> Q_use            : %f C", app->state.capacity_use);
+
+lion_status_t lion_app_show_state_info(lion_app_t *app) {
+  _SHOW_STATE(app, logi_info);
+  return LION_STATUS_SUCCESS;
+}
+
+lion_status_t lion_app_show_state_debug(lion_app_t *app) {
+  _SHOW_STATE(app, logi_debug);
+  return LION_STATUS_SUCCESS;
+}
+
+lion_status_t lion_app_show_state_trace(lion_app_t *app) {
+  _SHOW_STATE(app, logi_trace);
   return LION_STATUS_SUCCESS;
 }
 
@@ -148,25 +162,59 @@ lion_status_t lion_app_init(lion_app_t *app, double initial_power,
   logi_info("Configuring simulation driver");
   LION_CALL_I(_init_ode_driver(app), "Failed initializing ode driver");
 
-  LION_CALL_I(_show_init_information(app),
+  LION_CALL_I(lion_app_show_state_debug(app),
               "Failed showing initialization information");
   return LION_STATUS_SUCCESS;
 }
 
+void _template_progressbar(FILE *buf, int width) {
+  int x = 0;
+  for (x = 0; x < width; x++) {
+    fprintf(buf, " ");
+  }
+  fprintf(buf, "]");
+}
+
+void _update_progressbar(FILE *buf, int i, int max, int width, int *c,
+                         int *last_c) {
+  double progress = i * 100.0 / max;
+  *c = (int)progress;
+  fprintf(buf, "\n\033[F");
+  fprintf(buf, "%3d%%", *c);
+  fprintf(buf, "\033[1C");
+  fprintf(buf, "\033[%dC=", *last_c);
+  int x = 0;
+  for (x = *last_c; x < *c; x++) {
+    fprintf(buf, "=");
+  }
+  if (x < width) {
+    fprintf(buf, ">");
+  }
+  *last_c = *c;
+}
+
 lion_status_t lion_app_simulate(lion_app_t *app, lion_vector_t *power,
                                 lion_vector_t *amb_temp) {
-  // uint64_t max_iters = lion_app_max_iters(app);
-  uint64_t max_iters = power->len;
+
+  uint64_t max_iters = fminl(max_iters, power->len);
+  max_iters = fminl(max_iters, amb_temp->len);
   logi_debug("Considering %d max iterations", max_iters);
 
+  // Initialization hook
   if (app->conf->init_hook != NULL) {
     logi_debug("Found init hook");
     LION_CALLDF_I(app->conf->init_hook(app), "Failed calling init hook");
   }
 
   logi_debug("Starting iterations");
+  _template_progressbar(stderr, LION_PROGRESSBAR_WIDTH);
+  int c = 0;
+  int last_c = 0;
   for (uint64_t i = 1; i < max_iters; i++) {
-    logi_debug("Step %d", i);
+    _update_progressbar(stderr, i, max_iters, LION_PROGRESSBAR_WIDTH, &c,
+                        &last_c);
+
+    logi_trace("Step %d", i);
     if (i == power->len || i == amb_temp->len) {
       logi_error("Ran out of inputs before reaching end of simulation");
       break;
