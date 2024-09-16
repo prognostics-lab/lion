@@ -245,7 +245,8 @@ lion_status_t lion_app_step(lion_app_t *app, double power,
   LION_GSL_VCALL_I(gsl_odeiv2_driver_apply_fixed_step(
                        app->driver, &app->state.time,
                        app->conf->sim_step_seconds, 1, partial_result),
-                   "Failed at step %d (t = %f)", i, app->state.time);
+                   "Failed at step %d (t = %f)", app->state.step,
+                   app->state.time);
   // state(k + 1) is stored in partial_result
   app->state.soc_nominal = partial_result[0];
   app->state.internal_temperature = partial_result[1];
@@ -261,6 +262,7 @@ lion_status_t lion_app_step(lion_app_t *app, double power,
     // TODO: Add some mechanism to avoid race conditions
     LION_CALLDF_I(app->conf->update_hook(app), "Failed calling update hook");
   }
+  app->state.step++;
   return LION_STATUS_SUCCESS;
 }
 

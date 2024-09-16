@@ -198,8 +198,7 @@ void _finish_progressbar(FILE *buf) { fprintf(stderr, "\033[EDone\n"); }
 lion_status_t lion_app_simulate(lion_app_t *app, lion_vector_t *power,
                                 lion_vector_t *amb_temp) {
 
-  uint64_t max_iters = fminl(max_iters, power->len);
-  max_iters = fminl(max_iters, amb_temp->len);
+  uint64_t max_iters = fminl(power->len, amb_temp->len);
   logi_debug("Considering %d max iterations", max_iters);
 
   // Initialization hook
