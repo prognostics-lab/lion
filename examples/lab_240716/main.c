@@ -6,18 +6,39 @@
 #define POWER_FILENAME "data/240716_temp_profile_C4B1/processed/data_power.csv"
 #define AMBTEMP_FILENAME                                                       \
   "data/240716_temp_profile_C4B1/processed/data_amb_pv_temp.csv"
-#define SFTEMP_FILENAME "tmp/lab_240716/sf_temp.csv"
-#define INTEMP_FILENAME "tmp/lab_240716/in_temp.csv"
+#define OUTCSV_FILENAME "simdata/lab_240716/data.csv"
 
-lion_vector_t sf_temp;
-lion_vector_t in_temp;
+FILE *f;
+
+lion_status_t init_hook(lion_app_t *app) {
+  f = fopen(OUTCSV_FILENAME, "w+");
+  if (f == NULL) {
+    log_error("Failed to open output file");
+    return LION_STATUS_FAILURE;
+  }
+  fprintf(f, "time,step,power,ambient_temperature,voltage,current,"
+             "open_circuit_voltage,internal_resistance,ehc,generated_heat,"
+             "internal_temperature,surface_temperature,kappa,soc_nominal,"
+             "capacity_nominal,soc_use,capacity_use\n");
+  return LION_STATUS_SUCCESS;
+}
 
 lion_status_t update_hook(lion_app_t *app) {
-  log_trace("Iteration %d", app->state.step);
-  LION_CALL(lion_vector_push(app, &sf_temp, &app->state.surface_temperature),
-            "Failed pushing");
-  LION_CALL(lion_vector_push(app, &in_temp, &app->state.internal_temperature),
-            "Failed pushing");
+  fprintf(
+      f,
+      "%lf,%lu,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf\n",
+      app->state.time, app->state.step, app->state.power,
+      app->state.ambient_temperature, app->state.voltage, app->state.current,
+      app->state.open_circuit_voltage, app->state.internal_resistance,
+      app->state.ehc, app->state.generated_heat,
+      app->state.internal_temperature, app->state.surface_temperature,
+      app->state.kappa, app->state.soc_nominal, app->state.capacity_nominal,
+      app->state.soc_use, app->state.capacity_use);
+  return LION_STATUS_SUCCESS;
+}
+
+lion_status_t finished_hook(lion_app_t *app) {
+  fclose(f);
   return LION_STATUS_SUCCESS;
 }
 
@@ -35,7 +56,9 @@ int main(void) {
   conf.sim_epsrel = 1e-1;
   conf.sim_min_max_iter = 10000;
   // Hooks
+  conf.init_hook = &init_hook;
   conf.update_hook = &update_hook;
+  conf.finished_hook = &finished_hook;
 
   log_info("Setting up simulation parameters");
   lion_params_t params = lion_params_default();
@@ -60,30 +83,12 @@ int main(void) {
              "Failed creating ambient temperature profile from csv file '%s'",
              AMBTEMP_FILENAME);
 
-  log_info("Configuring system outputs");
-  LION_CALL(
-      lion_vector_with_capacity(&app, power.len, sizeof(double), &sf_temp),
-      "Failed creating surface temperature vector");
-  LION_CALL(
-      lion_vector_with_capacity(&app, power.len, sizeof(double), &in_temp),
-      "Failed creating internal temperature vector");
-
   log_info("Running application");
   LION_CALL(lion_app_run(&app, &power, &amb_temp), "Failed running app");
-
-  log_info("Saving results to csv");
-  LION_CALLDF(lion_vector_to_csv(&app, &sf_temp, "sf_temp", SFTEMP_FILENAME),
-              "Failed exporting to csv");
-  LION_CALLDF(lion_vector_to_csv(&app, &in_temp, "in_temp", INTEMP_FILENAME),
-              "Failed exporting to csv");
 
   log_info("Cleaning up");
   LION_CALL(lion_vector_cleanup(&app, &power), "Failed cleaning power vector");
   LION_CALL(lion_vector_cleanup(&app, &amb_temp),
             "Failed cleaning ambient temperature vector");
-  LION_CALL(lion_vector_cleanup(&app, &sf_temp),
-            "Failed cleaning surface temperature vector");
-  LION_CALL(lion_vector_cleanup(&app, &in_temp),
-            "Failed cleaning internal temperature vector");
   LION_CALL(lion_app_cleanup(&app), "Failed cleaning app");
 }
