@@ -17,7 +17,7 @@ lion_status_t lion_slv_update(lion_app_t *app) {
                                                  app->state.kappa, app->params);
 
   app->state.open_circuit_voltage =
-      lion_voc(app->state.soc_nominal, app->params);
+      lion_voc(app->state.soc_use, app->params);
   app->state.current =
       lion_current_optimize(app->sys_min, app->state.power, app->state.soc_use,
                             app->state.open_circuit_voltage, app->state.current,

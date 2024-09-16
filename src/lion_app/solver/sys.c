@@ -22,7 +22,7 @@ int lion_slv_system(double t, const double state[], double out[],
      inputs[0] -> *lion_app_state_t
      inputs[1] -> *lion_params_t
    */
-  logi_debug("ode call, soc=%f, tin=%f", state[0], state[1]);
+  logi_trace("ode call, soc=%f, tin=%f", state[0], state[1]);
   lion_slv_inputs_t *p = inputs;
   lion_app_state_t *sys_inputs = p->sys_inputs;
   lion_params_t *sys_params = p->sys_params;
@@ -33,7 +33,7 @@ int lion_slv_system(double t, const double state[], double out[],
   out[1] =
       lion_internal_temperature_d(state[1], sys_inputs->internal_temperature,
                                   sys_inputs->ambient_temperature, sys_params);
-  logi_debug("ode call done, dsoc=%f, dtin=%f", out[0], out[1]);
+  logi_trace("ode call done, dsoc=%f, dtin=%f", out[0], out[1]);
   return GSL_SUCCESS;
 }
 
@@ -81,7 +81,7 @@ double jac_1_1(lion_app_state_t *state, lion_params_t *params) {
 
 int lion_slv_jac(double t, const double state[], double *dfdy, double dfdt[],
                  void *inputs) {
-  logi_debug("jac call, soc=%f, tin=%f", state[0], state[1]);
+  logi_trace("jac call, soc=%f, tin=%f", state[0], state[1]);
   lion_slv_inputs_t *p = inputs;
   lion_app_state_t *sys_state = p->sys_inputs;
   lion_params_t *sys_params = p->sys_params;
@@ -99,7 +99,7 @@ int lion_slv_jac(double t, const double state[], double *dfdy, double dfdt[],
   gsl_matrix_set(m, 1, 1, jac11);
   dfdt[0] = 0.0;
   dfdt[1] = 0.0;
-  logi_debug("jac call done, jac={{%f, %f}, {%f, %f}}", jac00, jac01, jac10,
+  logi_trace("jac call done, jac={{%f, %f}, {%f, %f}}", jac00, jac01, jac10,
              jac11);
   return GSL_SUCCESS;
 }
