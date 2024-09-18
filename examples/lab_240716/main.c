@@ -1,5 +1,6 @@
 #include "lion/status.h"
 #include <lion/lion.h>
+#include <lion_math/current.h>
 #include <lionu/log.h>
 #include <lionu/macros.h>
 
@@ -7,25 +8,48 @@
 #define AMBTEMP_FILENAME                                                       \
   "data/240716_temp_profile_C4B1/processed/data_amb_pv_temp.csv"
 #define OUTCSV_FILENAME "simdata/lab_240716/data.csv"
+#define OUTCURROPT_FILENAME "simdata/lab_240716/curropt.csv"
 
-FILE *f;
+FILE *csv_file;
+#ifndef NDEBUG
+FILE *curropt_file = NULL;
+lion_vector_t currs;
+#endif
 
 lion_status_t init_hook(lion_app_t *app) {
-  f = fopen(OUTCSV_FILENAME, "w+");
-  if (f == NULL) {
+  // data csv file
+  csv_file = fopen(OUTCSV_FILENAME, "w+");
+  if (csv_file == NULL) {
     log_error("Failed to open output file");
     return LION_STATUS_FAILURE;
   }
-  fprintf(f, "time,step,power,ambient_temperature,voltage,current,"
-             "open_circuit_voltage,internal_resistance,ehc,generated_heat,"
-             "internal_temperature,surface_temperature,kappa,soc_nominal,"
-             "capacity_nominal,soc_use,capacity_use\n");
+  fprintf(csv_file,
+          "time,step,power,ambient_temperature,voltage,current,"
+          "open_circuit_voltage,internal_resistance,ehc,generated_heat,"
+          "internal_temperature,surface_temperature,kappa,soc_nominal,"
+          "capacity_nominal,soc_use,capacity_use\n");
+
+#ifndef NDEBUG
+  // curropt file
+  curropt_file = fopen(OUTCURROPT_FILENAME, "w+");
+  if (curropt_file == NULL) {
+    log_error("Failed to open curropt output file");
+    return LION_STATUS_FAILURE;
+  }
+  LION_CALL(lion_vector_linspace_d(app, -10.0, 10.0, 101, &currs),
+            "Failed creating currents");
+  for (int i = 0; i < currs.len - 1; i++) {
+    fprintf(curropt_file, "%lf,", lion_vector_get_d(app, &currs, i));
+  }
+  fprintf(curropt_file, "%lf\n", lion_vector_get_d(app, &currs, currs.len - 1));
+#endif
   return LION_STATUS_SUCCESS;
 }
 
 lion_status_t update_hook(lion_app_t *app) {
+  // Store current state in csv file
   fprintf(
-      f,
+      csv_file,
       "%lf,%lu,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf\n",
       app->state.time, app->state.step, app->state.power,
       app->state.ambient_temperature, app->state.voltage, app->state.current,
@@ -34,11 +58,34 @@ lion_status_t update_hook(lion_app_t *app) {
       app->state.internal_temperature, app->state.surface_temperature,
       app->state.kappa, app->state.soc_nominal, app->state.capacity_nominal,
       app->state.soc_use, app->state.capacity_use);
+
+#ifndef NDEBUG
+  // Check the objective function of the current optimization process
+  struct lion_optimization_iter_params params = {
+      .power = app->state.power,
+      .voc = app->state.open_circuit_voltage,
+      .soc = app->state.soc_use,
+      .params = app->params,
+  };
+
+  double c, target;
+  for (int i = 0; i < currs.len - 1; i++) {
+    c = lion_vector_get_d(app, &currs, i); // current
+    target = lion_current_optimize_targetfn(c, &params);
+    fprintf(curropt_file, "%lf,", target);
+  }
+  c = lion_vector_get_d(app, &currs, currs.len - 1); // current
+  target = lion_current_optimize_targetfn(c, &params);
+  fprintf(curropt_file, "%lf\n", target);
+#endif
   return LION_STATUS_SUCCESS;
 }
 
 lion_status_t finished_hook(lion_app_t *app) {
-  fclose(f);
+  fclose(csv_file);
+#ifndef NDEBUG
+  fclose(curropt_file);
+#endif
   return LION_STATUS_SUCCESS;
 }
 
@@ -90,5 +137,8 @@ int main(void) {
   LION_CALL(lion_vector_cleanup(&app, &power), "Failed cleaning power vector");
   LION_CALL(lion_vector_cleanup(&app, &amb_temp),
             "Failed cleaning ambient temperature vector");
+#ifndef NDEBUG
+  LION_CALL(lion_vector_cleanup(&app, &currs), "Failed cleaning currents");
+#endif
   LION_CALL(lion_app_cleanup(&app), "Failed cleaning app");
 }
