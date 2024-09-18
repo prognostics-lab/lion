@@ -7,6 +7,13 @@
 #define LION_CURRENT_OPTMIN -1e3
 #define LION_CURRENT_OPTMAX 1e3
 
+struct lion_optimization_iter_params {
+  double power;
+  double voc;
+  double soc;
+  lion_params_t *params;
+};
+
 double lion_current(double power, double open_circuit_voltage,
                     double internal_resistance, lion_params_t *params);
 double lion_current_grad_voc(double power, double open_circuit_voltage,
