@@ -137,6 +137,34 @@ lion_status_t lion_vector_from_csv(lion_app_t *app, const char *filename,
   return LION_STATUS_SUCCESS;
 }
 
+lion_status_t lion_vector_linspace_d(lion_app_t *app, double low, double high,
+                                     int num, lion_vector_t *out) {
+  lion_vector_t vec;
+  LION_VCALL_I(lion_vector_with_capacity(app, num, sizeof(double), &vec),
+               "Failed allocating vector with %d elements", num);
+  double step = (high - low) / (double)(num - 1);
+  for (int i = 0; i < num; i++) {
+    LION_VCALL_I(lion_vector_push_d(app, &vec, low + i * step),
+                 "Failed pushing %d-th element", i);
+  }
+  *out = vec;
+  return LION_STATUS_SUCCESS;
+}
+
+lion_status_t lion_vector_linspace_f(lion_app_t *app, float low, float high,
+                                     int num, lion_vector_t *out) {
+  lion_vector_t vec;
+  LION_VCALL_I(lion_vector_with_capacity(app, num, sizeof(float), &vec),
+               "Failed allocating vector with %d elements", num);
+  float step = (high - low) / (float)(num - 1);
+  for (int i = 0; i < num; i++) {
+    LION_VCALL_I(lion_vector_push_f(app, &vec, low + i * step),
+                 "Failed pushing %d-th element", i);
+  }
+  *out = vec;
+  return LION_STATUS_SUCCESS;
+}
+
 lion_status_t lion_vector_to_csv(lion_app_t *app, lion_vector_t *vec,
                                  const char *header, const char *filename) {
   // TODO: Implement saving vector to csv file
@@ -273,6 +301,16 @@ lion_status_t lion_vector_push(lion_app_t *app, lion_vector_t *vec,
     vec->len++;
   }
   return LION_STATUS_SUCCESS;
+}
+
+lion_status_t lion_vector_push_d(lion_app_t *app, lion_vector_t *vec,
+                                 double src) {
+  return lion_vector_push(app, vec, &src);
+}
+
+lion_status_t lion_vector_push_f(lion_app_t *app, lion_vector_t *vec,
+                                 float src) {
+  return lion_vector_push(app, vec, &src);
 }
 
 lion_status_t lion_vector_extend_array(lion_app_t *app, lion_vector_t *vec,
