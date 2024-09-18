@@ -33,6 +33,10 @@ lion_status_t lion_vector_from_array(lion_app_t *app, const void *data,
 lion_status_t lion_vector_from_csv(lion_app_t *app, const char *filename,
                                    const size_t data_size, const char *format,
                                    lion_vector_t *out);
+lion_status_t lion_vector_linspace_d(lion_app_t *app, double low, double high,
+                                     int num, lion_vector_t *out);
+lion_status_t lion_vector_linspace_f(lion_app_t *app, float low, float high,
+                                     int num, lion_vector_t *out);
 
 /* Vector saving */
 
@@ -76,6 +80,10 @@ lion_status_t lion_vector_resize(lion_app_t *app, lion_vector_t *vec,
                                  const size_t new_capacity);
 lion_status_t lion_vector_push(lion_app_t *app, lion_vector_t *vec,
                                const void *src);
+lion_status_t lion_vector_push_d(lion_app_t *app, lion_vector_t *vec,
+                                 double src);
+lion_status_t lion_vector_push_f(lion_app_t *app, lion_vector_t *vec,
+                                 float src);
 lion_status_t lion_vector_extend_array(lion_app_t *app, lion_vector_t *vec,
                                        const void *src, const size_t len);
 
