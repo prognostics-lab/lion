@@ -45,11 +45,9 @@ lion_status_t lion_readline(lion_app_t *app, FILE *file, char *buffer,
     return LION_STATUS_FAILURE;
   }
 
-  logi_trace("Reading first character");
   char ch = (char)getc(file);
   size_t count = 0;
 
-  logi_trace("Iterating");
   while ((ch != '\n') && (ch != EOF)) {
     if (count == max_length) {
       if (alloced) {
@@ -71,7 +69,6 @@ lion_status_t lion_readline(lion_app_t *app, FILE *file, char *buffer,
     ch = (char)getc(file);
   }
 
-  logi_trace("Finished reading line");
   buffer[count] = '\0';
   char line[count + 1];
   strncpy(line, buffer, count + 1);
