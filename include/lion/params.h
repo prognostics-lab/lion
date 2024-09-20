@@ -5,6 +5,10 @@
 #define LION_FUZZY_SETS_COUNT 8
 #define LION_FUZZY_SETS_DEGREE 4
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct lion_params {
   // Initial values
   struct {
@@ -65,3 +69,7 @@ typedef struct lion_params {
 } lion_params_t;
 
 lion_params_t lion_params_default(void);
+
+#ifdef __cplusplus
+}
+#endif

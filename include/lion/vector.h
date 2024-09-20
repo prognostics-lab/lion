@@ -5,11 +5,11 @@
 
 #include "status.h"
 
-typedef struct lion_app lion_app_t;
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+typedef struct lion_app lion_app_t;
 
 typedef struct lion_vector {
   void *data;
