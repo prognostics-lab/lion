@@ -31,9 +31,9 @@ def main():
 
     fig, ax = plt.subplots(3, 1)
     fig.suptitle("Temperature")
-    ax[0].plot(time, df["ambient_temperature"])
-    ax[1].plot(time, df["surface_temperature"])
-    ax[2].plot(time, df["internal_temperature"])
+    ax[0].plot(time, df["ambient_temperature"] - 273)
+    ax[1].plot(time, df["surface_temperature"] - 273)
+    ax[2].plot(time, df["internal_temperature"] - 273)
     ax[0].set_title("Ambient")
     ax[1].set_title("Surface")
     ax[2].set_title("Internal")
