@@ -89,20 +89,27 @@ lion_status_t finished_hook(lion_app_t *app) {
   return LION_STATUS_SUCCESS;
 }
 
-int main(int argc, char *argv[]) {
-  log_info("Setting up paths");
-  char power_filename[FILENAME_MAX];
-  char ambtemp_filename[FILENAME_MAX];
+lion_status_t setup_paths(int argc, char *argv[], char *out_power,
+                          char *out_amb) {
   if (argc != 1) {
     // We assume the paths are passed as arguments
     const char *p;
+    int power_set = 0;
+    int ambtemp_set = 0;
     for (int i = 1; i < argc; i++) {
       p = argv[i];
       if (strncmp(p, "power=", 6) == 0) {
-        strncpy(power_filename, p + 6, FILENAME_MAX);
+        power_set = 1;
+        strncpy(out_power, p + 6, FILENAME_MAX);
       } else if (strncmp(p, "amb=", 4) == 0) {
-        strncpy(ambtemp_filename, p + 4, FILENAME_MAX);
+        ambtemp_set = 1;
+        strncpy(out_amb, p + 4, FILENAME_MAX);
       }
+    }
+
+    if (!power_set || !ambtemp_set) {
+      log_fatal("Both paths must be provided");
+      return LION_STATUS_FAILURE;
     }
   } else {
     // If they are not passed as arguments, they are assumed to
@@ -115,9 +122,19 @@ int main(int argc, char *argv[]) {
       return LION_STATUS_FAILURE;
     }
 
-    strncpy(power_filename, power, FILENAME_MAX);
-    strncpy(ambtemp_filename, amb, FILENAME_MAX);
+    strncpy(out_power, power, FILENAME_MAX);
+    strncpy(out_amb, amb, FILENAME_MAX);
   }
+  return LION_STATUS_SUCCESS;
+}
+
+int main(int argc, char *argv[]) {
+  log_info("Setting up paths");
+  char power_filename[FILENAME_MAX];
+  char ambtemp_filename[FILENAME_MAX];
+  LION_CALL(setup_paths(argc, argv, power_filename, ambtemp_filename),
+            "Failed setting up paths");
+
   log_info("Power path: '%s'", power_filename);
   log_info("Ambient temperature path: '%s'", ambtemp_filename);
 
