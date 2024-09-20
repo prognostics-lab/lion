@@ -92,7 +92,7 @@ class Config:
         min_maxiter: int | None = None,
         log_stdlvl: LogLvl | None = None,
     ):
-        self._cdata = _lionl.lion_app_config_default()
+        self._cdata = ffi.new("lion_app_config_t *", _lionl.lion_app_config_default())
 
         if name is not None:
             self.name = name
@@ -235,7 +235,7 @@ class Params:
     __slots__ = ("_cdata",)
 
     def __init__(self):
-        self._cdata = _lionl.lion_params_default()
+        self._cdata = ffi.new("lion_params_t *", _lionl.lion_params_default())
 
 
 class App:
@@ -254,9 +254,7 @@ class App:
         else:
             self.params = params
 
-        _conf_p = ffi.new("lion_app_config_t *", self.config._cdata)
-        _params_p = ffi.new("lion_params_t *", self.params._cdata)
-        _lionl.lion_app_new(_conf_p, _params_p, self._cdata)
+        _lionl.lion_app_new(self.config._cdata, self.params._cdata, self._cdata)
 
     def __del__(self):
         try:
