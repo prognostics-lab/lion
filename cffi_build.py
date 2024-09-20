@@ -10,10 +10,16 @@ import cffi
 src_path = Path.joinpath(Path(__file__).parent, "pysrc")
 os.environ["PYTHONPATH"] = str(src_path)
 sys.path.append(str(src_path))
-from lion_ffi.config import (CBIN_DEBUG_PATH, CBIN_RELEASE_PATH,
-                             CLIB_DEBUG_PATH, CLIB_DLL_NAMES,
-                             CLIB_RELEASE_PATH, CLIB_SO_NAMES, INCLUDE_DIRS,
-                             SHLIB_PATH)
+from lion_ffi.config import (
+    CBIN_DEBUG_PATH,
+    CBIN_RELEASE_PATH,
+    CLIB_DEBUG_PATH,
+    CLIB_DLL_NAMES,
+    CLIB_RELEASE_PATH,
+    CLIB_SO_NAMES,
+    INCLUDE_DIRS,
+    SHLIB_PATH,
+)
 from lion_ffi.ffi import _app, _inputs, _params, _status, _vector
 
 
@@ -73,6 +79,8 @@ typedef struct gsl_odeiv2_driver gsl_odeiv2_driver;
 typedef struct gsl_odeiv2_step_type gsl_odeiv2_step_type;
 typedef struct gsl_min_fminimizer gsl_min_fminimizer;
 typedef struct gsl_min_fminimizer_type gsl_min_fminimizer_type;
+
+enum { LOG_TRACE, LOG_DEBUG, LOG_INFO, LOG_WARN, LOG_ERROR, LOG_FATAL };
 """
 
 FFI_CDEF = f"""
@@ -96,6 +104,7 @@ for i, line in enumerate(FFI_CDEF.splitlines()):
 
 LIB_SOURCE = """
 #include <lion/lion.h>
+#include <lionu/log.h>
 """
 
 # Builder for the FFI

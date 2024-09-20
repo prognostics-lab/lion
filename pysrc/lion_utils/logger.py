@@ -65,6 +65,7 @@ def setup_logger(quiet=False, debug=False, verbose=False, log_dir=False):
     if not quiet:
         # Stream logger
         str_hdl = logging.StreamHandler()
+        str_hdl.set_name("stderr")
         str_hdl.setFormatter(CustomFormatter())
         if debug:
             str_hdl.setLevel(logging.DEBUG)
@@ -86,6 +87,7 @@ def setup_logger(quiet=False, debug=False, verbose=False, log_dir=False):
 {now.minute:02}{now.second:02}"
             file_path = os.path.join(log_dir, f"{file_name}.txt")
         file_hdl = logging.FileHandler(file_path, encoding="utf-8")
+        file_hdl.set_name("file")
         file_hdl.setFormatter(log_fmt)
         file_hdl.setLevel(logging.DEBUG)
         LOGGER.addHandler(file_hdl)

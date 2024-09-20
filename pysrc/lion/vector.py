@@ -15,6 +15,9 @@ from lion.status import ffi_call
 from lion_utils.logger import LOGGER
 
 
+Vectorizable = List | np.ndarray | Iterator | Iterable | Real
+
+
 class Vector:
     """Vector of data allocated in a given device"""
 

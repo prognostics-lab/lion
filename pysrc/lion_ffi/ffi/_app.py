@@ -80,16 +80,7 @@ typedef struct lion_app {
   lion_params_t *params;
   lion_app_state_t state;
   lion_slv_inputs_t inputs;
-
-  // gsl_odeiv2_system sys;
-  // gsl_odeiv2_driver *driver;
-  // gsl_min_fminimizer *sys_min;
-  // const gsl_odeiv2_step_type *step_type;
-  // const gsl_min_fminimizer_type *minimizer;
-
-  // char log_filename[FILENAME_MAX + _LION_LOGFILE_MAX];
-  // FILE *log_file;
-
+  ...;
 } lion_app_t;
 """
 
