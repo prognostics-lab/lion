@@ -2,6 +2,7 @@
 #include <string>
 
 #include <lion/vector.h>
+#include <lion_math/current.h>
 #include <lionpp/lion.hpp>
 #include <lionpp/vector.hpp>
 #include <lionu/log.h>
