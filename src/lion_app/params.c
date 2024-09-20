@@ -1,6 +1,14 @@
 #include <lion/lion.h>
 
 const lion_params_t LION_APP_PARAMS_DEFAULT = {
+    .init =
+        {
+            .initial_soc = 0.1,
+            .initial_internal_temperature = 298.0,
+            .initial_soh = 1.0,
+            .initial_capacity = 14400.0,
+            .initial_current_guess = 10.0,
+        },
     .ehc =
         {
             .a = 4e-5,
