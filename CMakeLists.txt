@@ -65,7 +65,7 @@ add_compile_definitions(LION_PROJECT_ROOT_DIR="${CMAKE_SOURCE_DIR}/")
 
 if(${CMAKE_BUILD_TYPE} STREQUAL "Release")
   add_compile_definitions(LION_BUILD_TYPE_RELEASE)
-  add_compile_definitions(LION_DISABLE_LOGGING)
+  # add_compile_definitions(LION_DISABLE_LOGGING)
 else()
   add_compile_definitions(LION_BUILD_TYPE_DEBUG)
 endif()
