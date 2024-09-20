@@ -42,7 +42,6 @@ double lion_current_optimize_targetfn(double current, void *params) {
   double rint = lion_resistance(p->soc, current, p->params);
   double pred_current = lion_current(p->power, p->voc, rint, p->params);
   double val = gsl_pow_2(fabs(current - pred_current));
-  logi_trace("Current optimization, targetfn=%f", val);
   return val;
 }
 
@@ -86,6 +85,5 @@ double lion_current_optimize(gsl_min_fminimizer *s, double power, double soc,
   if (status != GSL_SUCCESS) {
     logi_error("Current did not converge");
   }
-  logi_trace("Current optimization result %f", initial_guess);
   return initial_guess;
 }

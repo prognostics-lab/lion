@@ -215,7 +215,6 @@ lion_status_t lion_app_simulate(lion_app_t *app, lion_vector_t *power,
     _update_progressbar(stderr, i, max_iters, LION_PROGRESSBAR_WIDTH, &c,
                         &last_c);
 
-    logi_trace("Step %d", i);
     if (i == power->len || i == amb_temp->len) {
       logi_error("Ran out of inputs before reaching end of simulation");
       break;

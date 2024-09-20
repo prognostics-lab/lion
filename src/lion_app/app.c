@@ -242,7 +242,6 @@ lion_status_t lion_app_step(lion_app_t *app, double power,
   // app->state contains state(k)
   double partial_result[2] = {app->state.soc_nominal,
                               app->state.internal_temperature};
-  LION_CALL_I(lion_app_show_state_trace(app), "Failed showing current state");
   LION_GSL_VCALL_I(gsl_odeiv2_driver_apply_fixed_step(
                        app->driver, &app->state.time,
                        app->conf->sim_step_seconds, 1, partial_result),
