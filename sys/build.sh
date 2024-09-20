@@ -124,11 +124,25 @@ if [ $testing -eq 1 ]; then
 fi
 
 if [[ "${example}" != "" ]]; then
-    echo -e "\n\nRunning example '\x1b[32;20m${example}\x1b[0m'"
-    if [ $release_mode -eq 1 ]; then
-        ./bin/ex.${example}
+    idx=-1
+    args=($@)
+    for i in "${!args[@]}"; do
+        if [[ "${args[$i]}" = "--" ]]; then
+            idx=$i
+            break
+        fi
+    done
+    if [[ "${idx}" != "-1" ]]; then
+        args=${@:$idx+2}
     else
-        ./bin/debug/ex.${example}
+        args=""
+    fi
+    echo -e "\n\nRunning example '\x1b[32;20m${example}\x1b[0m'"
+    echo -e "\n\nUsing args '\x1b[32;20m${args}\x1b[0m'"
+    if [ $release_mode -eq 1 ]; then
+        ./bin/ex.${example} $args
+    else
+        ./bin/debug/ex.${example} $args
     fi
 fi
 
