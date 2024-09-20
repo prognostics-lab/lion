@@ -1,12 +1,12 @@
+#include <stdlib.h>
+#include <string.h>
+
 #include "lion/status.h"
 #include <lion/lion.h>
 #include <lion_math/current.h>
 #include <lionu/log.h>
 #include <lionu/macros.h>
 
-#define POWER_FILENAME "data/240716_temp_profile_C4B1/processed/data_power.csv"
-#define AMBTEMP_FILENAME                                                       \
-  "data/240716_temp_profile_C4B1/processed/data_amb_pv_temp.csv"
 #define OUTCSV_FILENAME "simdata/lab_240716/data.csv"
 #define OUTCURROPT_FILENAME "simdata/lab_240716/curropt.csv"
 
@@ -89,7 +89,38 @@ lion_status_t finished_hook(lion_app_t *app) {
   return LION_STATUS_SUCCESS;
 }
 
-int main(void) {
+int main(int argc, char *argv[]) {
+  log_info("Setting up paths");
+  char power_filename[FILENAME_MAX];
+  char ambtemp_filename[FILENAME_MAX];
+  if (argc != 1) {
+    // We assume the paths are passed as arguments
+    const char *p;
+    for (int i = 1; i < argc; i++) {
+      p = argv[i];
+      if (strncmp(p, "power=", 6) == 0) {
+        strncpy(power_filename, p + 6, FILENAME_MAX);
+      } else if (strncmp(p, "amb=", 4) == 0) {
+        strncpy(ambtemp_filename, p + 4, FILENAME_MAX);
+      }
+    }
+  } else {
+    // If they are not passed as arguments, they are assumed to
+    // be environment variables
+    log_warn("Getting paths from environment variables, to avoid use args");
+    const char *power = getenv("LION_POWER_FILENAME");
+    const char *amb = getenv("LION_AMBTEMP_FILENAME");
+    if (power == NULL || amb == NULL) {
+      log_fatal("Filenames could not be found");
+      return LION_STATUS_FAILURE;
+    }
+
+    strncpy(power_filename, power, FILENAME_MAX);
+    strncpy(ambtemp_filename, amb, FILENAME_MAX);
+  }
+  log_info("Power path: '%s'", power_filename);
+  log_info("Ambient temperature path: '%s'", ambtemp_filename);
+
   log_info("Setting up configuration");
   lion_app_config_t conf = lion_app_config_default();
   // Metadata
@@ -123,12 +154,12 @@ int main(void) {
   lion_vector_t power;
   lion_vector_t amb_temp;
   LION_VCALL(
-      lion_vector_from_csv(&app, POWER_FILENAME, sizeof(double), "%lf", &power),
-      "Failed creating power profile from csv file '%s'", POWER_FILENAME);
-  LION_VCALL(lion_vector_from_csv(&app, AMBTEMP_FILENAME, sizeof(double), "%lf",
+      lion_vector_from_csv(&app, power_filename, sizeof(double), "%lf", &power),
+      "Failed creating power profile from csv file '%s'", power_filename);
+  LION_VCALL(lion_vector_from_csv(&app, ambtemp_filename, sizeof(double), "%lf",
                                   &amb_temp),
              "Failed creating ambient temperature profile from csv file '%s'",
-             AMBTEMP_FILENAME);
+             ambtemp_filename);
 
   log_info("Running application");
   LION_CALL(lion_app_run(&app, &power, &amb_temp), "Failed running app");
