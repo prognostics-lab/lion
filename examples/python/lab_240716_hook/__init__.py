@@ -4,8 +4,17 @@ from lion import App, Config, Params, Stepper, Status
 from lion_utils.logger import LOGGER
 
 
+def init_hook(app: App) -> Status:
+    print("*** Init hook called ***")
+    return Status.SUCCESS
+
+
 def update_hook(app: App) -> Status:
-    print(app.state.as_dict())
+    return Status.SUCCESS
+
+
+def finished_hook(app: App) -> Status:
+    print("*** Finished hook called ***")
     return Status.SUCCESS
 
 
@@ -28,7 +37,9 @@ def main(power_filename, ambtemp_filename):
 
     LOGGER.info("Running application")
     app = App(conf, params)
+    app.init_hook = init_hook
     app.update_hook = update_hook
+    app.finished_hook = finished_hook
     app.run(power, ambtemp)
 
     LOGGER.info("Done!")
