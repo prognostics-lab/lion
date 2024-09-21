@@ -1,6 +1,7 @@
 # TODO
 This file contains a list of the TODO tasks found within the source code.
 - **(`./cffi_build.py`)** Implement building the C library from Python
+- **(`./examples/lab_240716_cpp/main.cpp`)** Implement hooks in the C++ wrapper
 - **(`./include/lion/solver/sys.h`)** Add logic to change dimension depending on simtype
 - **(`./include/lion/status.h`)** Evaluate removal of runtime error detection on release builds
 - **(`./pysrc/lion/vector.py`)** Fix the bug that happens when the first element is less general than the rest
@@ -8,8 +9,6 @@ This file contains a list of the TODO tasks found within the source code.
 - **(`./pysrc/lion/vector.py`)** Implemented reading csv directly instead of using pandas
 - **(`./pysrc/lion/vector.py`)** Determine a more efficient way of converting to numpy array
 - **(`./src/lion_math/lion_math.h`)** Double check implementation of each model
-- **(`./src/lion_app/app.c`)** Add missing units of measurement
-- **(`./src/lion_app/app.c`)** Evaluate the logic of the state updates
 - **(`./src/lion_app/app.c`)** Evaluate implementation of concurrency
 - **(`./src/lion_app/app.c`)** Add some mechanism to avoid race conditions
 - **(`./src/lion_app/vector.c`)** This is leaking??? Fix it
