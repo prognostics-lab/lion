@@ -150,10 +150,6 @@ int main(int argc, char *argv[]) {
   conf.sim_epsabs = 1e-1;
   conf.sim_epsrel = 1e-1;
   conf.sim_min_max_iter = 10000;
-  // Hooks
-  conf.init_hook = &init_hook;
-  conf.update_hook = &update_hook;
-  conf.finished_hook = &finished_hook;
 
   log_info("Setting up simulation parameters");
   lion_params_t params = lion_params_default();
@@ -166,6 +162,9 @@ int main(int argc, char *argv[]) {
   log_info("Creating application");
   lion_app_t app;
   LION_CALL(lion_app_new(&conf, &params, &app), "Failed creating application");
+  app.init_hook = &init_hook;
+  app.update_hook = &update_hook;
+  app.finished_hook = &finished_hook;
 
   log_info("Configuring system inputs");
   lion_vector_t power;

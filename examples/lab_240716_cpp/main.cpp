@@ -150,9 +150,6 @@ int main(int argc, char *argv[]) {
   conf.get_handle()->sim_epsabs = 1e-1;
   conf.get_handle()->sim_epsrel = 1e-1;
   conf.get_handle()->sim_min_max_iter = 10000;
-  conf.get_handle()->init_hook = &init_hook;
-  conf.get_handle()->update_hook = &update_hook;
-  conf.get_handle()->finished_hook = &finished_hook;
 
   log_info("Setting up simulation parameters");
   lion::AppParams params;
@@ -164,6 +161,7 @@ int main(int argc, char *argv[]) {
 
   log_info("Creating application");
   lion::App app(&conf, &params);
+  // TODO: Implement hooks in the C++ wrapper
 
   log_info("Configuring system inputs");
   lion_vector_t _power;
