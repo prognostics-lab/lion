@@ -203,6 +203,8 @@ class Params:
     def __init__(self):
         self._cdata = ffi.new("lion_params_t *", _lionl.lion_params_default())
 
+    # TODO: Figure out how to do parameters
+
 
 class State:
     __slots__ = ("_app",)
