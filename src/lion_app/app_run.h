@@ -12,8 +12,6 @@
 lion_status_t lion_app_show_state_info(lion_app_t *app);
 lion_status_t lion_app_show_state_debug(lion_app_t *app);
 lion_status_t lion_app_show_state_trace(lion_app_t *app);
-lion_status_t lion_app_init(lion_app_t *app, double initial_power,
-                            double initial_amb_temp);
 lion_status_t lion_app_simulate(lion_app_t *app, lion_vector_t *power,
                                 lion_vector_t *amb_temp);
 

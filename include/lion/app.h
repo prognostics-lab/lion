@@ -78,9 +78,6 @@ typedef struct lion_app_config {
   /* App metadata */
 
   const char *app_name;
-  lion_status_t (*init_hook)(lion_app_t *app);
-  lion_status_t (*update_hook)(lion_app_t *app);
-  lion_status_t (*finished_hook)(lion_app_t *app);
 
   /* Simulation metadata */
 
@@ -133,6 +130,9 @@ typedef struct lion_app {
   lion_params_t *params;
   lion_app_state_t state;
   lion_slv_inputs_t inputs;
+  lion_status_t (*init_hook)(lion_app_t *app);
+  lion_status_t (*update_hook)(lion_app_t *app);
+  lion_status_t (*finished_hook)(lion_app_t *app);
 
   /* Data handles */
 
@@ -159,6 +159,8 @@ lion_app_config_t lion_app_config_default(void);
 
 lion_status_t lion_app_new(lion_app_config_t *conf, lion_params_t *params,
                            lion_app_t *out);
+lion_status_t lion_app_init(lion_app_t *app, double initial_power,
+                            double initial_amb_temp);
 lion_status_t lion_app_step(lion_app_t *app, double power,
                             double ambient_temperature);
 lion_status_t lion_app_run(lion_app_t *app, lion_vector_t *power,
