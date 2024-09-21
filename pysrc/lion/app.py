@@ -17,26 +17,26 @@ from lion.vector import Vector, Vectorizable
 from lion_utils.logger import LOGGER
 
 
-def _generate_init_pythoncb(func: Callable[["App"], Status]):
+def _generate_init_pythoncb(app: "App", func: Callable[["App"], Status]):
     @ffi.def_extern()
-    def init_pythoncb(app):
-        return func(app)
+    def init_pythoncb(_):
+        return func(app).value
 
     return init_pythoncb
 
 
-def _generate_update_pythoncb(func: Callable[["App"], Status]):
+def _generate_update_pythoncb(app: "App", func: Callable[["App"], Status]):
     @ffi.def_extern()
-    def update_pythoncb(app):
-        return func(app)
+    def update_pythoncb(_):
+        return func(app).value
 
     return update_pythoncb
 
 
-def _generate_finished_pythoncb(func: Callable[["App"], Status]):
+def _generate_finished_pythoncb(app: "App", func: Callable[["App"], Status]):
     @ffi.def_extern()
-    def finished_pythoncb(app):
-        return func(app)
+    def finished_pythoncb(_):
+        return func(app).value
 
     return finished_pythoncb
 
@@ -80,9 +80,6 @@ class Config:
     def __init__(
         self,
         name=None,
-        init=None,
-        update=None,
-        finished=None,
         regime: Regime | None = None,
         stepper: Stepper | None = None,
         minimizer: Minimizer | None = None,
@@ -96,12 +93,6 @@ class Config:
 
         if name is not None:
             self.name = name
-        if init is not None:
-            self.init = init
-        if update is not None:
-            self.update = update
-        if finished is not None:
-            self.finished = finished
         if regime is not None:
             self.sim_regime = regime
         if stepper is not None:
@@ -131,31 +122,6 @@ class Config:
     @name.setter
     def name(self, new_name: str):
         self._cdata.app_name = ffi.new("char[]", new_name)
-        LOGGER.debug(f"New name: {ffi.string(self._cdata.app_name)}")
-
-    @property
-    def init(self) -> None:
-        raise NotImplementedError("Can't fetch C functions")
-
-    @init.setter
-    def init(self, new_func: Callable[["App"], Status]):
-        self._cdata.init_hook = _generate_init_pythoncb(new_func)
-
-    @property
-    def update(self) -> None:
-        raise NotImplementedError("Can't fetch C functions")
-
-    @update.setter
-    def update(self, new_func: Callable[["App"], Status]):
-        self._cdata.update_hook = _generate_update_pythoncb(new_func)
-
-    @property
-    def finished(self) -> None:
-        raise NotImplementedError("Can't fetch C functions")
-
-    @finished.setter
-    def finished(self, new_func: Callable[["App"], Status]):
-        self._cdata.finished_hook = _generate_finished_pythoncb(new_func)
 
     @property
     def sim_regime(self) -> Regime:
@@ -238,13 +204,139 @@ class Params:
         self._cdata = ffi.new("lion_params_t *", _lionl.lion_params_default())
 
 
+class State:
+    __slots__ = ("_app",)
+
+    def __init__(self, app: "App"):
+        self._app = app
+
+    def as_dict(self) -> dict:
+        return {
+            "time": self.time,
+            "step": self.step,
+            "power": self.power,
+            "ambient_temperature": self.ambient_temperature,
+            "voltage": self.voltage,
+            "current": self.current,
+            "open_circuit_voltage": self.open_circuit_voltage,
+            "internal_resistance": self.internal_resistance,
+            "ehc": self.ehc,
+            "generated_heat": self.generated_heat,
+            "internal_temperature": self.internal_temperature,
+            "surface_temperature": self.surface_temperature,
+            "kappa": self.kappa,
+            "soc_nominal": self.soc_nominal,
+            "capacity_nominal": self.capacity_nominal,
+            "soc_use": self.soc_use,
+            "capacity_use": self.capacity_use,
+        }
+
+    def as_table(self) -> str:
+        return f"""\
+*** App state ***
+-> time: {self.time}
+-> step: {self.step}
+-> power: {self.power}
+-> ambient_temperature: {self.ambient_temperature}
+-> voltage: {self.voltage}
+-> current: {self.current}
+-> open_circuit_voltage: {self.open_circuit_voltage}
+-> internal_resistance: {self.internal_resistance}
+-> ehc: {self.ehc}
+-> generated_heat: {self.generated_heat}
+-> internal_temperature: {self.internal_temperature}
+-> surface_temperature: {self.surface_temperature}
+-> kappa: {self.kappa}
+-> soc_nominal: {self.soc_nominal}
+-> capacity_nominal: {self.capacity_nominal}
+-> soc_use: {self.soc_use}
+-> capacity_use: {self.capacity_use}
+"""
+
+    @property
+    def time(self) -> float:
+        return self._app._cdata.state.time
+
+    @property
+    def step(self) -> int:
+        return self._app._cdata.state.step
+
+    @property
+    def power(self) -> float:
+        return self._app._cdata.state.power
+
+    @property
+    def ambient_temperature(self) -> float:
+        return self._app._cdata.state.ambient_temperature
+
+    @property
+    def voltage(self) -> float:
+        return self._app._cdata.state.voltage
+
+    @property
+    def current(self) -> float:
+        return self._app._cdata.state.current
+
+    @property
+    def open_circuit_voltage(self) -> float:
+        return self._app._cdata.state.open_circuit_voltage
+
+    @property
+    def internal_resistance(self) -> float:
+        return self._app._cdata.state.internal_resistance
+
+    @property
+    def ehc(self) -> float:
+        return self._app._cdata.state.ehc
+
+    @property
+    def generated_heat(self) -> float:
+        return self._app._cdata.state.generated_heat
+
+    @property
+    def internal_temperature(self) -> float:
+        return self._app._cdata.state.internal_temperature
+
+    @property
+    def surface_temperature(self) -> float:
+        return self._app._cdata.state.surface_temperature
+
+    @property
+    def kappa(self) -> float:
+        return self._app._cdata.state.kappa
+
+    @property
+    def soc_nominal(self) -> float:
+        return self._app._cdata.state.soc_nominal
+
+    @property
+    def capacity_nominal(self) -> float:
+        return self._app._cdata.state.capacity_nominal
+
+    @property
+    def soc_use(self) -> float:
+        return self._app._cdata.state.soc_use
+
+    @property
+    def capacity_use(self) -> float:
+        return self._app._cdata.state.capacity_use
+
+
 class App:
     """Lion application to run"""
 
-    __slots__ = ("_cdata", "config", "params")
+    __slots__ = ("_cdata", "_initialized", "state", "config", "params")
 
-    def __init__(self, config: Config | None = None, params: Params | None = None):
+    def __init__(
+        self,
+        config: Config | None = None,
+        params: Params | None = None,
+        init: Callable[["App"], State] | None = None,
+        update: Callable[["App"], State] | None = None,
+        finished: Callable[["App"], State] | None = None,
+    ):
         self._cdata = ffi.new("lion_app_t *")
+        self._initialized = False
         if config is None:
             self.config = Config()
         else:
@@ -253,8 +345,16 @@ class App:
             self.params = Params()
         else:
             self.params = params
-
         _lionl.lion_app_new(self.config._cdata, self.params._cdata, self._cdata)
+
+        self.state = State(self)
+
+        if init is not None:
+            self.init_hook = init
+        if update is not None:
+            self.update_hook = update
+        if finished is not None:
+            self.finished_hook = finished
 
     def __del__(self):
         try:
@@ -262,8 +362,21 @@ class App:
         except LionException as e:
             LOGGER.error(f"App cleanup failed with exception '{e}'")
 
+    def init(self, initial_power: float, initial_amb_temp: float):
+        ffi_call(
+            _lionl.lion_app_init(self._cdata, initial_power, initial_amb_temp),
+            "Failed initializing",
+        )
+        self._initialized = True
+
     def step(self, power: float, amb_temp: float):
-        ffi_call(_lionl.lion_app_step(self._cdata, power, amb_temp), "Failed stepping")
+        if not self._initialized:
+            LOGGER.warn("Auto-initializing before step")
+            self.init(power, amb_temp)
+        else:
+            ffi_call(
+                _lionl.lion_app_step(self._cdata, power, amb_temp), "Failed stepping"
+            )
 
     def run(self, power: Vectorizable, amb_temp: Vectorizable):
         try:
@@ -279,3 +392,30 @@ class App:
                 f"Could not create `Vector` from type '{
                     type(power).__name__}'"
             )
+
+    @property
+    def init_hook(self) -> None:
+        raise NotImplementedError("Can't fetch C functions")
+
+    @init_hook.setter
+    def init_hook(self, new_func: Callable[["App"], Status]):
+        _generate_init_pythoncb(self, new_func)
+        self._cdata.init_hook = _lionl.init_pythoncb
+
+    @property
+    def update_hook(self) -> None:
+        raise NotImplementedError("Can't fetch C functions")
+
+    @update_hook.setter
+    def update_hook(self, new_func: Callable[["App"], Status]):
+        _generate_update_pythoncb(self, new_func)
+        self._cdata.update_hook = _lionl.update_pythoncb
+
+    @property
+    def finished_hook(self) -> None:
+        raise NotImplementedError("Can't fetch C functions")
+
+    @finished_hook.setter
+    def finished_hook(self, new_func: Callable[["App"], Status]):
+        _generate_finished_pythoncb(self, new_func)
+        self._cdata.finished_hook = _lionl.finished_pythoncb
