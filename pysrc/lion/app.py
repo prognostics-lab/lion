@@ -212,6 +212,28 @@ class State:
     def __init__(self, app: "App"):
         self._app = app
 
+    @staticmethod
+    def get_keys() -> list:
+        return [
+            "time",
+            "step",
+            "power",
+            "ambient_temperature",
+            "voltage",
+            "current",
+            "open_circuit_voltage",
+            "internal_resistance",
+            "ehc",
+            "generated_heat",
+            "internal_temperature",
+            "surface_temperature",
+            "kappa",
+            "soc_nominal",
+            "capacity_nominal",
+            "soc_use",
+            "capacity_use",
+        ]
+
     def as_dict(self) -> dict:
         return {
             "time": self.time,
@@ -232,6 +254,50 @@ class State:
             "soc_use": self.soc_use,
             "capacity_use": self.capacity_use,
         }
+
+    def as_list(self) -> list:
+        return [
+            self.time,
+            self.step,
+            self.power,
+            self.ambient_temperature,
+            self.voltage,
+            self.current,
+            self.open_circuit_voltage,
+            self.internal_resistance,
+            self.ehc,
+            self.generated_heat,
+            self.internal_temperature,
+            self.surface_temperature,
+            self.kappa,
+            self.soc_nominal,
+            self.capacity_nominal,
+            self.soc_use,
+            self.capacity_use,
+        ]
+
+    def as_numpy(self) -> np.ndarray:
+        return np.array(
+            [
+                self.time,
+                self.step,
+                self.power,
+                self.ambient_temperature,
+                self.voltage,
+                self.current,
+                self.open_circuit_voltage,
+                self.internal_resistance,
+                self.ehc,
+                self.generated_heat,
+                self.internal_temperature,
+                self.surface_temperature,
+                self.kappa,
+                self.soc_nominal,
+                self.capacity_nominal,
+                self.soc_use,
+                self.capacity_use,
+            ]
+        )
 
     def as_table(self) -> str:
         return f"""\
