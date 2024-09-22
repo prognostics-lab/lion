@@ -29,6 +29,6 @@ CLIB_DLL_NAMES = [
 ]
 
 INCLUDE_DIRS = [
-    str(Path.joinpath(CSOURCES_PATH)),
-    str(Path.joinpath(CHEADER_PATH)),
+    str(Path.joinpath(CSOURCES_PATH).resolve()),
+    str(Path.joinpath(CHEADER_PATH).resolve()),
 ]

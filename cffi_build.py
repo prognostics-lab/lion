@@ -14,11 +14,8 @@ from lion_ffi.config import (
     CBIN_DEBUG_PATH,
     CBIN_RELEASE_PATH,
     CLIB_DEBUG_PATH,
-    CLIB_DLL_NAMES,
     CLIB_RELEASE_PATH,
-    CLIB_SO_NAMES,
     INCLUDE_DIRS,
-    SHLIB_PATH,
 )
 from lion_ffi.ffi import _app, _inputs, _params, _status, _vector
 
@@ -44,13 +41,15 @@ enum { LOG_TRACE, LOG_DEBUG, LOG_INFO, LOG_WARN, LOG_ERROR, LOG_FATAL };
 """
 
 FFI_CDEF = f"""
-// Typedefs
 {LIB_TYPEDEF}
+
+// Typedefs
 {_status.CTYPEDEF}
 {_params.CTYPEDEF}
 {_inputs.CTYPEDEF}
 {_app.CTYPEDEF}
 {_vector.CTYPEDEF}
+
 // Function definitions
 {_status.CDEF}
 {_params.CDEF}
@@ -59,8 +58,8 @@ FFI_CDEF = f"""
 {_app.CDEF}
 """
 
-for i, line in enumerate(FFI_CDEF.splitlines()):
-    print(f"{i:>4} | {line}")
+# for i, line in enumerate(FFI_CDEF.splitlines()):
+#     print(f"{i:>4} | {line}")
 
 LIB_SOURCE = """
 #include <lion/lion.h>
@@ -86,5 +85,5 @@ ffi_builder.set_source(
     extra_link_args=["-Wl,-rpath=lib/:lib/debug/"],
 )
 
-if __name__ == "__main__":
-    ffi_builder.compile(verbose=True)
+# if __name__ == "__main__":
+#     ffi_builder.compile(verbose=True)
