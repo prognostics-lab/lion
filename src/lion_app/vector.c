@@ -39,7 +39,6 @@ lion_status_t lion_vector_zero(lion_app_t *app, const size_t len,
 lion_status_t lion_vector_with_capacity(lion_app_t *app, const size_t capacity,
                                         const size_t data_size,
                                         lion_vector_t *out) {
-  // TODO: This is leaking??? Fix it
   void *data = lion_malloc(app, data_size * capacity);
   if (data == NULL) {
     logi_error("Could not allocate enough data");
