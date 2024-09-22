@@ -47,6 +47,9 @@ def main(power_filename, ambtemp_filename, show=False, save=False):
 
     LOGGER.info("Setting up parameters")
     params = Params()
+    params.temp.cp = 100
+    params.temp.rin = 3
+    params.temp.rout = 9
 
     LOGGER.info("Running application")
     app = App(conf, params)
