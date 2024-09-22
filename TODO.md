@@ -12,7 +12,6 @@ This file contains a list of the TODO tasks found within the source code.
 - **(`./src/lion_math/lion_math.h`)** Double check implementation of each model
 - **(`./src/lion_app/app.c`)** Evaluate implementation of concurrency
 - **(`./src/lion_app/app.c`)** Add some mechanism to avoid race conditions
-- **(`./src/lion_app/vector.c`)** This is leaking??? Fix it
 - **(`./src/lion_app/vector.c`)** Implement saving vector to csv file
 - **(`./tests/unittest/quick/test_math_differential.c`)** Add tests for all calculations
 - **(`./tests/unittest/quick/test_math_differential.c`)** Add calculation of current
