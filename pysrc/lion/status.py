@@ -1,8 +1,8 @@
 from enum import Enum
 
 import lion_ffi as _
-from _lion import ffi
-from _lion import lib as _lionl
+from lion._lion import ffi
+from lion._lion import lib as _lionl
 from lion.exceptions import LionException
 from lion_utils.logger import LOGGER
 

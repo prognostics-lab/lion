@@ -7,8 +7,8 @@ from typing import List, Self
 import lion_ffi as _
 import numpy as np
 import pandas as pd
-from _lion import ffi
-from _lion import lib as _lionl
+from lion._lion import ffi
+from lion._lion import lib as _lionl
 from lion import dtypes
 from lion.exceptions import LionException
 from lion.status import ffi_call
