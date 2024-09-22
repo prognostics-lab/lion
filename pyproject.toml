@@ -1,11 +1,41 @@
+[project]
+name = "lion"
+description = "Lithium-ion battery simulator"
+readme = "README.md"
+version = "0.1.0"
+license = {file = "LICENSE"}
+authors = [{name = "CASE"}]
+maintainers = [
+    {name = "Cristobal Allendes", email = "callendes.molina@gmail.com"},
+]
+requires-python = ">=3.6"
+keywords = ["lithium", "simulator", "gsl"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+# dependencies = ["cffi>=1.0.0", "numpy>=1.0.0"]
+
+[project.urls]
+homepage = "https://github.com/case-ev/lion"
+documentation = "https://readthedocs.org"
+repository = "https://github.com/case-ev/lion"
+
 [build-system]
-requires = ["setuptools>=42.0", "wheel"]
+requires = ["setuptools>=42.0", "wheel", "cffi"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools.packages.find]
+where = ["pysrc"]
+
 [tool.pytest.ini_options]
-testpaths = [
-    "tests",
-]
-pythonpath = [
-    "pysrc",
-]
+testpaths = ["tests/python"]
+pythonpath = ["pysrc"]
+
