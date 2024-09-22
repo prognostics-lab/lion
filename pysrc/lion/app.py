@@ -195,15 +195,286 @@ ParamsVFT = namedtuple("ParamsVFT", "k1, k2, tref")
 ParamsTemp = namedtuple("ParamsTemp", "cp, rin, rout")
 
 
+class _ParamsInit:
+    __slots__ = ("_params",)
+
+    def __init__(self, params: "Params"):
+        self._params = params
+
+    @property
+    def soc(self) -> float:
+        return self._params._cdata.init.initial_soc
+
+    @property
+    def soh(self) -> float:
+        return self._params._cdata.init.initial_soh
+
+    @property
+    def temp_in(self) -> float:
+        return self._params._cdata.init.initial_internal_temperature
+
+    @property
+    def capacity(self) -> float:
+        return self._params._cdata.init.initial_capacity
+
+    @property
+    def current_guess(self) -> float:
+        return self._params._cdata.init.initial_current_guess
+
+    @soc.setter
+    def soc(self, new_val: float):
+        self._params._cdata.init.initial_soc = new_val
+
+    @soh.setter
+    def soh(self, new_val: float):
+        self._params._cdata.init.initial_soh = new_val
+
+    @temp_in.setter
+    def temp_in(self, new_val: float):
+        self._params._cdata.init.initial_internal_temperature = new_val
+
+    @capacity.setter
+    def capacity(self, new_val: float):
+        self._params._cdata.init.initial_capacity = new_val
+
+    @current_guess.setter
+    def current_guess(self, new_val: float):
+        self._params._cdata.init.initial_current_guess = new_val
+
+
+class _ParamsEHC:
+    __slots__ = ("_params",)
+
+    def __init__(self, params: "Params"):
+        self._params = params
+
+    @property
+    def a(self) -> float:
+        return self._params._cdata.ehc.a
+    @property
+    def b(self) -> float:
+        return self._params._cdata.ehc.b
+    @property
+    def mu(self) -> float:
+        return self._params._cdata.ehc.mu
+    @property
+    def kappa(self) -> float:
+        return self._params._cdata.ehc.kappa
+    @property
+    def sigma(self) -> float:
+        return self._params._cdata.ehc.sigma
+    @property
+    def l(self) -> float:
+        return self._params._cdata.ehc.l
+
+    @a.setter
+    def a(self, new_val: float):
+        self._params._cdata.ehc.a = new_val
+
+    @b.setter
+    def b(self, new_val: float):
+        self._params._cdata.ehc.b = new_val
+
+    @mu.setter
+    def mu(self, new_val: float):
+        self._params._cdata.ehc.mu = new_val
+
+    @kappa.setter
+    def kapp(self, new_val: float):
+        self._params._cdata.ehc.kappa = new_val
+
+    @sigma.setter
+    def sigma(self, new_val: float):
+        self._params._cdata.ehc.sigma = new_val
+
+    @l.setter
+    def l(self, new_val: float):
+        self._params._cdata.ehc.l = new_val
+
+class _ParamsVFT:
+    __slots__ = ("_params",)
+
+    def __init__(self, params: "Params"):
+        self._params = params
+
+    @property
+    def k1(self) -> float:
+        return self._params._cdata.vft.k1
+    @property
+    def k2(self) -> float:
+        return self._params._cdata.vft.k2
+    @property
+    def tref(self) -> float:
+        return self._params._cdata.vft.tref
+
+    @k1.setter
+    def k1(self, new_val: float):
+        self._params._cdata.vft.k1 = new_val
+
+    @k2.setter
+    def k2(self, new_val: float):
+        self._params._cdata.vft.k2 = new_val
+
+    @tref.setter
+    def tref(self, new_val: float):
+        self._params._cdata.vft.tref = new_val
+
+
+class _ParamsTemp:
+    __slots__ = ("_params",)
+
+    def __init__(self, params: "Params"):
+        self._params = params
+
+    @property
+    def cp(self) -> float:
+        return self._params._cdata.t.cp
+    @property
+    def rin(self) -> float:
+        return self._params._cdata.t.rin
+    @property
+    def rout(self) -> float:
+        return self._params._cdata.t.rout
+
+    @cp.setter
+    def cp(self, new_val: float):
+        self._params._cdata.t.cp = new_val
+
+    @rin.setter
+    def rin(self, new_val: float):
+        self._params._cdata.t.rin = new_val
+
+    @rout.setter
+    def rout(self, new_val: float):
+        self._params._cdata.t.rout = new_val
+
+
+class _ParamsOCV:
+    __slots__ = ("_params",)
+
+    def __init__(self, params: "Params"):
+        self._params = params
+
+    @property
+    def alpha(self) -> float:
+        return self._params._cdata.ocv.alpha
+    @property
+    def beta(self) -> float:
+        return self._params._cdata.ocv.beta
+    @property
+    def gamma(self) -> float:
+        return self._params._cdata.ocv.gamma
+    @property
+    def v0(self) -> float:
+        return self._params._cdata.ocv.v0
+    @property
+    def vl(self) -> float:
+        return self._params._cdata.ocv.vl
+
+    @alpha.setter
+    def alpha(self, new_val: float):
+        self._params._cdata.ocv.alpha = new_val
+
+    @beta.setter
+    def beta(self, new_val: float):
+        self._params._cdata.ocv.beta = new_val
+
+    @gamma.setter
+    def gamma(self, new_val: float):
+        self._params._cdata.ocv.gamma = new_val
+
+    @v0.setter
+    def v0(self, new_val: float):
+        self._params._cdata.ocv.v0 = new_val
+
+    @vl.setter
+    def vl(self, new_val: float):
+        self._params._cdata.ocv.vl = new_val
+
+class _ParamsRInt:
+    __slots__ = ("_params",)
+
+    def __init__(self, params: "Params"):
+        self._params = params
+
+    @property
+    def c40(self) -> float:
+        return self._params._cdata.rint.c40
+
+    @property
+    def c20(self) -> float:
+        return self._params._cdata.rint.c20
+
+    @property
+    def c10(self) -> float:
+        return self._params._cdata.rint.c10
+
+    @property
+    def c4(self) -> float:
+        return self._params._cdata.rint.c4
+
+    @property
+    def d5(self) -> float:
+        return self._params._cdata.rint.d5
+
+    @property
+    def d10(self) -> float:
+        return self._params._cdata.rint.d10
+
+    @property
+    def d15(self) -> float:
+        return self._params._cdata.rint.d15
+
+    @property
+    def d30(self) -> float:
+        return self._params._cdata.rint.d30
+
+    @c40.setter
+    def c40(self, new_val: float):
+        self._params._cdata.rint.c40 = new_val
+
+    @c20.setter
+    def c20(self, new_val: float):
+        self._params._cdata.rint.c20 = new_val
+
+    @c10.setter
+    def c10(self, new_val: float):
+        self._params._cdata.rint.c10 = new_val
+
+    @c4.setter
+    def c4(self, new_val: float):
+        self._params._cdata.rint.c4 = new_val
+
+    @d5.setter
+    def d5(self, new_val: float):
+        self._params._cdata.rint.d5 = new_val
+
+    @d10.setter
+    def d10(self, new_val: float):
+        self._params._cdata.rint.d10 = new_val
+
+    @d15.setter
+    def d15(self, new_val: float):
+        self._params._cdata.rint.d15 = new_val
+
+    @d30.setter
+    def d30(self, new_val: float):
+        self._params._cdata.rint.d30 = new_val
+
+
 class Params:
     """Lion application parameters"""
 
-    __slots__ = ("_cdata",)
+    __slots__ = ("_cdata", "init", "ehc", "ocv", "vft", "temp", "rint")
 
     def __init__(self):
         self._cdata = ffi.new("lion_params_t *", _lionl.lion_params_default())
-
-    # TODO: Figure out how to do parameters
+        self.init = _ParamsInit(self)
+        self.ehc = _ParamsEHC(self)
+        self.ocv = _ParamsOCV(self)
+        self.vft = _ParamsVFT(self)
+        self.temp = _ParamsTemp(self)
+        self.rint = _ParamsRInt(self)
 
 
 class State:

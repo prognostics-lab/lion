@@ -68,13 +68,13 @@ double jac_1_0(lion_app_state_t *state, lion_params_t *params) {
       lion_current_grad_voc(state->power, state->open_circuit_voltage,
                             state->internal_resistance, params);
   double term3 = lion_voc_grad(state->soc_use, params);
-  return term1 * term2 * term3 * state->kappa / params->t.cp;
+  return term1 * term2 * term3 * state->kappa / params->temp.cp;
 }
 
 double jac_1_1(lion_app_state_t *state, lion_params_t *params) {
-  double rt = params->t.rin + params->t.rout;
-  double t = 1.0 / (params->t.cp * rt);
-  return -t - state->ehc / params->t.cp;
+  double rt = params->temp.rin + params->temp.rout;
+  double t = 1.0 / (params->temp.cp * rt);
+  return -t - state->ehc / params->temp.cp;
 }
 
 int lion_slv_jac(double t, const double state[], double *dfdy, double dfdt[],

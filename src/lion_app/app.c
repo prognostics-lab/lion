@@ -180,7 +180,7 @@ static void lion_app_log_startup_info(lion_app_t *app) {
   logi_info(" * Absolute epsilon               : %f", app->conf->sim_epsabs);
   logi_info(" * Relative epsilon               : %f", app->conf->sim_epsrel);
   logi_info(" * Minimization max iterations    : %d iterations",
-            app->conf->sim_min_max_iter);
+            app->conf->sim_min_maxiter);
   if (app->init_hook != NULL) {
     logi_info(" * Init hook                      : YES");
   } else {
@@ -198,16 +198,16 @@ static void lion_app_log_startup_info(lion_app_t *app) {
   }
   logi_info(" * Initialization parameters");
   logi_info(" |-> State of charge              : %f %%",
-            100.0 * app->params->init.initial_soc);
+            100.0 * app->params->init.soc);
   logi_info(" |-> State of health              : %f %%",
-            100.0 * app->params->init.initial_soh);
+            100.0 * app->params->init.soh);
   logi_info(" |-> Internal temperature         : %f K",
-            app->params->init.initial_internal_temperature);
+            app->params->init.temp_in);
   logi_info(" |-> Nominal capacity             : %f C (%f Ah)",
-            app->params->init.initial_capacity,
-            app->params->init.initial_capacity / 3600.0);
+            app->params->init.capacity,
+            app->params->init.capacity / 3600.0);
   logi_info(" |-> Current guess                : %f A",
-            app->params->init.initial_current_guess);
+            app->params->init.current_guess);
   logi_info(" * Entropic heat coefficient parameters");
   logi_info(" |-> a                            : %f V/K", app->params->ehc.a);
   logi_info(" |-> b                            : %f V/K", app->params->ehc.b);
@@ -226,10 +226,10 @@ static void lion_app_log_startup_info(lion_app_t *app) {
   logi_info(" |-> k2                           : %f K", app->params->vft.k2);
   logi_info(" |-> Reference temperature        : %f K", app->params->vft.tref);
   logi_info(" * Temperature model");
-  logi_info(" |-> Heat capacity                : %f J K-1", app->params->t.cp);
-  logi_info(" |-> Internal thermal resistivity : %f K W-1", app->params->t.rin);
+  logi_info(" |-> Heat capacity                : %f J K-1", app->params->temp.cp);
+  logi_info(" |-> Internal thermal resistivity : %f K W-1", app->params->temp.rin);
   logi_info(" |-> Outter thermal resistivity   : %f K W-1",
-            app->params->t.rout);
+            app->params->temp.rout);
   logi_info("+-------------------------------------------------------+");
   logi_info("|################# END OF INFORMATION ##################|");
   logi_info("+-------------------------------------------------------+");
@@ -303,9 +303,9 @@ lion_status_t _init_initial_state(lion_app_t *app, double initial_power,
   // The current is set at first because it is used as an initial guess
   // for the optimization problem
   app->state.current = 0.0;
-  app->state.soc_nominal = app->params->init.initial_soc;
+  app->state.soc_nominal = app->params->init.soc;
   app->state.internal_temperature =
-      app->params->init.initial_internal_temperature;
+      app->params->init.temp_in;
   app->state.time = 0.0;
   app->state.step = 0;
   logi_debug("Setting first inputs");

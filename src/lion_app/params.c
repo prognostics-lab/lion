@@ -3,11 +3,11 @@
 const lion_params_t LION_APP_PARAMS_DEFAULT = {
     .init =
         {
-            .initial_soc = 0.1,
-            .initial_internal_temperature = 298.0,
-            .initial_soh = 1.0,
-            .initial_capacity = 14400.0,
-            .initial_current_guess = 10.0,
+            .soc = 0.1,
+            .temp_in = 298.0,
+            .soh = 1.0,
+            .capacity = 14400.0,
+            .current_guess = 10.0,
         },
     .ehc =
         {
@@ -32,7 +32,7 @@ const lion_params_t LION_APP_PARAMS_DEFAULT = {
             .k2 = 209.9,
             .tref = 298,
         },
-    .t =
+    .temp =
         {
             .cp = 100.0,
             .rin = 3.0,

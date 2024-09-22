@@ -88,7 +88,7 @@ typedef struct lion_app_config {
   double sim_step_seconds;
   double sim_epsabs;
   double sim_epsrel;
-  uint64_t sim_min_max_iter;
+  uint64_t sim_min_maxiter;
 
   /* Logging configuration */
 
