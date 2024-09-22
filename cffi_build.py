@@ -23,46 +23,6 @@ from lion_ffi.config import (
 from lion_ffi.ffi import _app, _inputs, _params, _status, _vector
 
 
-def _build_shared_lib() -> bool:
-    """Build the underlying C library"""
-    # TODO: Implement building the C library from Python
-    return False
-
-
-# Manually copy the corresponding shared libraries
-def _get_shared_lib(flag=False):
-    if os.path.exists(str(Path.joinpath(CLIB_RELEASE_PATH, CLIB_SO_NAMES[0]))):
-        path = CLIB_RELEASE_PATH
-        files = CLIB_SO_NAMES
-    elif os.path.exists(str(Path.joinpath(CLIB_DEBUG_PATH, CLIB_SO_NAMES[0]))):
-        path = CLIB_DEBUG_PATH
-        files = CLIB_SO_NAMES
-    elif os.path.exists(str(Path.joinpath(CBIN_RELEASE_PATH, CLIB_DLL_NAMES[0]))):
-        path = CBIN_RELEASE_PATH
-        files = CLIB_DLL_NAMES
-    elif os.path.exists(str(Path.joinpath(CBIN_DEBUG_PATH, CLIB_DLL_NAMES[0]))):
-        path = CBIN_DEBUG_PATH
-        files = CLIB_DLL_NAMES
-    else:
-        if flag:
-            return None
-        if not _build_shared_lib():
-            return None
-        return _get_shared_lib(True)
-    return path, files
-
-
-# ret = _get_shared_lib()
-# if ret is None:
-#     print("ERROR: Could not find shared library files", file=sys.stderr)
-#     sys.exit(1)
-# path, files = ret
-# for f in files:
-#     shutil.copyfile(str(Path.joinpath(path, f)), str(Path.joinpath(SHLIB_PATH, f)))
-
-
-# Parameters for the FFI
-
 LIB_TYPEDEF = """
 typedef struct lion_mf_sigmoid_params {
   double a;
@@ -113,7 +73,7 @@ ffi_builder = cffi.FFI()
 
 ffi_builder.cdef(FFI_CDEF)
 ffi_builder.set_source(
-    "_lion",
+    "lion._lion",
     LIB_SOURCE,
     libraries=["lion_app", "lion_math", "lion_utils"],
     library_dirs=[
@@ -125,3 +85,6 @@ ffi_builder.set_source(
     include_dirs=INCLUDE_DIRS,
     extra_link_args=["-Wl,-rpath=lib/:lib/debug/"],
 )
+
+if __name__ == "__main__":
+    ffi_builder.compile(verbose=True)
