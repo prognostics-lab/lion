@@ -16,7 +16,7 @@ const lion_params_t LION_APP_PARAMS_DEFAULT = {
             .mu = 0.4,
             .kappa = 3,
             .sigma = 0.05,
-            .lambda = 7,
+            .l = 7,
         },
     .ocv =
         {

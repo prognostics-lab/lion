@@ -214,7 +214,7 @@ static void lion_app_log_startup_info(lion_app_t *app) {
   logi_info(" |-> kappa                        : %f", app->params->ehc.kappa);
   logi_info(" |-> mu                           : %f", app->params->ehc.mu);
   logi_info(" |-> sigma                        : %f", app->params->ehc.sigma);
-  logi_info(" |-> lambda                       : %f", app->params->ehc.lambda);
+  logi_info(" |-> l                            : %f", app->params->ehc.l);
   logi_info(" * Open circuit voltage");
   logi_info(" |-> alpha                        : %f", app->params->ocv.alpha);
   logi_info(" |-> beta                         : %f", app->params->ocv.beta);

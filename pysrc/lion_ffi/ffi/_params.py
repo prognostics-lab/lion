@@ -16,7 +16,7 @@ typedef struct lion_params_ehc {
   double mu;
   double kappa;
   double sigma;
-  double lambda;
+  double l;
 } lion_params_ehc_t;
 
 typedef struct lion_params_vft {
