@@ -173,11 +173,11 @@ class Config:
 
     @property
     def sim_min_maxiter(self) -> int:
-        return self._cdata.sim_min_max_iter
+        return self._cdata.sim_min_maxiter
 
     @sim_min_maxiter.setter
     def sim_min_maxiter(self, new_maxiter: int):
-        self._cdata.sim_min_max_iter = new_maxiter
+        self._cdata.sim_min_maxiter = new_maxiter
 
     @property
     def log_stdlvl(self) -> LogLvl:
@@ -188,13 +188,6 @@ class Config:
         self._cdata.log_stdlvl = new_lvl.value
 
 
-ParamsInit = namedtuple("ParamsInit", "soc, soh, temp_in, capacity, current_guess")
-ParamsEHC = namedtuple("ParamsEHC", "a, b, kappa, mu, sigma, l")
-ParamsOCV = namedtuple("ParamsOCV", "alpha, beta, gamma, v0, vl")
-ParamsVFT = namedtuple("ParamsVFT", "k1, k2, tref")
-ParamsTemp = namedtuple("ParamsTemp", "cp, rin, rout")
-
-
 class _ParamsInit:
     __slots__ = ("_params",)
 
@@ -203,43 +196,43 @@ class _ParamsInit:
 
     @property
     def soc(self) -> float:
-        return self._params._cdata.init.initial_soc
+        return self._params._cdata.init.soc
 
     @property
     def soh(self) -> float:
-        return self._params._cdata.init.initial_soh
+        return self._params._cdata.init.soh
 
     @property
     def temp_in(self) -> float:
-        return self._params._cdata.init.initial_internal_temperature
+        return self._params._cdata.init.temp_in
 
     @property
     def capacity(self) -> float:
-        return self._params._cdata.init.initial_capacity
+        return self._params._cdata.init.capacity
 
     @property
     def current_guess(self) -> float:
-        return self._params._cdata.init.initial_current_guess
+        return self._params._cdata.init.current_guess
 
     @soc.setter
     def soc(self, new_val: float):
-        self._params._cdata.init.initial_soc = new_val
+        self._params._cdata.init.soc = new_val
 
     @soh.setter
     def soh(self, new_val: float):
-        self._params._cdata.init.initial_soh = new_val
+        self._params._cdata.init.soh = new_val
 
     @temp_in.setter
     def temp_in(self, new_val: float):
-        self._params._cdata.init.initial_internal_temperature = new_val
+        self._params._cdata.init.temp_in = new_val
 
     @capacity.setter
     def capacity(self, new_val: float):
-        self._params._cdata.init.initial_capacity = new_val
+        self._params._cdata.init.capacity = new_val
 
     @current_guess.setter
     def current_guess(self, new_val: float):
-        self._params._cdata.init.initial_current_guess = new_val
+        self._params._cdata.init.current_guess = new_val
 
 
 class _ParamsEHC:
@@ -251,18 +244,23 @@ class _ParamsEHC:
     @property
     def a(self) -> float:
         return self._params._cdata.ehc.a
+
     @property
     def b(self) -> float:
         return self._params._cdata.ehc.b
+
     @property
     def mu(self) -> float:
         return self._params._cdata.ehc.mu
+
     @property
     def kappa(self) -> float:
         return self._params._cdata.ehc.kappa
+
     @property
     def sigma(self) -> float:
         return self._params._cdata.ehc.sigma
+
     @property
     def l(self) -> float:
         return self._params._cdata.ehc.l
@@ -291,6 +289,7 @@ class _ParamsEHC:
     def l(self, new_val: float):
         self._params._cdata.ehc.l = new_val
 
+
 class _ParamsVFT:
     __slots__ = ("_params",)
 
@@ -300,9 +299,11 @@ class _ParamsVFT:
     @property
     def k1(self) -> float:
         return self._params._cdata.vft.k1
+
     @property
     def k2(self) -> float:
         return self._params._cdata.vft.k2
+
     @property
     def tref(self) -> float:
         return self._params._cdata.vft.tref
@@ -328,25 +329,27 @@ class _ParamsTemp:
 
     @property
     def cp(self) -> float:
-        return self._params._cdata.t.cp
+        return self._params._cdata.temp.cp
+
     @property
     def rin(self) -> float:
-        return self._params._cdata.t.rin
+        return self._params._cdata.temp.rin
+
     @property
     def rout(self) -> float:
-        return self._params._cdata.t.rout
+        return self._params._cdata.temp.rout
 
     @cp.setter
     def cp(self, new_val: float):
-        self._params._cdata.t.cp = new_val
+        self._params._cdata.temp.cp = new_val
 
     @rin.setter
     def rin(self, new_val: float):
-        self._params._cdata.t.rin = new_val
+        self._params._cdata.temp.rin = new_val
 
     @rout.setter
     def rout(self, new_val: float):
-        self._params._cdata.t.rout = new_val
+        self._params._cdata.temp.rout = new_val
 
 
 class _ParamsOCV:
@@ -358,15 +361,19 @@ class _ParamsOCV:
     @property
     def alpha(self) -> float:
         return self._params._cdata.ocv.alpha
+
     @property
     def beta(self) -> float:
         return self._params._cdata.ocv.beta
+
     @property
     def gamma(self) -> float:
         return self._params._cdata.ocv.gamma
+
     @property
     def v0(self) -> float:
         return self._params._cdata.ocv.v0
+
     @property
     def vl(self) -> float:
         return self._params._cdata.ocv.vl
@@ -390,6 +397,7 @@ class _ParamsOCV:
     @vl.setter
     def vl(self, new_val: float):
         self._params._cdata.ocv.vl = new_val
+
 
 class _ParamsRInt:
     __slots__ = ("_params",)

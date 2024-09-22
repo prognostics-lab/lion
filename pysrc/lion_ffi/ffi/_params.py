@@ -3,11 +3,11 @@ CTYPEDEF = """
 #define LION_FUZZY_SETS_DEGREE 4
 
 typedef struct lion_params_init {
-  double initial_soc;
-  double initial_internal_temperature;
-  double initial_soh;
-  double initial_capacity;
-  double initial_current_guess;
+  double soc;
+  double temp_in;
+  double soh;
+  double capacity;
+  double current_guess;
 } lion_params_init_t;
 
 typedef struct lion_params_ehc {
@@ -58,7 +58,7 @@ typedef struct lion_params {
   lion_params_ehc_t ehc;
   lion_params_ocv_t ocv;
   lion_params_vft_t vft;
-  lion_params_temp_t t;
+  lion_params_temp_t temp;
   lion_params_rint_t rint;
 } lion_params_t;
 """
