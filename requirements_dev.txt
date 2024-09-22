@@ -1,2 +1,4 @@
 pandas==2.2.2
 matplotlib=3.9.2
+setuptools==75.1.0
+sphinx=8.0.2
