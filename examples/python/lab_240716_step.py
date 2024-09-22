@@ -33,4 +33,3 @@ def main(power_filename, ambtemp_filename):
 
     LOGGER.info("Done!")
     print(df)
-    df.to_csv("examples/python/lab_240716_step/simdata.csv")

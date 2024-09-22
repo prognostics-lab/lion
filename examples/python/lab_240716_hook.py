@@ -43,7 +43,7 @@ def main(power_filename, ambtemp_filename, show=False, save=False):
     conf.sim_step_seconds = 1
     conf.sim_epsabs = 1e-1
     conf.sim_epsrel = 1e-1
-    conf.sim_min_maxiter = 10000
+    conf.sim_min_maxiter = 1000000
 
     LOGGER.info("Setting up parameters")
     params = Params()

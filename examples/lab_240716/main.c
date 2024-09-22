@@ -149,15 +149,15 @@ int main(int argc, char *argv[]) {
   conf.sim_step_seconds = 1.0;
   conf.sim_epsabs = 1e-1;
   conf.sim_epsrel = 1e-1;
-  conf.sim_min_max_iter = 10000;
+  conf.sim_min_maxiter = 10000;
 
   log_info("Setting up simulation parameters");
   lion_params_t params = lion_params_default();
-  params.init.initial_soc = 0.1;
-  params.init.initial_internal_temperature = 296.0;
-  params.init.initial_soh = 1.0;
-  params.init.initial_capacity = 14400.0;
-  params.init.initial_current_guess = 10.0;
+  params.init.soc = 0.1;
+  params.init.temp_in = 296.0;
+  params.init.soh = 1.0;
+  params.init.capacity = 14400.0;
+  params.init.current_guess = 10.0;
 
   log_info("Creating application");
   lion_app_t app;
