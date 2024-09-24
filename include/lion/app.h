@@ -161,6 +161,12 @@ lion_status_t lion_app_step(lion_app_t *app, double power,
                             double ambient_temperature);
 lion_status_t lion_app_run(lion_app_t *app, lion_vector_t *power,
                            lion_vector_t *ambient_temperature);
+typedef struct lion_version {
+  const char *major;
+  const char *minor;
+  const char *patch;
+} lion_version_t;
+lion_version_t lion_app_get_version(lion_app_t *app);
 
 int lion_app_should_close(lion_app_t *app);
 uint64_t lion_app_max_iters(lion_app_t *app);

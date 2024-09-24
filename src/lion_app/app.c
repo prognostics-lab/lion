@@ -159,9 +159,9 @@ static void lion_app_log_startup_info(lion_app_t *app) {
   logi_info("+-------------------------------------------------------+");
   logi_info(" * Application name               : %s", app->conf->app_name);
 #ifdef LION_ENGINE_VERSION_MAJOR
-  logi_info(" * Engine version                 : %s.%s.%s",
-            LION_ENGINE_VERSION_MAJOR, LION_ENGINE_VERSION_MINOR,
-            LION_ENGINE_VERSION_PATCH);
+  lion_version_t ver = lion_app_get_version(app);
+  logi_info(" * Engine version                 : %s.%s.%s", ver.major,
+            ver.minor, ver.patch);
 #else
   logi_info(" * Engine version                 : N/A");
 #endif
@@ -208,8 +208,7 @@ static void lion_app_log_startup_info(lion_app_t *app) {
   logi_info(" |-> Internal temperature         : %f K",
             app->params->init.temp_in);
   logi_info(" |-> Nominal capacity             : %f C (%f Ah)",
-            app->params->init.capacity,
-            app->params->init.capacity / 3600.0);
+            app->params->init.capacity, app->params->init.capacity / 3600.0);
   logi_info(" |-> Current guess                : %f A",
             app->params->init.current_guess);
   logi_info(" * Entropic heat coefficient parameters");
@@ -230,8 +229,10 @@ static void lion_app_log_startup_info(lion_app_t *app) {
   logi_info(" |-> k2                           : %f K", app->params->vft.k2);
   logi_info(" |-> Reference temperature        : %f K", app->params->vft.tref);
   logi_info(" * Temperature model");
-  logi_info(" |-> Heat capacity                : %f J K-1", app->params->temp.cp);
-  logi_info(" |-> Internal thermal resistivity : %f K W-1", app->params->temp.rin);
+  logi_info(" |-> Heat capacity                : %f J K-1",
+            app->params->temp.cp);
+  logi_info(" |-> Internal thermal resistivity : %f K W-1",
+            app->params->temp.rin);
   logi_info(" |-> Outter thermal resistivity   : %f K W-1",
             app->params->temp.rout);
   logi_info("+-------------------------------------------------------+");
@@ -308,8 +309,7 @@ lion_status_t _init_initial_state(lion_app_t *app, double initial_power,
   // for the optimization problem
   app->state.current = 0.0;
   app->state.soc_nominal = app->params->init.soc;
-  app->state.internal_temperature =
-      app->params->init.temp_in;
+  app->state.internal_temperature = app->params->init.temp_in;
   app->state.time = 0.0;
   app->state.step = 0;
   logi_debug("Setting first inputs");
@@ -476,6 +476,15 @@ lion_status_t lion_app_cleanup(lion_app_t *app) {
 #endif
 
   return LION_STATUS_SUCCESS;
+}
+
+lion_version_t lion_app_get_version(lion_app_t *app) {
+  lion_version_t out = {
+      .major = LION_ENGINE_VERSION_MAJOR,
+      .minor = LION_ENGINE_VERSION_MINOR,
+      .patch = LION_ENGINE_VERSION_PATCH,
+  };
+  return out;
 }
 
 int lion_app_should_close(lion_app_t *app) { return 0; }
