@@ -32,8 +32,19 @@ repository = "https://github.com/case-ev/lion"
 requires = ["setuptools>=42.0", "wheel", "cffi"]
 build-backend = "setuptools.build_meta"
 
-[tool.setuptools.packages.find]
-where = ["pysrc"]
+[tool.setuptools]
+package-dir = {"" = "pysrc"}
+packages = [
+    "lion",
+    # "lion._lion",
+    "lion_ffi",
+    "lion_ffi.config",
+    "lion_ffi.ffi",
+    "lion_utils",
+]
+
+# [tool.setuptools.packages.find]
+# where = ["pysrc"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests/python"]
