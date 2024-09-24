@@ -1,4 +1,5 @@
 import os
+import sys
 import pathlib
 
 from setuptools import setup, Extension
@@ -22,8 +23,10 @@ class cmake_ext(build_ext):
 
         build_temp = pathlib.Path(self.build_temp)
         build_temp.mkdir(parents=True, exist_ok=True)
+        print(f"Build temp {build_temp.resolve()}")
         extdir = pathlib.Path(self.get_ext_fullpath(ext.name))
         extdir.mkdir(parents=True, exist_ok=True)
+        print(f"Extension dir {extdir.resolve()}")
 
         # example of cmake args
         config = "Debug" if self.debug else "Release"
@@ -43,16 +46,17 @@ class cmake_ext(build_ext):
         self.spawn(["cmake", "-S", ".", "-B", str(build_temp)] + cmake_args)
         if not self.dry_run:
             self.spawn(["cmake", "--build", str(build_temp)] + build_args)
+            self.spawn(["cmake", "--install", str(build_temp)])
 
-        # _get_ffi_builder().compile(verbose=True)
+        # get_ffi_builder().compile(verbose=True)
 
 
 # TODO: Set version dynamically
 if __name__ == "__main__":
     setup(
-        cffi_modules=["cffi_build.py:ffi_builder"],
-        ext_modules=[CMakeExtension("lion")],
-        cmdclass={
-            "build_ext": cmake_ext,
-        },
+        # ext_modules=[CMakeExtension("lion")],
+        # cmdclass={
+        #     "build_ext": cmake_ext,
+        # },
+        cffi_modules=["pysrc/lion_ffi/cffi_build.py:ffi_builder"],
     )
