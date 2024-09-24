@@ -150,6 +150,12 @@ typedef struct lion_app {
 #endif
 } lion_app_t;
 
+typedef struct lion_version {
+  const char *major;
+  const char *minor;
+  const char *patch;
+} lion_version_t;
+
 lion_status_t lion_app_config_new(lion_app_config_t *out);
 lion_app_config_t lion_app_config_default(void);
 
@@ -161,11 +167,6 @@ lion_status_t lion_app_step(lion_app_t *app, double power,
                             double ambient_temperature);
 lion_status_t lion_app_run(lion_app_t *app, lion_vector_t *power,
                            lion_vector_t *ambient_temperature);
-typedef struct lion_version {
-  const char *major;
-  const char *minor;
-  const char *patch;
-} lion_version_t;
 lion_version_t lion_app_get_version(lion_app_t *app);
 
 int lion_app_should_close(lion_app_t *app);
