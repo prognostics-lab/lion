@@ -33,6 +33,7 @@ set(CMAKE_COMPILE_PDB_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR}/pdb)
 
 # Directory of the code
 set(PROJECT_SOURCE_DIR_LOCATION ${CMAKE_SOURCE_DIR}/src)
+set(PROJECT_HEADERS_DEST "include")
 
 # Names for the different libraries in the project
 set(PROJECT_APP_NAME ${PROJECT_NAME}_app)
@@ -90,4 +91,21 @@ if(${LION_BUILD_TESTS})
   include(CTest)
   enable_testing()
   add_subdirectory(tests)
+endif()
+
+if(${LION_INSTALL})
+  # libraries
+  install(TARGETS ${PROJECT_APP_NAME} ${PROJECT_CPP_NAME} ${PROJECT_MATH_NAME} ${PROJECT_UTILS_NAME})
+
+  # headers
+  file(GLOB BASE_HEADERS ${PROJECT_HEADERS}/lion/*.h)
+  file(GLOB BASE_SOLVER_HEADERS ${PROJECT_HEADERS}/lion/solver/*.h)
+  file(GLOB CPP_HEADERS ${PROJECT_HEADERS}/lionpp/*.hpp)
+  file(GLOB UTILS_HEADERS ${PROJECT_HEADERS}/lionu/*.h)
+  file(GLOB UTILS_FUZZY_HEADERS ${PROJECT_HEADERS}/lionu/fuzzy/*.h)
+  install(FILES ${BASE_HEADERS} DESTINATION ${PROJECT_HEADERS_DEST}/lion)
+  install(FILES ${BASE_SOLVER_HEADERS} DESTINATION ${PROJECT_HEADERS_DEST}/lion/solver)
+  install(FILES ${CPP_HEADERS} DESTINATION ${PROJECT_HEADERS_DEST}/lionpp)
+  install(FILES ${UTILS_HEADERS} DESTINATION ${PROJECT_HEADERS_DEST}/lionu)
+  install(FILES ${UTILS_FUZZY_HEADERS} DESTINATION ${PROJECT_HEADERS_DEST}/lionu/fuzzy)
 endif()

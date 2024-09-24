@@ -13,6 +13,7 @@ examples=0
 testing=0
 verbose=0
 python_install=0
+lib_install=0
 
 while getopts "hcxvisetrdwlpG:R:P:" arg
 do
@@ -25,6 +26,7 @@ do
             ;;
         i)
             params+=" -DLION_INSTALL=ON"
+            lib_install=1
             ;;
         s)
             params+=" -DBUILD_SHARED_LIBS=OFF"
@@ -144,6 +146,11 @@ if [[ "${example}" != "" ]]; then
     else
         ./bin/debug/ex.${example} $args
     fi
+fi
+
+if [[ $lib_install -eq 1 ]]; then
+    echo -e "\n\n\x1b[32;20mInstalling library in system\x1b[0m"
+    sudo cmake --install build
 fi
 
 if [ $python_install -eq 1 ]; then
