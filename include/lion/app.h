@@ -12,10 +12,6 @@
 #include "status.h"
 #include "vector.h"
 
-#define LION_ENGINE_VERSION_MAJOR 0
-#define LION_ENGINE_VERSION_MINOR 1
-#define LION_ENGINE_VERSION_PATCH 0
-
 #define _LION_LOGFILE_MAX 64
 
 #ifdef __cplusplus

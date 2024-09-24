@@ -158,9 +158,13 @@ static void lion_app_log_startup_info(lion_app_t *app) {
   logi_info("|################# STARTUP INFORMATION #################|");
   logi_info("+-------------------------------------------------------+");
   logi_info(" * Application name               : %s", app->conf->app_name);
-  logi_info(" * Engine version                 : %u.%u.%u",
+#ifdef LION_ENGINE_VERSION_MAJOR
+  logi_info(" * Engine version                 : %s.%s.%s",
             LION_ENGINE_VERSION_MAJOR, LION_ENGINE_VERSION_MINOR,
             LION_ENGINE_VERSION_PATCH);
+#else
+  logi_info(" * Engine version                 : N/A");
+#endif
   logi_info(" * `lion_app_t` struct size       : %d B", sizeof(lion_app_t));
   if (app->conf->log_dir != NULL) {
     logi_info(" * Log directory                  : %s", app->conf->log_dir);

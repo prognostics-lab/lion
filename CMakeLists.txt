@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_C_COMPILER /usr/bin/clang)
 set(CMAKE_CXX_COMPILER /usr/bin/clang++)
 
-project(lion VERSION 0.1)
+project(lion VERSION 0.1.0)
 set(CMAKE_DEPENDENCIES_DIR ${CMAKE_SOURCE_DIR}/dependencies)
 
 # Necessary libraries
@@ -63,6 +63,9 @@ endif()
 
 add_compile_definitions(LOG_USE_COLOR)
 add_compile_definitions(LION_PROJECT_ROOT_DIR="${CMAKE_SOURCE_DIR}/")
+add_compile_definitions(LION_ENGINE_VERSION_MAJOR="${PROJECT_VERSION_MAJOR}")
+add_compile_definitions(LION_ENGINE_VERSION_MINOR="${PROJECT_VERSION_MINOR}")
+add_compile_definitions(LION_ENGINE_VERSION_PATCH="${PROJECT_VERSION_PATCH}")
 
 if(${CMAKE_BUILD_TYPE} STREQUAL "Release")
   add_compile_definitions(LION_BUILD_TYPE_RELEASE)
