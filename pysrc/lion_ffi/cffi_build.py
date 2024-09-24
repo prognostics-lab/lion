@@ -7,7 +7,7 @@ from pathlib import Path
 
 import cffi
 
-src_path = Path.joinpath(Path(__file__).parent, "pysrc")
+src_path = Path.joinpath(Path(__file__).parent.parent)
 os.environ["PYTHONPATH"] = str(src_path)
 sys.path.append(str(src_path))
 from lion_ffi.config import (
