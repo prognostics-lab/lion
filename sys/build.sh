@@ -6,7 +6,7 @@
 params=""
 example=""
 platform=""
-generator=""
+generator="Ninja"
 force_generator=""
 release_mode=0
 examples=0
@@ -15,7 +15,7 @@ verbose=0
 python_install=0
 lib_install=0
 
-while getopts "hcxvisetrdwlpG:R:P:" arg
+while getopts "hcxvisetrdpG:R:P:" arg
 do
     case "$arg" in
         c)
@@ -45,12 +45,6 @@ do
             ;;
         d)
             release_mode=0
-            ;;
-        w)
-            platform="WINDOWS"
-            ;;
-        l)
-            platform="LINUX"
             ;;
         v)
             verbose=1
@@ -89,12 +83,6 @@ fi
 
 if [ $verbose -eq "1" ]; then
   params+=" -DCMAKE_VERBOSE_MAKEFILE=1"
-fi
-
-if [[ "${platform}" == "WINDOWS" ]]; then
-    generator="Visual Studio 17 2022"
-elif [[ "${platform}" == "LINUX" ]]; then
-    generator="Unix Makefiles"
 fi
 
 if [[ "${force_generator}" != "" ]]; then
