@@ -736,8 +736,7 @@ class App:
         except TypeError:
             LOGGER.error("Trying to create vector from invalid type")
             raise TypeError(
-                f"Could not create `Vector` from type '{
-                    type(power).__name__}'"
+                f"Could not create `Vector` from type '{type(power).__name__}'"
             )
 
     @property
