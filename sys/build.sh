@@ -100,7 +100,7 @@ if [ $release_mode -eq 1 ]; then
     cmake --build ./build/ --config Release
     build_type="Release"
 else
-    cmake --build ./build/
+    cmake --build ./build/ --config Debug
     build_type="Debug"
 fi
 
