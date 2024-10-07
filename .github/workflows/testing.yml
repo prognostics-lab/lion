@@ -74,7 +74,7 @@ jobs:
         run: |
           python -m venv .venv
           . .venv/bin/activate
-          pip install pytest cmake
+          pip install pytest pytest-md
           echo PATH=$PATH >> $GITHUB_ENV
 
       - name: Build Python wrapper
@@ -83,3 +83,7 @@ jobs:
 
       - name: Run pytest
         uses: pavelzw/pytest-action@v2.2.0
+        with:
+          verbose: true
+          emoji: false
+          job-summary: true
