@@ -6,7 +6,7 @@ on:
 
 jobs:
   ctest-debug:
-    name: CTest Debug
+    name: CTest Debug (Ubuntu)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -34,7 +34,7 @@ jobs:
           verbose: true
 
   ctest-release:
-    name: CTest Release
+    name: CTest Release (Ubuntu)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -62,7 +62,7 @@ jobs:
           verbose: true
 
   pytest-311:
-    name: PyTest Python 3.11
+    name: PyTest Python 3.11 (Ubuntu)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -92,7 +92,7 @@ jobs:
           job-summary: true
 
   pytest-312:
-    name: PyTest Python 3.12
+    name: PyTest Python 3.12 (Ubuntu)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
