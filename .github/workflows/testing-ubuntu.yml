@@ -1,4 +1,4 @@
-name: Testing
+name: Testing Ubuntu
 on:
   push:
     branches-ignore:
@@ -13,6 +13,10 @@ jobs:
         uses: actions/checkout@v4.2.0
         with:
           submodules: true
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get install libgsl-dev
 
       - name: Setup Ninja
         uses: seanmiddleditch/gha-setup-ninja@v5
@@ -41,6 +45,10 @@ jobs:
         uses: actions/checkout@v4.2.0
         with:
           submodules: true
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get install libgsl-dev
 
       - name: Setup Ninja
         uses: seanmiddleditch/gha-setup-ninja@v5
