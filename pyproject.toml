@@ -9,6 +9,7 @@ maintainers = [
     {name = "Cristobal Allendes", email = "callendes.molina@gmail.com"},
 ]
 requires-python = ">=3.6"
+dependencies = ["numpy>=1.0.0", "cffi>=1.17.0", "cmake>=3.12", "pandas>=2.0.0"]
 keywords = ["lithium", "simulator", "gsl"]
 classifiers = [
     "Programming Language :: Python :: 3",
@@ -21,7 +22,6 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
 ]
-# dependencies = ["cffi>=1.0.0", "numpy>=1.0.0"]
 
 [project.urls]
 homepage = "https://github.com/case-ev/lion"
@@ -29,7 +29,7 @@ documentation = "https://readthedocs.org"
 repository = "https://github.com/case-ev/lion"
 
 [build-system]
-requires = ["setuptools>=42.0", "wheel", "cffi"]
+requires = ["setuptools>=42.0", "wheel", "cffi", "cmake>=3.12"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
