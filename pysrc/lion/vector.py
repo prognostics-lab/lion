@@ -86,8 +86,7 @@ class Vector:
             dtype = dtypes.get_ctype(target[0])
             if dtype is None:
                 raise TypeError(
-                    f"Conversion of type '{
-                        type(target[0]).__name__}' not implemented"
+                    f"Conversion of type '{type(target[0]).__name__}' not implemented"
                 )
         buf = cls(dtype)
         size = len(target)
@@ -111,8 +110,7 @@ class Vector:
             dtype = dtypes._NP_TYPES.get(target.dtype.name)
             if dtype is None:
                 raise TypeError(
-                    f"Conversion of type 'np.{
-                        target.dtype.name}' not implemented"
+                    f"Conversion of type 'np.{target.dtype.name}' not implemented"
                 )
         buf = cls(dtype)
         size = len(target.flatten())
@@ -141,8 +139,7 @@ class Vector:
             dtype = dtypes.get_ctype(vals[0])
             if dtype is None:
                 raise TypeError(
-                    f"Conversion of type '{
-                        type(vals[0]).__name__}' not implemented"
+                    f"Conversion of type '{type(vals[0]).__name__}' not implemented"
                 )
         return cls.from_list(vals, dtype)
 
@@ -169,8 +166,7 @@ class Vector:
         except TypeError:
             LOGGER.error("Trying to create Vector from invalid type")
             raise TypeError(
-                f"Could not create `Vector` from type '{
-                    type(target).__name__}'"
+                f"Could not create `Vector` from type '{type(target).__name__}'"
             )
 
     @new.register(list)
@@ -371,8 +367,7 @@ class Vector:
         except TypeError:
             LOGGER.error("Trying to extend Vector from invalid type")
             raise TypeError(
-                f"Could not extend `Vector` from type '{
-                    type(target).__name__}'"
+                f"Could not extend `Vector` from type '{type(target).__name__}'"
             )
 
     @extend.register(list)
