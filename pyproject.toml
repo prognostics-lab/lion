@@ -8,17 +8,12 @@ authors = [{name = "CASE"}]
 maintainers = [
     {name = "Cristobal Allendes", email = "callendes.molina@gmail.com"},
 ]
-requires-python = ">=3.6"
+requires-python = ">=3.11"
 dependencies = ["numpy>=1.0.0", "cffi>=1.17.0", "cmake>=3.12", "pandas>=2.0.0"]
 keywords = ["lithium", "simulator", "gsl"]
 classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.6",
-    "Programming Language :: Python :: 3.7",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
 ]
