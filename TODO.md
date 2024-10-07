@@ -13,7 +13,7 @@ This file contains a list of the TODO tasks found within the source code.
 - **(`./src/lion_app/app.c`)** Evaluate implementation of concurrency
 - **(`./src/lion_app/app.c`)** Add some mechanism to avoid race conditions
 - **(`./src/lion_app/vector.c`)** Implement saving vector to csv file
+- **(`./tests/unittest/quick/test_math_algebraic.c`)** Add tests for algebraic equations
 - **(`./tests/unittest/quick/test_math_differential.c`)** Add tests for all calculations
 - **(`./tests/unittest/quick/test_math_differential.c`)** Add calculation of current
-- **(`./tests/unittest/quick/test_math_algebraic.c`)** Add tests for algebraic equations
 - **(`./tools/gen_todo.sh`)** Ignore TODOs in dependencies
