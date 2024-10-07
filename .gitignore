@@ -303,4 +303,4 @@ bin
 build
 pdb
 lib
-pysrc/**/.c
+pysrc/**.c
