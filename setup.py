@@ -97,8 +97,8 @@ class cmake_ext(build_ext):
         super().run()
 
     def build_cmake(self, ext):
-        print("=== Building C FFI ===")
-        ffi_builder.compile("pysrc", verbose=True)
+        # print("=== Building C FFI ===")
+        # ffi_builder.compile("pysrc", verbose=True)
 
         print("=== Building CMake project ===")
         cwd = pathlib.Path().absolute()
@@ -129,6 +129,9 @@ class cmake_ext(build_ext):
         if not self.dry_run:
             self.spawn(["cmake", "--build", str(build_temp)] + build_args)
             self.spawn(["cmake", "--install", str(build_temp)])
+
+        print("=== Building C FFI ===")
+        ffi_builder.compile("pysrc", verbose=True)
 
 
 
