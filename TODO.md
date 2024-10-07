@@ -8,6 +8,7 @@ This file contains a list of the TODO tasks found within the source code.
 - **(`./pysrc/lion/vector.py`)** Determine a more efficient way of creating from numpy array
 - **(`./pysrc/lion/vector.py`)** Implemented reading csv directly instead of using pandas
 - **(`./pysrc/lion/vector.py`)** Determine a more efficient way of converting to numpy array
+- **(`./setup.py`)** Fix the bug where it has to be installed twice to work
 - **(`./setup.py`)** Set version dynamically
 - **(`./src/lion_math/lion_math.h`)** Double check implementation of each model
 - **(`./src/lion_app/app.c`)** Evaluate implementation of concurrency
