@@ -137,8 +137,9 @@ if [[ "${example}" != "" ]]; then
 fi
 
 if [[ $lib_install -eq 1 ]]; then
-    echo -e "\n\n\x1b[32;20mInstalling library in system\x1b[0m"
-    sudo cmake --install build
+    PREFIX="/usr/"
+    echo -e "\n\n\x1b[32;20mInstalling library to ${PREFIX}\x1b[0m"
+    sudo cmake --install build --prefix "/usr/"
 fi
 
 if [ $python_install -eq 1 ]; then
