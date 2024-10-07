@@ -130,6 +130,7 @@ class cmake_ext(build_ext):
             self.spawn(["cmake", "--build", str(build_temp)] + build_args)
             self.spawn(["cmake", "--install", str(build_temp)])
 
+        # TODO: Fix the bug where it has to be installed twice to work
         print("=== Building C FFI ===")
         ffi_builder.compile("pysrc", verbose=True)
 
