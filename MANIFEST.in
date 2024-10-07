@@ -1,0 +1,2 @@
+include pysrc/lion/_lion.*.so
+include pysrc/lion/_lion.*.dll
