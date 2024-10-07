@@ -1,7 +1,8 @@
 #pragma once
 
-#include <lion/app.h>
 #include <stdint.h>
+
+#include <lion/app.h>
 
 #ifdef __cplusplus
 extern "C" {

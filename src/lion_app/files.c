@@ -1,12 +1,12 @@
-#include "vendor/log.h"
-
 #include <lion/app.h>
-#include <lionu/files.h>
-#include <lionu/mem.h>
+#include <lion_utils/vendor/log.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "files.h"
+#include "mem.h"
 
 #define BUF_SIZE 65536
 

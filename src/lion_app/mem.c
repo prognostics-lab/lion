@@ -1,9 +1,9 @@
 #include <lion/app.h>
-#include <lionu/mem.h>
+#include <lion_utils/vendor/log.h>
+#include <lionu/macros.h>
 #include <stdlib.h>
 
-#include "macros.h"
-#include "vendor/log.h"
+#include "mem.h"
 
 #ifndef NDEBUG
 

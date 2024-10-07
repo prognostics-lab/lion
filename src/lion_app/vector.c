@@ -1,10 +1,11 @@
 #include <lion/lion.h>
 #include <lion_utils/macros.h>
 #include <lion_utils/vendor/log.h>
-#include <lionu/files.h>
-#include <lionu/mem.h>
+#include <lion_app/files.h>
 #include <stdio.h>
 #include <string.h>
+
+#include "mem.h"
 
 lion_status_t lion_vector_new(lion_app_t *app, const size_t data_size,
                               lion_vector_t *out) {

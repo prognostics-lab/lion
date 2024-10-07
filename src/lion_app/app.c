@@ -8,9 +8,9 @@
 #include <lion/lion.h>
 #include <lion_utils/macros.h>
 #include <lion_utils/vendor/log.h>
-#include <lionu/mem.h>
 
 #include "app_run.h"
+#include "mem.h"
 
 #ifdef _WIN32
 #include <windows.h>
