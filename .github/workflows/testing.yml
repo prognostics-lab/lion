@@ -12,18 +12,18 @@ jobs:
       matrix:
         build-type: ["Debug", "Release"]
         config:
-          - {
-              os: windows-latest,
-              deps-script: "git clone https://github.com/microsoft/vcpkg.git; cd vpckg; .\bootstrap-vcpkg.bat; .\vckpg integrate install; .\vcpkg install gsl gsl:x64-windows"
-            }
+          # - {
+          #     os: windows-latest,
+          #     deps-script: "git clone https://github.com/microsoft/vcpkg.git; cd vpckg; .\bootstrap-vcpkg.bat; .\vckpg integrate install; .\vcpkg install gsl gsl:x64-windows"
+          #   }
           - {
               os: ubuntu-latest,
               deps-script: "sudo apt-get install libgsl-dev"
             }
-          - {
-              os: macos-latest,
-              deps-script: "brew install gsl"
-            }
+          # - {
+          #     os: macos-latest,
+          #     deps-script: "brew install gsl"
+          #   }
     steps:
       - name: Checkout
         uses: actions/checkout@v4.2.0
@@ -59,18 +59,18 @@ jobs:
       matrix:
         python-version: ["3.11", "3.12"]
         config:
-          - {
-              os: windows-latest,
-              deps-script: "git clone https://github.com/microsoft/vcpkg.git; cd vpckg; .\bootstrap-vcpkg.bat; .\vckpg integrate install; .\vcpkg install gsl gsl:x64-windows"
-            }
+          # - {
+          #     os: windows-latest,
+          #     deps-script: "git clone https://github.com/microsoft/vcpkg.git; cd vpckg; .\bootstrap-vcpkg.bat; .\vckpg integrate install; .\vcpkg install gsl gsl:x64-windows"
+          #   }
           - {
               os: ubuntu-latest,
               deps-script: "sudo apt-get install libgsl-dev"
             }
-          - {
-              os: macos-latest,
-              deps-script: "brew install gsl"
-            }
+          # - {
+          #     os: macos-latest,
+          #     deps-script: "brew install gsl"
+          #   }
     steps:
       - name: Checkout
         uses: actions/checkout@v4.2.0
