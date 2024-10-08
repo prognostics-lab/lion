@@ -682,6 +682,7 @@ class App:
         update: Callable[["App"], State] | None = None,
         finished: Callable[["App"], State] | None = None,
     ):
+        LOGGER.debug("Creating lion.App")
         self._cdata = ffi.new("lion_app_t *")
         self._initialized = False
         if config is None:
@@ -692,9 +693,10 @@ class App:
             self.params = Params()
         else:
             self.params = params
-        _lionl.lion_app_new(self.config._cdata, self.params._cdata, self._cdata)
 
         self.state = State(self)
+        _lionl.lion_app_new(self.config._cdata, self.params._cdata, self._cdata)
+
 
         if init is not None:
             self.init_hook = init
@@ -704,6 +706,7 @@ class App:
             self.finished_hook = finished
 
     def __del__(self):
+        LOGGER.debug("Cleaning up lion.App")
         try:
             ffi_call(_lionl.lion_app_cleanup(self._cdata), "Failed cleanup of app")
         except LionException as e:
