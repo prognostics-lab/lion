@@ -81,7 +81,7 @@ ffi_builder.set_source(
         str(CLIB_RELEASE_PATH),
     ],
     include_dirs=INCLUDE_DIRS,
-    extra_link_args=["-Wl,-rpath=lib/:lib/debug/:/usr/local/lib"],
+    extra_link_args=["-Wl,-rpath=/usr/lib:lib/:lib/debug/"],
 )
 
 
