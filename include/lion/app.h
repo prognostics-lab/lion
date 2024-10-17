@@ -177,6 +177,7 @@ lion_status_t lion_app_cleanup(lion_app_t *app);
 const char *lion_app_regime_name(lion_app_regime_t regime);
 const char *lion_app_stepper_name(lion_app_stepper_t stepper);
 const char *lion_app_minimizer_name(lion_app_minimizer_t minimizer);
+const char *lion_app_gsl_errno_name(const int num);
 
 #ifdef __cplusplus
 }

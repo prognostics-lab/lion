@@ -3,6 +3,7 @@
 #include <string.h>
 #include <time.h>
 
+#include <gsl/gsl_errno.h>
 #include <gsl/gsl_odeiv2.h>
 
 #include <lion/lion.h>
@@ -549,4 +550,8 @@ const char *lion_app_minimizer_name(lion_app_minimizer_t minimizer) {
     return "Minimizer not found";
   }
   return "Unexpected return";
+}
+
+const char *lion_app_gsl_errno_name(const int num) {
+  return gsl_strerror(num);
 }
