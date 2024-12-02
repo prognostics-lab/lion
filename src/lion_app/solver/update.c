@@ -14,17 +14,6 @@ lion_status_t lion_slv_update(lion_app_t *app) {
   app->state.capacity_use     = lion_capacity_usable(app->state.capacity_nominal, app->state.kappa, app->params);
 
   app->state.open_circuit_voltage = lion_voc(app->state.soc_use, app->params);
-<<<<<<< HEAD
-  app->state.current =
-      lion_current_optimize(app->sys_min, app->state.power, app->state.soc_use,
-                            app->state.open_circuit_voltage, app->state.current,
-                            app->conf->sim_epsabs, app->conf->sim_epsrel,
-                            app->conf->sim_min_maxiter, app->params);
-  app->state.internal_resistance =
-      lion_resistance(app->state.soc_use, app->state.current, app->params);
-  app->state.voltage = lion_voltage_from_current(
-      app->state.power, app->state.current, app->params);
-=======
   app->state.current              = lion_current_optimize(
       app->sys_min,
       app->state.power,
@@ -38,7 +27,6 @@ lion_status_t lion_slv_update(lion_app_t *app) {
   );
   app->state.internal_resistance = lion_resistance(app->state.soc_use, app->state.current, app->params);
   app->state.voltage             = lion_voltage_from_current(app->state.power, app->state.current, app->params);
->>>>>>> 4db05ab (I think only format changes)
 
   app->state.ehc = lion_ehc(app->state.soc_use, app->params);
   app->state.generated_heat =
