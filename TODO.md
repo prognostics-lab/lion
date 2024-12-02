@@ -10,7 +10,10 @@ This file contains a list of the TODO tasks found within the source code.
 - **(`./pysrc/lion/vector.py`)** Determine a more efficient way of converting to numpy array
 - **(`./setup.py`)** Fix the bug where it has to be installed twice to work
 - **(`./setup.py`)** Set version dynamically
+- **(`./src/lion_math/internal_resistance.c`)** Consider a version of this code with a fixed internal resistance
 - **(`./src/lion_math/lion_math.h`)** Double check implementation of each model
+- **(`./src/lion_math/capacity.h`)** Implement state of health
+- **(`./src/lion_app/app.c`)** Meticulously review the update logic. There seems to be an incosistency
 - **(`./src/lion_app/app.c`)** Evaluate implementation of concurrency
 - **(`./src/lion_app/app.c`)** Add some mechanism to avoid race conditions
 - **(`./src/lion_app/vector.c`)** Implement saving vector to csv file
