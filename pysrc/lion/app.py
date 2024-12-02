@@ -697,7 +697,6 @@ class App:
         self.state = State(self)
         _lionl.lion_app_new(self.config._cdata, self.params._cdata, self._cdata)
 
-
         if init is not None:
             self.init_hook = init
         if update is not None:
@@ -712,21 +711,24 @@ class App:
         except LionException as e:
             LOGGER.error(f"App cleanup failed with exception '{e}'")
 
-    def init(self, initial_power: float, initial_amb_temp: float):
+    def init(self):
         ffi_call(
-            _lionl.lion_app_init(self._cdata, initial_power, initial_amb_temp),
+            _lionl.lion_app_init(self._cdata),
             "Failed initializing",
         )
         self._initialized = True
 
+    def reset(self):
+        ffi_call(
+            _lionl.lion_app_reset(self._cdata),
+            "Failed resetting",
+        )
+
     def step(self, power: float, amb_temp: float):
         if not self._initialized:
             LOGGER.warn("Auto-initializing before step")
-            self.init(power, amb_temp)
-        else:
-            ffi_call(
-                _lionl.lion_app_step(self._cdata, power, amb_temp), "Failed stepping"
-            )
+            self.init()
+        ffi_call(_lionl.lion_app_step(self._cdata, power, amb_temp), "Failed stepping")
 
     def run(self, power: Vectorizable, amb_temp: Vectorizable):
         try:

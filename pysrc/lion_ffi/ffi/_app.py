@@ -91,8 +91,8 @@ lion_app_config_t lion_app_config_default(void);
 
 lion_status_t lion_app_new(lion_app_config_t *conf, lion_params_t *params,
                            lion_app_t *out);
-lion_status_t lion_app_init(lion_app_t *app, double initial_power,
-                            double initial_amb_temp);
+lion_status_t lion_app_init(lion_app_t *app);
+lion_status_t lion_app_reset(lion_app_t *app);
 lion_status_t lion_app_step(lion_app_t *app, double power,
                             double ambient_temperature);
 lion_status_t lion_app_run(lion_app_t *app, lion_vector_t *power,
