@@ -3,87 +3,80 @@
 const lion_params_t LION_APP_PARAMS_DEFAULT = {
     .init =
         {
-            .soc = 0.1,
-            .temp_in = 298.0,
-            .soh = 1.0,
-            .capacity = 14400.0,
-            .current_guess = 10.0,
-        },
+               .soc           = 0.1,
+               .temp_in       = 298.0,
+               .soh           = 1.0,
+               .capacity      = 14400.0,
+               .current_guess = 10.0,
+               },
     .ehc =
         {
-            .a = 4e-5,
-            .b = 5e-5,
-            .mu = 0.4,
-            .kappa = 3,
-            .sigma = 0.05,
-            .l = 7,
-        },
+               .a     = 4e-5,
+               .b     = 5e-5,
+               .mu    = 0.4,
+               .kappa = 3,
+               .sigma = 0.05,
+               .l     = 7,
+               },
     .ocv =
         {
-            .alpha = 0.15,
-            .beta = 17,
-            .gamma = 10.5,
-            .v0 = 4.14,
-            .vl = 3.977,
-        },
+               .alpha = 0.15,
+               .beta  = 17,
+               .gamma = 10.5,
+               .v0    = 4.14,
+               .vl    = 3.977,
+               },
     .vft =
         {
-            .k1 = -5.738,
-            .k2 = 209.9,
-            .tref = 298,
-        },
+               .k1   = -5.738,
+               .k2   = 209.9,
+               .tref = 298,
+               },
     .temp =
         {
-            .cp = 100.0,
-            .rin = 3.0,
-            .rout = 9.0,
-        },
+               .cp   = 100.0,
+               .rin  = 3.0,
+               .rout = 9.0,
+               },
     .rint =
         {
-            // Charge
+               // Charge
             .c40 =
                 {
                     .a = -19.9748,
                     .c = -26.5422,
-                },
-            .c20 =
+                }, .c20 =
                 {
-                    .mean = -20.0,
+                    .mean  = -20.0,
                     .sigma = 3.0,
-                },
-            .c10 =
+                }, .c10 =
                 {
-                    .mean = -10.0,
+                    .mean  = -10.0,
                     .sigma = 2.3875,
-                },
-            .c4 =
+                }, .c4 =
                 {
-                    .mean = -4.0,
+                    .mean  = -4.0,
                     .sigma = 2.1623,
-                },
-            // Discharge
+                }, // Discharge
             .d5 =
                 {
-                    .mean = 5.0,
+                    .mean  = 5.0,
                     .sigma = 2.0,
-                },
-            .d10 =
+                }, .d10 =
                 {
-                    .mean = 10.0,
+                    .mean  = 10.0,
                     .sigma = 3.1631,
-                },
-            .d15 =
+                }, .d15 =
                 {
-                    .mean = 15.0,
+                    .mean  = 15.0,
                     .sigma = 2.0,
-                },
-            .d30 =
+                }, .d30 =
                 {
                     .a = 15.9494,
                     .c = 17.3438,
-                },
-            .poly =
+                }, .poly =
                 {
+                    // p0     p1        p2        p3
                     {0.04172, 0.001688, -0.01526, 0.04006},  // c30
                     {0.04385, 0.01758, -0.04159, 0.05488},   // c20
                     {0.05166, 0.02408, -0.05132, 0.06101},   // c10
@@ -92,8 +85,7 @@ const lion_params_t LION_APP_PARAMS_DEFAULT = {
                     {0.0958, -0.05706, -0.07709, 0.1141},    // d10
                     {0.07868, -0.05782, -0.008633, 0.04612}, // d15
                     {0.07218, -0.07066, 0.04202, 0.0061},    // d20
-                },
-        },
+                }, },
 };
 
 lion_params_t lion_params_default(void) { return LION_APP_PARAMS_DEFAULT; }

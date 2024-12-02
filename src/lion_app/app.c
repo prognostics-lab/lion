@@ -1,44 +1,42 @@
+#include "app_run.h"
+#include "mem.h"
+
+#include <gsl/gsl_errno.h>
+#include <gsl/gsl_odeiv2.h>
+#include <lion/lion.h>
+#include <lion_utils/macros.h>
+#include <lion_utils/vendor/log.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 
-#include <gsl/gsl_errno.h>
-#include <gsl/gsl_odeiv2.h>
-
-#include <lion/lion.h>
-#include <lion_utils/macros.h>
-#include <lion_utils/vendor/log.h>
-
-#include "app_run.h"
-#include "mem.h"
-
 #ifdef _WIN32
-#include <windows.h>
-#define CREATE_DIRECTORY(dirname) CreateDirectory(dirname, NULL)
-#define DIR_ALREADY_EXISTS_ERROR_CODE ERROR_ALREADY_EXISTS
-#define EPOCH_DIFF 11644473600000ULL // Milliseconds
-#define GET_CURRENT_TIME(current_time)                                         \
-  {                                                                            \
-    FILETIME ft;                                                               \
-    ULARGE_INTEGER ft64;                                                       \
-    GetSystemTimeAsFileTime(&ft);                                              \
-    ft64.LowPart = ft.dwLowDateTime;                                           \
-    ft64.HighPart = ft.dwHighDateTime;                                         \
-    current_time = (int64_t)(ft64.QuadPart / 10000 - EPOCH_DIFF);              \
-  }
+  #include <windows.h>
+  #define CREATE_DIRECTORY(dirname)     CreateDirectory(dirname, NULL)
+  #define DIR_ALREADY_EXISTS_ERROR_CODE ERROR_ALREADY_EXISTS
+  #define EPOCH_DIFF                    11644473600000ULL // Milliseconds
+  #define GET_CURRENT_TIME(current_time)                                                                                                             \
+    {                                                                                                                                                \
+      FILETIME       ft;                                                                                                                             \
+      ULARGE_INTEGER ft64;                                                                                                                           \
+      GetSystemTimeAsFileTime(&ft);                                                                                                                  \
+      ft64.LowPart  = ft.dwLowDateTime;                                                                                                              \
+      ft64.HighPart = ft.dwHighDateTime;                                                                                                             \
+      current_time  = (int64_t)(ft64.QuadPart / 10000 - EPOCH_DIFF);                                                                                 \
+    }
 #else
-#include <errno.h>
-#include <sys/stat.h>
-#include <sys/time.h>
-#define CREATE_DIRECTORY(dirname) mkdir(dirname, 0777)
-#define DIR_ALREADY_EXISTS_ERROR_CODE EEXIST
-#define GET_CURRENT_TIME(current_time)                                         \
-  {                                                                            \
-    struct timeval tv;                                                         \
-    gettimeofday(&tv, NULL);                                                   \
-    current_time = (int64_t)tv.tv_sec * 1000LL + (int64_t)tv.tv_usec / 1000LL; \
-  }
+  #include <errno.h>
+  #include <sys/stat.h>
+  #include <sys/time.h>
+  #define CREATE_DIRECTORY(dirname)     mkdir(dirname, 0777)
+  #define DIR_ALREADY_EXISTS_ERROR_CODE EEXIST
+  #define GET_CURRENT_TIME(current_time)                                                                                                             \
+    {                                                                                                                                                \
+      struct timeval tv;                                                                                                                             \
+      gettimeofday(&tv, NULL);                                                                                                                       \
+      current_time = (int64_t)tv.tv_sec * 1000LL + (int64_t)tv.tv_usec / 1000LL;                                                                     \
+    }
 #endif
 
 const lion_app_config_t LION_APP_CONFIG_DEFAULT = {
@@ -46,28 +44,26 @@ const lion_app_config_t LION_APP_CONFIG_DEFAULT = {
     .app_name = "Application",
 
     // Simulation parameters
-    .sim_stepper = LION_STEPPER_RK8PD,
-    .sim_minimizer = LION_MINIMIZER_BRENT,
+    .sim_stepper      = LION_STEPPER_RK8PD,
+    .sim_minimizer    = LION_MINIMIZER_BRENT,
     .sim_time_seconds = 10.0,
     .sim_step_seconds = 1e-3,
-    .sim_epsabs = 1e-8,
-    .sim_epsrel = 1e-8,
+    .sim_epsabs       = 1e-8,
+    .sim_epsrel       = 1e-8,
 
     // Logging
-    .log_dir = NULL,
-    .log_stdlvl = LOG_INFO,
+    .log_dir     = NULL,
+    .log_stdlvl  = LOG_INFO,
     .log_filelvl = LOG_TRACE,
 };
 
 lion_status_t lion_app_config_new(lion_app_config_t *out) {
   lion_app_config_t conf = LION_APP_CONFIG_DEFAULT;
-  *out = conf;
+  *out                   = conf;
   return LION_STATUS_SUCCESS;
 }
 
-lion_app_config_t lion_app_config_default(void) {
-  return LION_APP_CONFIG_DEFAULT;
-}
+lion_app_config_t lion_app_config_default(void) { return LION_APP_CONFIG_DEFAULT; }
 
 static lion_status_t create_directory(const char *dirname) {
 #ifdef _WIN32
@@ -96,17 +92,16 @@ static lion_status_t create_directory(const char *dirname) {
   return LION_STATUS_SUCCESS;
 }
 
-lion_status_t lion_app_new(lion_app_config_t *conf, lion_params_t *params,
-                           lion_app_t *out) {
+lion_status_t lion_app_new(lion_app_config_t *conf, lion_params_t *params, lion_app_t *out) {
   lion_app_t app = {
-      .conf = conf,
-      .params = params,
-      .init_hook = NULL,
-      .update_hook = NULL,
+      .conf          = conf,
+      .params        = params,
+      .init_hook     = NULL,
+      .update_hook   = NULL,
       .finished_hook = NULL,
 
-      .driver = NULL,
-      .sys_min = NULL,
+      .driver    = NULL,
+      .sys_min   = NULL,
       .step_type = NULL,
       .minimizer = NULL,
 
@@ -116,8 +111,8 @@ lion_status_t lion_app_new(lion_app_config_t *conf, lion_params_t *params,
   };
 
   // Logging setup
-  time_t seconds = time(NULL);
-  struct tm *time = localtime(&seconds);
+  time_t     seconds = time(NULL);
+  struct tm *time    = localtime(&seconds);
   log_set_level(app.conf->log_stdlvl);
 
   if (app.conf->log_dir == NULL) {
@@ -127,9 +122,7 @@ lion_status_t lion_app_new(lion_app_config_t *conf, lion_params_t *params,
       size_t log_dir_len = strnlen(app.conf->log_dir, FILENAME_MAX);
       strncpy(app.log_filename, app.conf->log_dir, log_dir_len);
 
-      app.log_filename[strftime(app.log_filename + log_dir_len,
-                                _LION_LOGFILE_MAX, "/%Y%m%d_%H%M%S.txt", time) +
-                       log_dir_len] = '\0';
+      app.log_filename[strftime(app.log_filename + log_dir_len, _LION_LOGFILE_MAX, "/%Y%m%d_%H%M%S.txt", time) + log_dir_len] = '\0';
 
       app.log_file = fopen(app.log_filename, "w");
       if (app.log_file == NULL) {
@@ -144,8 +137,7 @@ lion_status_t lion_app_new(lion_app_config_t *conf, lion_params_t *params,
   }
 
 #ifndef NDEBUG
-  LION_CALL_I(lion_app_init_debug(&app),
-              "Failed initializing debug information");
+  LION_CALL_I(lion_app_init_debug(&app), "Failed initializing debug information");
 #endif
   *out = app;
   return LION_STATUS_SUCCESS;
@@ -161,8 +153,7 @@ static void lion_app_log_startup_info(lion_app_t *app) {
   logi_info(" * Application name               : %s", app->conf->app_name);
 #ifdef LION_ENGINE_VERSION_MAJOR
   lion_version_t ver = lion_app_get_version(app);
-  logi_info(" * Engine version                 : %s.%s.%s", ver.major,
-            ver.minor, ver.patch);
+  logi_info(" * Engine version                 : %s.%s.%s", ver.major, ver.minor, ver.patch);
 #else
   logi_info(" * Engine version                 : N/A");
 #endif
@@ -172,20 +163,14 @@ static void lion_app_log_startup_info(lion_app_t *app) {
     logi_info(" * Log std level                  : %d", app->conf->log_stdlvl);
     logi_info(" * Log file level                 : %d", app->conf->log_filelvl);
   }
-  logi_info(" * Regime                         : %s",
-            lion_app_regime_name(app->conf->sim_regime));
-  logi_info(" * Stepper                        : %s",
-            lion_app_stepper_name(app->conf->sim_stepper));
-  logi_info(" * Minimizer                      : %s",
-            lion_app_minimizer_name(app->conf->sim_minimizer));
-  logi_info(" * Total simulation time          : %f s",
-            app->conf->sim_time_seconds);
-  logi_info(" * Simulation step time           : %f s",
-            app->conf->sim_step_seconds);
+  logi_info(" * Regime                         : %s", lion_app_regime_name(app->conf->sim_regime));
+  logi_info(" * Stepper                        : %s", lion_app_stepper_name(app->conf->sim_stepper));
+  logi_info(" * Minimizer                      : %s", lion_app_minimizer_name(app->conf->sim_minimizer));
+  logi_info(" * Total simulation time          : %f s", app->conf->sim_time_seconds);
+  logi_info(" * Simulation step time           : %f s", app->conf->sim_step_seconds);
   logi_info(" * Absolute epsilon               : %f", app->conf->sim_epsabs);
   logi_info(" * Relative epsilon               : %f", app->conf->sim_epsrel);
-  logi_info(" * Minimization max iterations    : %d iterations",
-            app->conf->sim_min_maxiter);
+  logi_info(" * Minimization max iterations    : %d iterations", app->conf->sim_min_maxiter);
   if (app->init_hook != NULL) {
     logi_info(" * Init hook                      : YES");
   } else {
@@ -202,16 +187,11 @@ static void lion_app_log_startup_info(lion_app_t *app) {
     logi_info(" * Finished hook                  : NO");
   }
   logi_info(" * Initialization parameters");
-  logi_info(" |-> State of charge              : %f %%",
-            100.0 * app->params->init.soc);
-  logi_info(" |-> State of health              : %f %%",
-            100.0 * app->params->init.soh);
-  logi_info(" |-> Internal temperature         : %f K",
-            app->params->init.temp_in);
-  logi_info(" |-> Nominal capacity             : %f C (%f Ah)",
-            app->params->init.capacity, app->params->init.capacity / 3600.0);
-  logi_info(" |-> Current guess                : %f A",
-            app->params->init.current_guess);
+  logi_info(" |-> State of charge              : %f %%", 100.0 * app->params->init.soc);
+  logi_info(" |-> State of health              : %f %%", 100.0 * app->params->init.soh);
+  logi_info(" |-> Internal temperature         : %f K", app->params->init.temp_in);
+  logi_info(" |-> Nominal capacity             : %f C (%f Ah)", app->params->init.capacity, app->params->init.capacity / 3600.0);
+  logi_info(" |-> Current guess                : %f A", app->params->init.current_guess);
   logi_info(" * Entropic heat coefficient parameters");
   logi_info(" |-> a                            : %f V/K", app->params->ehc.a);
   logi_info(" |-> b                            : %f V/K", app->params->ehc.b);
@@ -230,12 +210,9 @@ static void lion_app_log_startup_info(lion_app_t *app) {
   logi_info(" |-> k2                           : %f K", app->params->vft.k2);
   logi_info(" |-> Reference temperature        : %f K", app->params->vft.tref);
   logi_info(" * Temperature model");
-  logi_info(" |-> Heat capacity                : %f J K-1",
-            app->params->temp.cp);
-  logi_info(" |-> Internal thermal resistivity : %f K W-1",
-            app->params->temp.rin);
-  logi_info(" |-> Outter thermal resistivity   : %f K W-1",
-            app->params->temp.rout);
+  logi_info(" |-> Heat capacity                : %f J K-1", app->params->temp.cp);
+  logi_info(" |-> Internal thermal resistivity : %f K W-1", app->params->temp.rin);
+  logi_info(" |-> Outter thermal resistivity   : %f K W-1", app->params->temp.rout);
   logi_info("+-------------------------------------------------------+");
   logi_info("|################# END OF INFORMATION ##################|");
   logi_info("+-------------------------------------------------------+");
@@ -303,18 +280,17 @@ lion_status_t _init_simulation_minimizer(lion_app_t *app) {
   return LION_STATUS_SUCCESS;
 }
 
-lion_status_t _init_initial_state(lion_app_t *app, double initial_power,
-                                  double initial_amb_temp) {
+lion_status_t _init_initial_state(lion_app_t *app, double initial_power, double initial_amb_temp) {
   logi_debug("Setting up initial conditions");
   // The current is set at first because it is used as an initial guess
   // for the optimization problem
-  app->state.current = 0.0;
-  app->state.soc_nominal = app->params->init.soc;
+  app->state.current              = 0.0;
+  app->state.soc_nominal          = app->params->init.soc;
   app->state.internal_temperature = app->params->init.temp_in;
-  app->state.time = 0.0;
-  app->state.step = 0;
+  app->state.time                 = 0.0;
+  app->state.step                 = 0;
   logi_debug("Setting first inputs");
-  app->state.power = initial_power;
+  app->state.power               = initial_power;
   app->state.ambient_temperature = initial_amb_temp;
   LION_CALL_I(lion_slv_update(app), "Failed spreading initial condition");
   return LION_STATUS_SUCCESS;
@@ -326,35 +302,29 @@ lion_status_t _init_ode_system(lion_app_t *app) {
   app->inputs.sys_params = app->params;
   logi_debug("Creating GSL system");
   gsl_odeiv2_system sys = {
-      .function = &lion_slv_system,
-      .jacobian = &lion_slv_jac,
+      .function  = &lion_slv_system,
+      .jacobian  = &lion_slv_jac,
       .dimension = LION_SLV_DIMENSION,
-      .params = &app->inputs,
+      .params    = &app->inputs,
   };
   app->sys = sys;
   return LION_STATUS_SUCCESS;
 }
 
 lion_status_t _init_ode_driver(lion_app_t *app) {
-  app->driver = gsl_odeiv2_driver_alloc_y_new(
-      &app->sys, app->step_type, app->conf->sim_step_seconds,
-      app->conf->sim_epsabs, app->conf->sim_epsrel);
+  app->driver = gsl_odeiv2_driver_alloc_y_new(&app->sys, app->step_type, app->conf->sim_step_seconds, app->conf->sim_epsabs, app->conf->sim_epsrel);
   return LION_STATUS_SUCCESS;
 }
 
-lion_status_t lion_app_init(lion_app_t *app, double initial_power,
-                            double initial_amb_temp) {
+lion_status_t lion_app_init(lion_app_t *app, double initial_power, double initial_amb_temp) {
   logi_debug("Configuring simulation stepper");
-  LION_CALL_I(_init_simulation_stepper(app),
-              "Failed initializing simulation stepper");
+  LION_CALL_I(_init_simulation_stepper(app), "Failed initializing simulation stepper");
 
   logi_debug("Configuring optimization minimizer");
-  LION_CALL_I(_init_simulation_minimizer(app),
-              "Failed initializing simulation minimizer");
+  LION_CALL_I(_init_simulation_minimizer(app), "Failed initializing simulation minimizer");
 
   logi_info("Configuring initial state");
-  LION_CALL_I(_init_initial_state(app, initial_power, initial_amb_temp),
-              "Failed initializing initial state");
+  LION_CALL_I(_init_initial_state(app, initial_power, initial_amb_temp), "Failed initializing initial state");
 
   logi_info("Configuring ode system");
   LION_CALL_I(_init_ode_system(app), "Failed initializing ode system");
@@ -362,8 +332,7 @@ lion_status_t lion_app_init(lion_app_t *app, double initial_power,
   logi_info("Configuring simulation driver");
   LION_CALL_I(_init_ode_driver(app), "Failed initializing ode driver");
 
-  LION_CALL_I(lion_app_show_state_debug(app),
-              "Failed showing initialization information");
+  LION_CALL_I(lion_app_show_state_debug(app), "Failed showing initialization information");
 
   // Initialization hook
   if (app->init_hook != NULL) {
@@ -374,21 +343,20 @@ lion_status_t lion_app_init(lion_app_t *app, double initial_power,
   return LION_STATUS_SUCCESS;
 }
 
-lion_status_t lion_app_step(lion_app_t *app, double power,
-                            double ambient_temperature) {
+lion_status_t lion_app_step(lion_app_t *app, double power, double ambient_temperature) {
   // app->state contains state(k)
-  double partial_result[2] = {app->state.soc_nominal,
-                              app->state.internal_temperature};
-  LION_GSL_VCALL_I(gsl_odeiv2_driver_apply_fixed_step(
-                       app->driver, &app->state.time,
-                       app->conf->sim_step_seconds, 1, partial_result),
-                   "Failed at step %d (t = %f)", app->state.step,
-                   app->state.time);
+  double partial_result[2] = {app->state.soc_nominal, app->state.internal_temperature};
+  LION_GSL_VCALL_I(
+      gsl_odeiv2_driver_apply_fixed_step(app->driver, &app->state.time, app->conf->sim_step_seconds, 1, partial_result),
+      "Failed at step %d (t = %f)",
+      app->state.step,
+      app->state.time
+  );
   // state(k + 1) is stored in partial_result
-  app->state.soc_nominal = partial_result[0];
+  app->state.soc_nominal          = partial_result[0];
   app->state.internal_temperature = partial_result[1];
-  app->state.power = power;
-  app->state.ambient_temperature = ambient_temperature;
+  app->state.power                = power;
+  app->state.ambient_temperature  = ambient_temperature;
   LION_CALL_I(lion_slv_update(app), "Failed updating state");
   // partial results are spread over the state, meaning at this
   // point app->state contains state(k + 1) leaving it ready for the
@@ -403,25 +371,20 @@ lion_status_t lion_app_step(lion_app_t *app, double power,
   return LION_STATUS_SUCCESS;
 }
 
-lion_status_t lion_app_run(lion_app_t *app, lion_vector_t *power,
-                           lion_vector_t *ambient_temperature) {
+lion_status_t lion_app_run(lion_app_t *app, lion_vector_t *power, lion_vector_t *ambient_temperature) {
   logi_info("Application start");
   lion_app_log_startup_info(app);
 #ifndef NDEBUG
   if (app->_idebug_heap_head == NULL)
-    LION_CALL_I(lion_app_init_debug(app),
-                "Failed initializing debug information");
+    LION_CALL_I(lion_app_init_debug(app), "Failed initializing debug information");
 #endif
 
   if (power != NULL && ambient_temperature != NULL) {
     logi_info("Initializing application");
-    LION_CALL_I(lion_app_init(app, lion_vector_get_d(app, power, 0),
-                              lion_vector_get_d(app, ambient_temperature, 0)),
-                "Failed initializing app");
+    LION_CALL_I(lion_app_init(app, lion_vector_get_d(app, power, 0), lion_vector_get_d(app, ambient_temperature, 0)), "Failed initializing app");
 
     logi_debug("Running application");
-    LION_CALL_I(lion_app_simulate(app, power, ambient_temperature),
-                "Failed simulating system");
+    LION_CALL_I(lion_app_simulate(app, power, ambient_temperature), "Failed simulating system");
   } else {
     logi_error("Null arguments were passed, skipping application running");
   }
@@ -446,30 +409,25 @@ lion_status_t lion_app_cleanup(lion_app_t *app) {
 
 #ifndef NDEBUG
   if (app->_idebug_malloced_total != 0) {
-    logi_warn("MEMORY LEAK: Found %lli elements (%d B) in heap after cleanup",
-              app->_idebug_malloced_total, app->_idebug_malloced_size);
+    logi_warn("MEMORY LEAK: Found %lli elements (%d B) in heap after cleanup", app->_idebug_malloced_total, app->_idebug_malloced_size);
 
     logi_warn("MEMORY LEAK LOCATIONS:");
     _idebug_heap_info_t *node = app->_idebug_heap_head;
     while (node != NULL) {
-      logi_warn(" * %#p (%d B) @ %s:%d", node->addr, node->size, node->file,
-                node->line);
+      logi_warn(" * %#p (%d B) @ %s:%d", node->addr, node->size, node->file, node->line);
       node = node->next;
     }
   }
 
-  _idebug_heap_info_t *node = app->_idebug_heap_head;
-  int64_t count = (int64_t)heapinfo_count(app);
+  _idebug_heap_info_t *node  = app->_idebug_heap_head;
+  int64_t              count = (int64_t)heapinfo_count(app);
   if (app->_idebug_malloced_total != count) {
-    logi_error(
-        "Found mismatch between reported (%d) and stored (%d) allocations",
-        app->_idebug_malloced_total, count);
+    logi_error("Found mismatch between reported (%d) and stored (%d) allocations", app->_idebug_malloced_total, count);
 
     node = app->_idebug_heap_head;
     logi_error("Stored allocations are:");
     while (node != NULL) {
-      logi_error(" * %#p (%d B) @ %s:%d", node->addr, node->size, node->file,
-                 node->line);
+      logi_error(" * %#p (%d B) @ %s:%d", node->addr, node->size, node->file, node->line);
       node = node->next;
     }
   }
@@ -490,9 +448,7 @@ lion_version_t lion_app_get_version(lion_app_t *app) {
 
 int lion_app_should_close(lion_app_t *app) { return 0; }
 
-uint64_t lion_app_max_iters(lion_app_t *app) {
-  return (uint64_t)(app->conf->sim_time_seconds / app->conf->sim_step_seconds);
-}
+uint64_t lion_app_max_iters(lion_app_t *app) { return (uint64_t)(app->conf->sim_time_seconds / app->conf->sim_step_seconds); }
 
 const char *lion_app_regime_name(lion_app_regime_t regime) {
   switch (regime) {
@@ -552,6 +508,4 @@ const char *lion_app_minimizer_name(lion_app_minimizer_t minimizer) {
   return "Unexpected return";
 }
 
-const char *lion_app_gsl_errno_name(const int num) {
-  return gsl_strerror(num);
-}
+const char *lion_app_gsl_errno_name(const int num) { return gsl_strerror(num); }

@@ -1,39 +1,38 @@
 #include <gsl/gsl_math.h>
+#include <lionu/math.h>
 #include <stddef.h>
 #include <stdint.h>
 
-#include <lionu/math.h>
-
 // clang-format off
 #define __LION_GENERATOR_ALLTYPES(macro)                                       \
-  macro(i8)                                                                    \
-  macro(i16)                                                                   \
-  macro(i32)                                                                   \
-  macro(i64)                                                                   \
-  macro(u8)                                                                    \
-  macro(u16)                                                                   \
-  macro(u32)                                                                   \
-  macro(u64)                                                                   \
-  macro(float)                                                                 \
-  macro(double)
+  macro(int8_t, i8)                                                                    \
+  macro(int16_t, i16)                                                                   \
+  macro(int32_t, i32)                                                                   \
+  macro(int64_t, i64)                                                                   \
+  macro(uint8_t,  u8)                                                                    \
+  macro(uint16_t, u16)                                                                   \
+  macro(uint32_t, u32)                                                                   \
+  macro(uint64_t, u64)                                                                   \
+  macro(float, f)                                                                 \
+  macro(double, d)
 // clang-format on
 
-#define _SUM_GENERATOR(T)                                                      \
-  T lion_sum_##T(T *vals, size_t count) {                                      \
-    T res = 0;                                                                 \
-    for (size_t i = 0; i < count; i++) {                                       \
-      res += vals[i];                                                          \
-    }                                                                          \
-    return res;                                                                \
+#define _SUM_GENERATOR(T, S)                                                                                                                         \
+  T lion_sum_##S(T *vals, size_t count) {                                                                                                            \
+    T res = 0;                                                                                                                                       \
+    for (size_t i = 0; i < count; i++) {                                                                                                             \
+      res += vals[i];                                                                                                                                \
+    }                                                                                                                                                \
+    return res;                                                                                                                                      \
   }
 
-#define _POLYVAL_GENERATOR(T)                                                  \
-  T lion_polyval_##T(T x, T *coeffs, u32 count) {                              \
-    T res = 0;                                                                 \
-    for (u32 i = 0; i < count; i++) {                                          \
-      res += coeffs[i] * gsl_pow_uint(x, i);                                   \
-    }                                                                          \
-    return res;                                                                \
+#define _POLYVAL_GENERATOR(T, S)                                                                                                                     \
+  T lion_polyval_##S(T x, T *coeffs, u32 count) {                                                                                                    \
+    T res = 0;                                                                                                                                       \
+    for (u32 i = 0; i < count; i++) {                                                                                                                \
+      res += coeffs[i] * gsl_pow_uint(x, i);                                                                                                         \
+    }                                                                                                                                                \
+    return res;                                                                                                                                      \
   }
 
 // clang-format off

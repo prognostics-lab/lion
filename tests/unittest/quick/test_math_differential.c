@@ -14,8 +14,8 @@ lion_status_t test_current(lion_app_t *app) {
 
 lion_status_t setup_test(lion_app_t *app) {
   lion_app_config_t conf = lion_app_config_default();
-  conf.log_dir = "logs";
-  conf.log_stdlvl = LOG_DEBUG;
+  conf.log_dir           = "logs";
+  conf.log_stdlvl        = LOG_DEBUG;
 
   lion_params_t params = lion_params_default();
 

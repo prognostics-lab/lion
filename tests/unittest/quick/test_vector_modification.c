@@ -7,12 +7,11 @@
 
 lion_status_t test_modification_push1(lion_app_t *app) {
   lion_vector_t vec;
-  uint32_t data[] = {0, 1, 2, 3, 4, 5, 6, 7};
-  size_t len = sizeof(data) / sizeof(uint32_t);
+  uint32_t      data[] = {0, 1, 2, 3, 4, 5, 6, 7};
+  size_t        len    = sizeof(data) / sizeof(uint32_t);
 
   log_debug("Creating vector");
-  LION_CALL(lion_vector_from_array(app, data, len, sizeof(uint32_t), &vec),
-            "Failed creating vector");
+  LION_CALL(lion_vector_from_array(app, data, len, sizeof(uint32_t), &vec), "Failed creating vector");
   LION_ASSERT_EQI(vec.capacity, 8);
 
   log_debug("Pushing element");
@@ -31,19 +30,17 @@ lion_status_t test_modification_push1(lion_app_t *app) {
 
   log_debug("Checking that the push happened fine");
   uint32_t contained_val;
-  LION_CALL(lion_vector_get(app, &vec, 8, &contained_val),
-            "Failed getting vec[8]");
+  LION_CALL(lion_vector_get(app, &vec, 8, &contained_val), "Failed getting vec[8]");
   LION_ASSERT_EQI(contained_val, val);
   return LION_STATUS_SUCCESS;
 }
 
 lion_status_t test_modification_push2(lion_app_t *app) {
   lion_vector_t vec;
-  size_t capacity = 8;
+  size_t        capacity = 8;
 
   log_debug("Creating vector");
-  LION_CALL(lion_vector_with_capacity(app, capacity, sizeof(uint32_t), &vec),
-            "Failed creating vector");
+  LION_CALL(lion_vector_with_capacity(app, capacity, sizeof(uint32_t), &vec), "Failed creating vector");
 
   log_debug("Pushing element");
   uint32_t val = 20;
@@ -55,26 +52,23 @@ lion_status_t test_modification_push2(lion_app_t *app) {
 
   log_debug("Checking that the push happened fine");
   uint32_t contained_val;
-  LION_CALL(lion_vector_get(app, &vec, 0, &contained_val),
-            "Failed getting vec[0]");
+  LION_CALL(lion_vector_get(app, &vec, 0, &contained_val), "Failed getting vec[0]");
   LION_ASSERT_EQI(contained_val, val);
   return LION_STATUS_SUCCESS;
 }
 
 lion_status_t test_modification_extend_array(lion_app_t *app) {
   lion_vector_t vec;
-  uint32_t data[] = {0, 1, 2, 3, 4, 5, 6, 7};
-  size_t len = 8;
+  uint32_t      data[] = {0, 1, 2, 3, 4, 5, 6, 7};
+  size_t        len    = 8;
 
   log_debug("Creating vector");
-  LION_CALL(lion_vector_from_array(app, data, len, sizeof(uint32_t), &vec),
-            "Failed creating vector");
+  LION_CALL(lion_vector_from_array(app, data, len, sizeof(uint32_t), &vec), "Failed creating vector");
 
   log_debug("Extending vector");
-  uint32_t values[] = {20, 19, 15};
-  size_t values_len = 3;
-  LION_CALL(lion_vector_extend_array(app, &vec, values, values_len),
-            "Failed extending array");
+  uint32_t values[]   = {20, 19, 15};
+  size_t   values_len = 3;
+  LION_CALL(lion_vector_extend_array(app, &vec, values, values_len), "Failed extending array");
 
   log_debug("Checking that the dimensions changed properly");
   LION_ASSERT_EQI(vec.len, 11);
@@ -89,14 +83,12 @@ lion_status_t test_modification_extend_array(lion_app_t *app) {
   log_debug("Checking that the extend happened fine");
   uint32_t contained_val;
   for (uint32_t i = 0; i < len; i++) {
-    LION_VCALL(lion_vector_get(app, &vec, i, &contained_val),
-               "Failed getting vec[%d]", i);
+    LION_VCALL(lion_vector_get(app, &vec, i, &contained_val), "Failed getting vec[%d]", i);
     logi_debug("Found %u", contained_val);
     LION_ASSERT_EQI(contained_val, data[i]);
   }
   for (uint32_t i = 0; i < values_len; i++) {
-    LION_VCALL(lion_vector_get(app, &vec, i + len, &contained_val),
-               "Failed getting vec[%d]", i + len);
+    LION_VCALL(lion_vector_get(app, &vec, i + len, &contained_val), "Failed getting vec[%d]", i + len);
     logi_debug("Found %u", contained_val);
     LION_ASSERT_EQI(contained_val, values[i]);
   }

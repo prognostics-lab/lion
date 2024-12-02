@@ -1,3 +1,7 @@
+#include "files.h"
+
+#include "mem.h"
+
 #include <lion/app.h>
 #include <lion_utils/vendor/log.h>
 #include <stdint.h>
@@ -5,14 +9,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "files.h"
-#include "mem.h"
-
 #define BUF_SIZE 65536
 
 int lion_count_lines(FILE *file) {
   char buf[BUF_SIZE];
-  int counter = 0;
+  int  counter = 0;
   for (;;) {
     size_t res = fread(buf, 1, BUF_SIZE, file);
     if (ferror(file))
@@ -30,9 +31,8 @@ int lion_count_lines(FILE *file) {
   return counter;
 }
 
-lion_status_t lion_readline(lion_app_t *app, FILE *file, char *buffer,
-                            char **out) {
-  int alloced = 0;
+lion_status_t lion_readline(lion_app_t *app, FILE *file, char *buffer, char **out) {
+  int    alloced    = 0;
   size_t max_length = 128;
   if (buffer == NULL) {
     alloced = 1;
@@ -45,7 +45,7 @@ lion_status_t lion_readline(lion_app_t *app, FILE *file, char *buffer,
     return LION_STATUS_FAILURE;
   }
 
-  char ch = (char)getc(file);
+  char   ch    = (char)getc(file);
   size_t count = 0;
 
   while ((ch != '\n') && (ch != EOF)) {
@@ -53,7 +53,7 @@ lion_status_t lion_readline(lion_app_t *app, FILE *file, char *buffer,
       if (alloced) {
         logi_debug("Encountered max length, reallocating");
         max_length += 128;
-        buffer = lion_realloc(app, buffer, max_length);
+        buffer      = lion_realloc(app, buffer, max_length);
         if (buffer == NULL) {
           logi_error("Error reallocating space for line buffer");
           return LION_STATUS_FAILURE;

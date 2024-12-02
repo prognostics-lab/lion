@@ -10,8 +10,7 @@ extern "C" {
 #endif
 
 int lion_slv_system(double t, const double state[], double out[], void *inputs);
-int lion_slv_jac(double t, const double state[], double *dfdy, double dfdt[],
-                 void *inputs);
+int lion_slv_jac(double t, const double state[], double *dfdy, double dfdt[], void *inputs);
 
 #ifdef __cplusplus
 }

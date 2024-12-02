@@ -1,7 +1,6 @@
 #include <gsl/gsl_math.h>
-#include <math.h>
-
 #include <lionu/fuzzy.h>
+#include <math.h>
 
 double lion_mf_gaussian(double x, lion_mf_gaussian_params_t *params) {
   double num = 0.5 * gsl_pow_2(x - params->mean);
