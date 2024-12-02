@@ -280,7 +280,7 @@ lion_status_t _init_simulation_minimizer(lion_app_t *app) {
   return LION_STATUS_SUCCESS;
 }
 
-lion_status_t _init_initial_state(lion_app_t *app, double initial_power, double initial_amb_temp) {
+lion_status_t _init_initial_state(lion_app_t *app) {
   logi_debug("Setting up initial conditions");
   // The current is set at first because it is used as an initial guess
   // for the optimization problem
@@ -289,10 +289,10 @@ lion_status_t _init_initial_state(lion_app_t *app, double initial_power, double 
   app->state.internal_temperature = app->params->init.temp_in;
   app->state.time                 = 0.0;
   app->state.step                 = 0;
-  logi_debug("Setting first inputs");
-  app->state.power               = initial_power;
-  app->state.ambient_temperature = initial_amb_temp;
-  LION_CALL_I(lion_slv_update(app), "Failed spreading initial condition");
+  logi_debug("Setting first inputs, should be irrelevant");
+  app->state.power               = 0.0;
+  app->state.ambient_temperature = app->params->init.temp_in;
+  // LION_CALL_I(lion_slv_update(app), "Failed spreading initial condition");
   return LION_STATUS_SUCCESS;
 }
 
@@ -316,7 +316,7 @@ lion_status_t _init_ode_driver(lion_app_t *app) {
   return LION_STATUS_SUCCESS;
 }
 
-lion_status_t lion_app_init(lion_app_t *app, double initial_power, double initial_amb_temp) {
+lion_status_t lion_app_init(lion_app_t *app) {
   logi_debug("Configuring simulation stepper");
   LION_CALL_I(_init_simulation_stepper(app), "Failed initializing simulation stepper");
 
@@ -324,7 +324,7 @@ lion_status_t lion_app_init(lion_app_t *app, double initial_power, double initia
   LION_CALL_I(_init_simulation_minimizer(app), "Failed initializing simulation minimizer");
 
   logi_info("Configuring initial state");
-  LION_CALL_I(_init_initial_state(app, initial_power, initial_amb_temp), "Failed initializing initial state");
+  LION_CALL_I(_init_initial_state(app), "Failed initializing initial state");
 
   logi_info("Configuring ode system");
   LION_CALL_I(_init_ode_system(app), "Failed initializing ode system");
@@ -343,8 +343,19 @@ lion_status_t lion_app_init(lion_app_t *app, double initial_power, double initia
   return LION_STATUS_SUCCESS;
 }
 
+lion_status_t lion_app_reset(lion_app_t *app) {
+  logi_debug("Resetting simulator");
+  LION_CALL_I(_init_initial_state(app), "Failed resetting initial state");
+  return LION_STATUS_SUCCESS;
+}
+
 lion_status_t lion_app_step(lion_app_t *app, double power, double ambient_temperature) {
-  // app->state contains state(k)
+  // TODO: Meticulously review the update logic. There seems to be an incosistency
+  // app->state contains state(k), inputs(k - 1)
+  app->state.power               = power;
+  app->state.ambient_temperature = ambient_temperature;
+  LION_CALL_I(lion_slv_update(app), "Failed updating state");
+  // app->state contains state(k), inputs(k)
   double partial_result[2] = {app->state.soc_nominal, app->state.internal_temperature};
   LION_GSL_VCALL_I(
       gsl_odeiv2_driver_apply_fixed_step(app->driver, &app->state.time, app->conf->sim_step_seconds, 1, partial_result),
@@ -352,15 +363,10 @@ lion_status_t lion_app_step(lion_app_t *app, double power, double ambient_temper
       app->state.step,
       app->state.time
   );
-  // state(k + 1) is stored in partial_result
   app->state.soc_nominal          = partial_result[0];
   app->state.internal_temperature = partial_result[1];
-  app->state.power                = power;
-  app->state.ambient_temperature  = ambient_temperature;
   LION_CALL_I(lion_slv_update(app), "Failed updating state");
-  // partial results are spread over the state, meaning at this
-  // point app->state contains state(k + 1) leaving it ready for the
-  // next time iteration
+  // app->state contains state(k + 1), inputs(k)
 
   if (app->update_hook != NULL) {
     // TODO: Evaluate implementation of concurrency
@@ -381,7 +387,7 @@ lion_status_t lion_app_run(lion_app_t *app, lion_vector_t *power, lion_vector_t 
 
   if (power != NULL && ambient_temperature != NULL) {
     logi_info("Initializing application");
-    LION_CALL_I(lion_app_init(app, lion_vector_get_d(app, power, 0), lion_vector_get_d(app, ambient_temperature, 0)), "Failed initializing app");
+    LION_CALL_I(lion_app_init(app), "Failed initializing app");
 
     logi_debug("Running application");
     LION_CALL_I(lion_app_simulate(app, power, ambient_temperature), "Failed simulating system");
