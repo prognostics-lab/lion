@@ -6,6 +6,11 @@
 
 // TODO: Consider a version of this code with a fixed internal resistance
 
+
+double lion_resistante_fixed(double soc, double current, lion_params_t *params) {
+  return 1.0;
+}
+
 double lion_resistance(double soc, double current, lion_params_t *params) {
   // Evaluate memberships
   double c40 = lion_mf_sigmoid(current, &params->rint.c40);
