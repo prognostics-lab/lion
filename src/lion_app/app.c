@@ -284,15 +284,14 @@ lion_status_t _init_initial_state(lion_app_t *app) {
   logi_debug("Setting up initial conditions");
   // The current is set at first because it is used as an initial guess
   // for the optimization problem
-  app->state.current              = 0.0;
-  app->state.soc_nominal          = app->params->init.soc;
-  app->state.internal_temperature = app->params->init.temp_in;
-  app->state.time                 = 0.0;
-  app->state.step                 = 0;
-  logi_debug("Setting first inputs, should be irrelevant");
-  app->state.power               = 0.0;
-  app->state.ambient_temperature = app->params->init.temp_in;
-  // LION_CALL_I(lion_slv_update(app), "Failed spreading initial condition");
+  app->state.current                    = 0.0;
+  app->state._next_soc_nominal          = app->params->init.soc;
+  app->state._next_internal_temperature = app->params->init.temp_in;
+  app->state.time                       = 0.0;
+  app->state.step                       = 0;
+  // logi_debug("Setting first inputs, should be irrelevant");
+  // app->state.power               = 0.0;
+  // app->state.ambient_temperature = app->params->init.temp_in;
   return LION_STATUS_SUCCESS;
 }
 
@@ -350,12 +349,21 @@ lion_status_t lion_app_reset(lion_app_t *app) {
 }
 
 lion_status_t lion_app_step(lion_app_t *app, double power, double ambient_temperature) {
-  // TODO: Meticulously review the update logic. There seems to be an incosistency
-  // app->state contains state(k), inputs(k - 1)
-  app->state.power               = power;
-  app->state.ambient_temperature = ambient_temperature;
+  /*
+     By using this update logic, at the end of every call app->state contains the inputs,
+     outputs and states at timestep k, and the states at k+1 are stored in placeholder
+     variables
+  */
+
+  // app->state = {x(k - 1), y(k - 1), u(k - 1)}
+  app->state.soc_nominal          = app->state._next_soc_nominal;
+  app->state.internal_temperature = app->state._next_internal_temperature;
+  // app->state = {x(k), y(k - 1), u(k - 1)}
+  app->state.power                = power;
+  app->state.ambient_temperature  = ambient_temperature;
+  // app->state = {x(k), y(k - 1), u(k)}
   LION_CALL_I(lion_slv_update(app), "Failed updating state");
-  // app->state contains state(k), inputs(k)
+  // app->state = {x(k), y(k), u(k)}
   double partial_result[2] = {app->state.soc_nominal, app->state.internal_temperature};
   LION_GSL_VCALL_I(
       gsl_odeiv2_driver_apply_fixed_step(app->driver, &app->state.time, app->conf->sim_step_seconds, 1, partial_result),
@@ -363,10 +371,8 @@ lion_status_t lion_app_step(lion_app_t *app, double power, double ambient_temper
       app->state.step,
       app->state.time
   );
-  app->state.soc_nominal          = partial_result[0];
-  app->state.internal_temperature = partial_result[1];
-  LION_CALL_I(lion_slv_update(app), "Failed updating state");
-  // app->state contains state(k + 1), inputs(k)
+  app->state._next_soc_nominal          = partial_result[0];
+  app->state._next_internal_temperature = partial_result[1];
 
   if (app->update_hook != NULL) {
     // TODO: Evaluate implementation of concurrency

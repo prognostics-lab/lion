@@ -93,7 +93,7 @@ typedef struct lion_app_config {
 
 typedef struct lion_app_state {
   double   time;
-  uint64_t step;
+  uint64_t step; // Step = 1 is the first one for practical reasons
 
   // System inputs
   double power;
@@ -117,6 +117,10 @@ typedef struct lion_app_state {
   double capacity_nominal;
   double soc_use;
   double capacity_use;
+
+  // Next state placeholders
+  double _next_soc_nominal;
+  double _next_internal_temperature;
 } lion_app_state_t;
 
 typedef struct lion_app {

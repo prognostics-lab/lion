@@ -1,3 +1,5 @@
+#include "lion/params.h"
+
 #include <lion/lion.h>
 
 const lion_params_t LION_APP_PARAMS_DEFAULT = {
@@ -40,52 +42,70 @@ const lion_params_t LION_APP_PARAMS_DEFAULT = {
                },
     .rint =
         {
-               // Charge
-            .c40 =
-                {
-                    .a = -19.9748,
-                    .c = -26.5422,
-                }, .c20 =
-                {
-                    .mean  = -20.0,
-                    .sigma = 3.0,
-                }, .c10 =
-                {
-                    .mean  = -10.0,
-                    .sigma = 2.3875,
-                }, .c4 =
-                {
-                    .mean  = -4.0,
-                    .sigma = 2.1623,
-                }, // Discharge
-            .d5 =
-                {
-                    .mean  = 5.0,
-                    .sigma = 2.0,
-                }, .d10 =
-                {
-                    .mean  = 10.0,
-                    .sigma = 3.1631,
-                }, .d15 =
-                {
-                    .mean  = 15.0,
-                    .sigma = 2.0,
-                }, .d30 =
-                {
-                    .a = 15.9494,
-                    .c = 17.3438,
-                }, .poly =
-                {
-                    // p0     p1        p2        p3
-                    {0.04172, 0.001688, -0.01526, 0.04006},  // c30
-                    {0.04385, 0.01758, -0.04159, 0.05488},   // c20
-                    {0.05166, 0.02408, -0.05132, 0.06101},   // c10
-                    {0.07004, 0.03910, -0.05345, 0.05015},   // c4
-                    {0.1317, -0.05083, -0.2579, 0.3084},     // d5
-                    {0.0958, -0.05706, -0.07709, 0.1141},    // d10
-                    {0.07868, -0.05782, -0.008633, 0.04612}, // d15
-                    {0.07218, -0.07066, 0.04202, 0.0061},    // d20
-                }, },
+               .model  = LION_RINT_MODEL_FIXED,
+               .params = NULL,
+               },
 };
 
-lion_params_t lion_params_default(void) { return LION_APP_PARAMS_DEFAULT; }
+const lion_params_rint_fixed_t LION_PARAMS_RINT_DEFAULT_FIXED = {.internal_resistance = 0.12};
+
+const lion_params_rint_polarization_t LION_PARAMS_RINT_DEFAULT_POLARIZATION = {
+    // Charge
+    .c40 =
+        {
+              .a = -19.9748,
+              .c = -26.5422,
+              },
+    .c20 =
+        {
+              .mean  = -20.0,
+              .sigma = 3.0,
+              },
+    .c10 =
+        {
+              .mean  = -10.0,
+              .sigma = 2.3875,
+              },
+    .c4 =
+        {
+              .mean  = -4.0,
+              .sigma = 2.1623,
+              },
+    // Discharge
+    .d5 =
+        {
+              .mean  = 5.0,
+              .sigma = 2.0,
+              },
+    .d10 =
+        {
+              .mean  = 10.0,
+              .sigma = 3.1631,
+              },
+    .d15 =
+        {
+              .mean  = 15.0,
+              .sigma = 2.0,
+              },
+    .d30 =
+        {
+              .a = 15.9494,
+              .c = 17.3438,
+              },
+    .poly =
+        {
+              // p0     p1        p2        p3
+            {0.04172, 0.001688, -0.01526, 0.04006},  // c30
+            {0.04385, 0.01758, -0.04159, 0.05488},   // c20
+            {0.05166, 0.02408, -0.05132, 0.06101},   // c10
+            {0.07004, 0.03910, -0.05345, 0.05015},   // c4
+            {0.1317, -0.05083, -0.2579, 0.3084},     // d5
+            {0.0958, -0.05706, -0.07709, 0.1141},    // d10
+            {0.07868, -0.05782, -0.008633, 0.04612}, // d15
+            {0.07218, -0.07066, 0.04202, 0.0061},    // d20
+        },
+};
+
+lion_params_t                   lion_params_default(void) { return LION_APP_PARAMS_DEFAULT; }
+lion_params_rint_fixed_t        lion_params_default_fixed(void) { return LION_PARAMS_RINT_DEFAULT_FIXED; }
+lion_params_rint_polarization_t lion_params_default_polarization(void) { return LION_PARAMS_RINT_DEFAULT_POLARIZATION; }
