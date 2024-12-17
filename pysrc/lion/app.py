@@ -399,6 +399,9 @@ class _ParamsOCV:
         self._params._cdata.ocv.vl = new_val
 
 
+# TODO: Add the different types of internal resistance models
+
+
 class _ParamsRInt:
     __slots__ = ("_params",)
 
