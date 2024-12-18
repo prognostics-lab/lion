@@ -46,31 +46,34 @@ class ResistancePolarization(Resistance):
         "d10",
         "d15",
         "d30",
+        "poly",
     )
 
     def __init__(
         self,
-        c40,
-        c20,
-        c10,
-        c4,
-        d5,
-        d10,
-        d15,
-        d30,
+        c40=None,
+        c20=None,
+        c10=None,
+        c4=None,
+        d5=None,
+        d10=None,
+        d15=None,
+        d30=None,
+        poly=None,
     ):
+        # TODO: Implement configuring the polynomial coefficients
         default = self._c_default()
         self.c40 = choose(c40, default.c40)
         self.c20 = choose(c20, default.c20)
         self.c10 = choose(c10, default.c10)
-        self.c4  = choose(c4, default.c4)
-        self.d5  = choose(d5, default.d5)
+        self.c4 = choose(c4, default.c4)
+        self.d5 = choose(d5, default.d5)
         self.d10 = choose(d10, default.d10)
         self.d15 = choose(d15, default.d15)
         self.d30 = choose(d30, default.d30)
+        self.poly = choose(poly, default.poly)
 
     def set_parameters(self, target):
-        # TODO: Implement configuring the polynomial coefficients
         target.model = _ResistanceModels.POLARIZATION.value
         target.params.polarization.c40 = self.c40
         target.params.polarization.c20 = self.c20
@@ -80,6 +83,7 @@ class ResistancePolarization(Resistance):
         target.params.polarization.d10 = self.d10
         target.params.polarization.d15 = self.d15
         target.params.polarization.d30 = self.d30
+        target.params.polarization.poly = self.poly
 
     @staticmethod
     def _c_default():
