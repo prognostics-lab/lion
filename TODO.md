@@ -4,7 +4,9 @@ This file contains a list of the TODO tasks found within the source code.
 - **(`./examples/lab_240716_cpp/main.cpp`)** Implement hooks in the C++ wrapper
 - **(`./include/lion/status.h`)** Evaluate removal of runtime error detection on release builds
 - **(`./include/lion/solver/sys.h`)** Add logic to change dimension depending on simtype
-- **(`./pysrc/lion/app.py`)** Add the different types of internal resistance models
+- **(`./pysrc/lion/models/rint.py`)** Test whether this implementation fails when setting different models
+- **(`./pysrc/lion/models/rint.py`)** Implement configuring the polynomial coefficients
+- **(`./pysrc/lion/app.py`)** Refactor these helper methods to depend on the output of `get_keys`
 - **(`./pysrc/lion/vector.py`)** Fix the bug that happens when the first element is less general than the rest
 - **(`./pysrc/lion/vector.py`)** Determine a more efficient way of creating from numpy array
 - **(`./pysrc/lion/vector.py`)** Implemented reading csv directly instead of using pandas
@@ -14,7 +16,6 @@ This file contains a list of the TODO tasks found within the source code.
 - **(`./src/lion_app/vector.c`)** Implement saving vector to csv file
 - **(`./src/lion_app/app.c`)** Evaluate implementation of concurrency
 - **(`./src/lion_app/app.c`)** Add some mechanism to avoid race conditions
-- **(`./src/lion_math/internal_resistance.c`)** Consider a version of this code with a fixed internal resistance
 - **(`./src/lion_math/lion_math.h`)** Double check implementation of each model
 - **(`./src/lion_math/capacity.h`)** Implement state of health
 - **(`./tests/unittest/quick/test_math_differential.c`)** Add tests for all calculations
