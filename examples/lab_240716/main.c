@@ -173,7 +173,7 @@ int main(int argc, char *argv[]) {
   params.init.capacity            = 14400.0;
   params.init.current_guess       = 10.0;
   params.rint.model               = LION_RINT_MODEL_POLARIZATION;
-  params.rint.params.polarization = lion_params_default_polarization();
+  params.rint.params.polarization = lion_params_default_rint_polarization();
 
   log_info("Creating application");
   lion_app_t app;
