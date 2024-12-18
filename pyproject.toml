@@ -31,6 +31,7 @@ build-backend = "setuptools.build_meta"
 package-dir = {"" = "pysrc"}
 packages = [
     "lion",
+    "lion.models",
     "lion_ffi",
     "lion_ffi.config",
     "lion_ffi.ffi",

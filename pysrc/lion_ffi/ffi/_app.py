@@ -70,6 +70,8 @@ typedef struct lion_app_state {
   double capacity_nominal;
   double soc_use;
   double capacity_use;
+
+  ...;
 } lion_app_state_t;
 
 typedef struct lion_app {
