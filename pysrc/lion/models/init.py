@@ -1,3 +1,8 @@
+from lion_utils.choose import choose
+
+import lion_ffi as _
+from lion._lion import ffi
+from lion._lion import lib as _lionl
 from lion.models._base import _BaseParams
 
 
@@ -13,11 +18,12 @@ class Initial(_BaseParams):
     def __init__(
         self, soc=None, temp_in=None, soh=None, capacity=None, current_guess=None
     ):
-        self.soc = soc
-        self.temp_in = temp_in
-        self.soh = soh
-        self.capacity = capacity
-        self.current_guess = current_guess
+        default = self._c_default()
+        self.soc = choose(soc, default.soc)
+        self.temp_in = choose(temp_in, default.temp_in)
+        self.soh = choose(soh, default.soh)
+        self.capacity = choose(capacity, default.capacity)
+        self.current_guess = choose(current_guess, default.current_guess)
 
     def set_parameters(self, target):
         target.soc = self.soc
@@ -25,3 +31,7 @@ class Initial(_BaseParams):
         target.soh = self.soh
         target.capacity = self.capacity
         target.current_guess = self.current_guess
+
+    @staticmethod
+    def _c_default():
+        return _lionl.lion_params_default_init()

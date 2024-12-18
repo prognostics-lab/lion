@@ -197,6 +197,8 @@ class Params:
     def __init__(self, init=None, ehc=None, ocv=None, vft=None, temp=None, rint=None):
         self._cdata = ffi.new("lion_params_t *", _lionl.lion_params_default())
 
+        # TODO: Figure out a way to let C handle the defaults
+
         if init is None:
             self.init = models.Initial()
         else:
@@ -260,19 +262,19 @@ class Params:
         new.set_parameters(self._cdata.ehc)
 
     @ocv.setter
-    def ocv(self) -> models.Ocv:
+    def ocv(self, new: models.Ocv) -> None:
         new.set_parameters(self._cdata.ocv)
 
     @vft.setter
-    def vft(self) -> models.Vft:
+    def vft(self, new: models.Vft) -> None:
         new.set_parameters(self._cdata.vft)
 
     @temp.setter
-    def temp(self) -> models.Temperature:
+    def temp(self, new: models.Temperature) -> None:
         new.set_parameters(self._cdata.temp)
 
     @rint.setter
-    def rint(self) -> models.Resistance:
+    def rint(self, new: models.Resistance) -> None:
         new.set_parameters(self._cdata.rint)
 
 

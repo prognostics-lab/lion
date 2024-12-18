@@ -1,3 +1,8 @@
+from lion_utils.choose import choose
+
+import lion_ffi as _
+from lion._lion import ffi
+from lion._lion import lib as _lionl
 from lion.models._base import _BaseParams
 
 
@@ -13,14 +18,20 @@ class TemperatureSurface(Temperature):
     )
 
     def __init__(self, cp=None, rin=None, rout=None):
-        self.cp = cp
-        self.rin = rin
-        self.rout = rout
+        default = self._c_default()
+        self.cp = choose(cp, default.cp)
+        self.rin = choose(rin, default.rin)
+        self.rout = choose(rout, default.rout)
 
     def set_parameters(self, target):
         target.cp = self.cp
         target.rin = self.rin
         target.rout = self.rout
+
+    @staticmethod
+    def _c_default():
+        # TODO: Change this when I eventually decide to implement other models
+        return _lionl.lion_params_default_temp()
 
 
 class TemperatureAir(Temperature):
