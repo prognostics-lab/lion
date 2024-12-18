@@ -42,8 +42,8 @@ const lion_params_t LION_APP_PARAMS_DEFAULT = {
                },
     .rint =
         {
-               .model  = LION_RINT_MODEL_FIXED,
-               .params = NULL,
+               .model        = LION_RINT_MODEL_FIXED,
+               .params.fixed = 1.0,
                },
 };
 

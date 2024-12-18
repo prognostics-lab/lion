@@ -162,18 +162,18 @@ int main(int argc, char *argv[]) {
   conf.sim_epsrel        = 1e-1;
   conf.sim_min_maxiter   = 10000;
 
-  log_info("Setting up internal resistance parameters");
-  lion_params_rint_polarization_t rint = lion_params_default_polarization();
+  // log_info("Setting up internal resistance parameters");
+  // lion_params_rint_polarization_t rint = lion_params_default_polarization();
 
   log_info("Setting up simulation parameters");
-  lion_params_t params      = lion_params_default();
-  params.init.soc           = 0.1;
-  params.init.temp_in       = 296.0;
-  params.init.soh           = 1.0;
-  params.init.capacity      = 14400.0;
-  params.init.current_guess = 10.0;
-  params.rint.model         = LION_RINT_MODEL_POLARIZATION;
-  params.rint.params        = &rint;
+  lion_params_t params            = lion_params_default();
+  params.init.soc                 = 0.1;
+  params.init.temp_in             = 296.0;
+  params.init.soh                 = 1.0;
+  params.init.capacity            = 14400.0;
+  params.init.current_guess       = 10.0;
+  params.rint.model               = LION_RINT_MODEL_POLARIZATION;
+  params.rint.params.polarization = lion_params_default_polarization();
 
   log_info("Creating application");
   lion_app_t app;

@@ -71,7 +71,10 @@ typedef struct lion_params_rint_polarization {
 
 typedef struct lion_params_rint {
   lion_rint_model_t model;
-  void             *params;
+  union {
+    lion_params_rint_fixed_t        fixed;
+    lion_params_rint_polarization_t polarization;
+  } params;
 } lion_params_rint_t;
 
 typedef struct lion_params {

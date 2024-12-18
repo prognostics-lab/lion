@@ -5,15 +5,13 @@
 #include <lionu/fuzzy.h>
 #include <lionu/math.h>
 
-// TODO: Consider a version of this code with a fixed internal resistance
-
 double lion_resistance_fixed(double soc, double current, lion_params_t *params) {
-  lion_params_rint_fixed_t *p = params->rint.params;
+  lion_params_rint_fixed_t *p = &params->rint.params.fixed;
   return p->internal_resistance;
 }
 
 double lion_resistance_polarization(double soc, double current, lion_params_t *params) {
-  lion_params_rint_polarization_t *p = params->rint.params;
+  lion_params_rint_polarization_t *p = &params->rint.params.polarization;
 
   // Evaluate memberships
   double c40 = lion_mf_sigmoid(current, &p->c40);
