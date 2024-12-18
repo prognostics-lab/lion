@@ -4,8 +4,10 @@ This file contains a list of the TODO tasks found within the source code.
 - **(`./examples/lab_240716_cpp/main.cpp`)** Implement hooks in the C++ wrapper
 - **(`./include/lion/status.h`)** Evaluate removal of runtime error detection on release builds
 - **(`./include/lion/solver/sys.h`)** Add logic to change dimension depending on simtype
+- **(`./pysrc/lion/models/temp.py`)** Change this when I eventually decide to implement other models
 - **(`./pysrc/lion/models/rint.py`)** Test whether this implementation fails when setting different models
 - **(`./pysrc/lion/models/rint.py`)** Implement configuring the polynomial coefficients
+- **(`./pysrc/lion/app.py`)** Figure out a way to let C handle the defaults
 - **(`./pysrc/lion/app.py`)** Refactor these helper methods to depend on the output of `get_keys`
 - **(`./pysrc/lion/vector.py`)** Fix the bug that happens when the first element is less general than the rest
 - **(`./pysrc/lion/vector.py`)** Determine a more efficient way of creating from numpy array
