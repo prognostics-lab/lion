@@ -4,9 +4,10 @@ from functools import singledispatchmethod
 from numbers import Real
 from typing import List, Self
 
-import lion_ffi as _
 import numpy as np
 import pandas as pd
+
+import lion_ffi as _
 from lion._lion import ffi
 from lion._lion import lib as _lionl
 from lion import dtypes
