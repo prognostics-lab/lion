@@ -1,7 +1,7 @@
 # 0. Introduction
 
 - [What is lion](introduction.md)
-- [Installation](introduction.md)
+- [Installation](installation.md)
 
 # 1. Usage guide
 
