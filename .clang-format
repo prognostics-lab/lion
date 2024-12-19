@@ -14,6 +14,7 @@ PointerAlignment: Right
 AllowShortBlocksOnASingleLine: Empty
 AllowShortCaseLabelsOnASingleLine: false
 # BreakAfterReturnType: Automatic
+BracedInitializerIndentWidth: 2
 PenaltyReturnTypeOnItsOwnLine: 1000
 BreakBeforeConceptDeclarations: Always
 BreakConstructorInitializers: AfterColon
@@ -21,6 +22,7 @@ BreakInheritanceList: AfterColon
 BreakStringLiterals: true
 # BreakTemplateDeclarations: Yes
 CompactNamespaces: false
+# Cpp11BracedListStyle: false
 IncludeBlocks: Regroup
 IndentCaseLabels: false
 IndentExternBlock: NoIndent
