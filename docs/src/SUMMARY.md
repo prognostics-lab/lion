@@ -14,5 +14,5 @@
 
 # API reference
 
-[Reference](reference/reference.md)
+- [Reference](reference/reference.md)
 
