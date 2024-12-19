@@ -1,0 +1,12 @@
+[book]
+authors = ["CASE"]
+language = "en"
+multilingual = false
+src = "src"
+title = "lion"
+
+[build]
+build-dir = "../book"
+
+[output.html]
+mathjax-support = true
