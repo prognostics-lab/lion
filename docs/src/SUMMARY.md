@@ -1,11 +1,18 @@
-# 0. Introduction
+# Summary
 
-- [What is lion](00-introduction/introduction.md)
-- [Installation](00-introduction/installation.md)
+[Introduction](introduction.md)
 
-# 1. Usage guide
+# Instructions
 
-- [System](01-usage/system.md)
-- [Configuration](01-usage/configuration.md)
-- [Parameters](01-usage/parameters.md)
+- [Installation](instructions/installation.md)
+
+# Usage
+
+- [System](usage/system.md)
+- [Configuration](usage/configuration.md)
+- [Parameters](usage/parameters.md)
+
+# API reference
+
+[Reference](reference/reference.md)
 
