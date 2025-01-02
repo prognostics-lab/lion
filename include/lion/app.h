@@ -2,6 +2,7 @@
 
 #include "params.h"
 #include "solver/inputs.h"
+#include "solver/sys.h"
 #include "status.h"
 #include "vector.h"
 
@@ -75,14 +76,15 @@ typedef struct lion_app_config {
 
   /* Simulation metadata */
 
-  lion_app_regime_t    sim_regime;
-  lion_app_stepper_t   sim_stepper;
-  lion_app_minimizer_t sim_minimizer;
-  double               sim_time_seconds;
-  double               sim_step_seconds;
-  double               sim_epsabs;
-  double               sim_epsrel;
-  uint64_t             sim_min_maxiter;
+  lion_app_regime_t      sim_regime;
+  lion_app_stepper_t     sim_stepper;
+  lion_app_minimizer_t   sim_minimizer;
+  lion_jacobian_method_t sim_jacobian;
+  double                 sim_time_seconds;
+  double                 sim_step_seconds;
+  double                 sim_epsabs;
+  double                 sim_epsrel;
+  uint64_t               sim_min_maxiter;
 
   /* Logging configuration */
 

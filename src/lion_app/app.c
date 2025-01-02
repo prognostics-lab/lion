@@ -40,21 +40,22 @@
 #endif
 
 const lion_app_config_t LION_APP_CONFIG_DEFAULT = {
-    // Metadata
-    .app_name = "Application",
+  // Metadata
+  .app_name = "Application",
 
-    // Simulation parameters
-    .sim_stepper      = LION_STEPPER_RK8PD,
-    .sim_minimizer    = LION_MINIMIZER_BRENT,
-    .sim_time_seconds = 10.0,
-    .sim_step_seconds = 1e-3,
-    .sim_epsabs       = 1e-8,
-    .sim_epsrel       = 1e-8,
+  // Simulation parameters
+  .sim_stepper      = LION_STEPPER_RK8PD,
+  .sim_minimizer    = LION_MINIMIZER_BRENT,
+  .sim_jacobian     = LION_JACOBIAN_ANALYTICAL,
+  .sim_time_seconds = 10.0,
+  .sim_step_seconds = 1e-3,
+  .sim_epsabs       = 1e-8,
+  .sim_epsrel       = 1e-8,
 
-    // Logging
-    .log_dir     = NULL,
-    .log_stdlvl  = LOG_INFO,
-    .log_filelvl = LOG_TRACE,
+  // Logging
+  .log_dir     = NULL,
+  .log_stdlvl  = LOG_INFO,
+  .log_filelvl = LOG_TRACE,
 };
 
 lion_status_t lion_app_config_new(lion_app_config_t *out) {
@@ -94,19 +95,19 @@ static lion_status_t create_directory(const char *dirname) {
 
 lion_status_t lion_app_new(lion_app_config_t *conf, lion_params_t *params, lion_app_t *out) {
   lion_app_t app = {
-      .conf          = conf,
-      .params        = params,
-      .init_hook     = NULL,
-      .update_hook   = NULL,
-      .finished_hook = NULL,
+    .conf          = conf,
+    .params        = params,
+    .init_hook     = NULL,
+    .update_hook   = NULL,
+    .finished_hook = NULL,
 
-      .driver    = NULL,
-      .sys_min   = NULL,
-      .step_type = NULL,
-      .minimizer = NULL,
+    .driver    = NULL,
+    .sys_min   = NULL,
+    .step_type = NULL,
+    .minimizer = NULL,
 
 #ifndef NDEBUG // Internal debug information
-      ._idebug_malloced_total = 0,
+    ._idebug_malloced_total = 0,
 #endif
   };
 
@@ -166,6 +167,7 @@ static void lion_app_log_startup_info(lion_app_t *app) {
   logi_info(" * Regime                         : %s", lion_app_regime_name(app->conf->sim_regime));
   logi_info(" * Stepper                        : %s", lion_app_stepper_name(app->conf->sim_stepper));
   logi_info(" * Minimizer                      : %s", lion_app_minimizer_name(app->conf->sim_minimizer));
+  logi_info(" * Jacobian                       : %s", lion_jacobian_name(app->conf->sim_jacobian));
   logi_info(" * Total simulation time          : %f s", app->conf->sim_time_seconds);
   logi_info(" * Simulation step time           : %f s", app->conf->sim_step_seconds);
   logi_info(" * Absolute epsilon               : %f", app->conf->sim_epsabs);
@@ -300,11 +302,20 @@ lion_status_t _init_ode_system(lion_app_t *app) {
   app->inputs.sys_inputs = &app->state;
   app->inputs.sys_params = app->params;
   logi_debug("Creating GSL system");
+  void *jac;
+  switch (app->conf->sim_jacobian) {
+  case LION_JACOBIAN_ANALYTICAL:
+    jac = &lion_slv_jac_analytical;
+  case LION_JACOBIAN_2POINT:
+    jac = &lion_slv_jac_2point;
+  default:
+    jac = NULL;
+  }
   gsl_odeiv2_system sys = {
-      .function  = &lion_slv_system,
-      .jacobian  = &lion_slv_jac,
-      .dimension = LION_SLV_DIMENSION,
-      .params    = &app->inputs,
+    .function  = &lion_slv_system,
+    .jacobian  = jac,
+    .dimension = LION_SLV_DIMENSION,
+    .params    = &app->inputs,
   };
   app->sys = sys;
   return LION_STATUS_SUCCESS;
@@ -451,9 +462,9 @@ lion_status_t lion_app_cleanup(lion_app_t *app) {
 
 lion_version_t lion_app_get_version(lion_app_t *app) {
   lion_version_t out = {
-      .major = LION_ENGINE_VERSION_MAJOR,
-      .minor = LION_ENGINE_VERSION_MINOR,
-      .patch = LION_ENGINE_VERSION_PATCH,
+    .major = LION_ENGINE_VERSION_MAJOR,
+    .minor = LION_ENGINE_VERSION_MINOR,
+    .patch = LION_ENGINE_VERSION_PATCH,
   };
   return out;
 }
