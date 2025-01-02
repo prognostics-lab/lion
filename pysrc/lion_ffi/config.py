@@ -31,5 +31,5 @@ CLIB_DLL_NAMES = [
 INCLUDE_DIRS = [
     str(Path.joinpath(CSOURCES_PATH).resolve()),
     str(Path.joinpath(CHEADER_PATH).resolve()),
-    "/opt/homebrew/Cellar/gsl/2.8/include",
+    "/opt/homebrew/include",
 ]
