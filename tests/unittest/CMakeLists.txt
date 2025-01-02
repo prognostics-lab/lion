@@ -26,3 +26,4 @@ foreach(filepath ${TESTS_QUICK})
   add_test(NAME ${filename_we} COMMAND ${filename_we})
   set_tests_properties(${filename_we} PROPERTIES LABELS "quick")
 endforeach()
+

@@ -60,10 +60,10 @@ double lion_current_optimize(
   // optimization problem
   //   min ||I - f(I)||^2
   struct lion_optimization_iter_params opt_params = {
-      .power  = power,
-      .voc    = open_circuit_voltage,
-      .soc    = soc,
-      .params = params,
+    .power  = power,
+    .voc    = open_circuit_voltage,
+    .soc    = soc,
+    .params = params,
   };
 
   double opt_min = LION_CURRENT_OPTMIN;

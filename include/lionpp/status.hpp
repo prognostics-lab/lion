@@ -7,7 +7,7 @@ namespace lion {
 enum Status {
   SUCCESS = LION_STATUS_SUCCESS,
   FAILURE = LION_STATUS_FAILURE,
-  EXIT = LION_STATUS_EXIT,
+  EXIT    = LION_STATUS_EXIT,
 };
 
 }
