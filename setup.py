@@ -79,9 +79,10 @@ ffi_builder.set_source(
         str(CLIB_DEBUG_PATH),
         str(CBIN_RELEASE_PATH),
         str(CLIB_RELEASE_PATH),
+        "/opt/homebrew/lib",
     ],
     include_dirs=INCLUDE_DIRS,
-    extra_link_args=["-Wl,-rpath=/usr/lib:lib/:lib/debug/:/opt/homebrew/lib"],
+    # extra_link_args=["-Wl,-rpath=/usr/lib:lib/:lib/debug/:/opt/homebrew/lib"],
 )
 
 
