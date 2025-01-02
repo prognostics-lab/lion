@@ -16,6 +16,7 @@ This file contains a list of the TODO tasks found within the source code.
 - **(`./setup.py`)** Fix the bug where it has to be installed twice to work
 - **(`./setup.py`)** Set version dynamically
 - **(`./src/lion_app/vector.c`)** Implement saving vector to csv file
+- **(`./src/lion_app/solver/jacobian_twopoint.c`)** Implement the calculation of the numerical Jacobian
 - **(`./src/lion_app/app.c`)** Evaluate implementation of concurrency
 - **(`./src/lion_app/app.c`)** Add some mechanism to avoid race conditions
 - **(`./src/lion_math/lion_math.h`)** Double check implementation of each model
