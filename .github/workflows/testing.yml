@@ -95,6 +95,7 @@ jobs:
       - name: Build Python wrapper
         run: |
           pip install .
+          pip install .
 
       - name: Run pytest
         uses: pavelzw/pytest-action@v2.2.0
