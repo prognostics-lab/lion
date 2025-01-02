@@ -82,7 +82,7 @@ ffi_builder.set_source(
         "/opt/homebrew/lib",
     ],
     include_dirs=INCLUDE_DIRS,
-    # extra_link_args=["-rpath=/usr/lib:lib/:lib/debug/:/opt/homebrew/lib"],
+    extra_link_args=["-rpath /usr/lib:lib/:lib/debug/:/opt/homebrew/lib"],
 )
 
 
