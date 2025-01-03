@@ -67,6 +67,13 @@ LIB_SOURCE = """
 
 # Builder for the FFI
 
+LINK_ARGS = [
+    "-Wl,-rpath,/usr/lib",
+    "-Wl,-rpath,lib/",
+    "-Wl,-rpath,lib/debug/",
+    "-Wl,-rpath,/opt/homebrew/lib",
+]
+
 ffi_builder = cffi.FFI()
 
 ffi_builder.cdef(FFI_CDEF)
@@ -82,7 +89,7 @@ ffi_builder.set_source(
         "/opt/homebrew/lib",
     ],
     include_dirs=INCLUDE_DIRS,
-    extra_link_args=["-Wl,-rpath=/usr/lib:lib/:lib/debug/:/opt/homebrew/lib"],
+    extra_link_args=LINK_ARGS,
 )
 
 
