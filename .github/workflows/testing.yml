@@ -53,6 +53,9 @@ jobs:
           build-config: ${{ matrix.build-type }}
           verbose: true
 
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+
   pytest:
     name: Testing PyTest ${{ matrix.config.os }} py${{ matrix.python-version }}
     runs-on: ${{ matrix.config.os }}
@@ -95,7 +98,6 @@ jobs:
       - name: Build Python wrapper
         run: |
           pip install .
-          pip install .
 
       - name: Run pytest
         uses: pavelzw/pytest-action@v2.2.0
@@ -104,6 +106,6 @@ jobs:
           emoji: false
           job-summary: true
 
-
-
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
 
