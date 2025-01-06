@@ -60,7 +60,7 @@ jobs:
       - name: Setup tmate session
         if: ${{ failure() }}
         uses: mxschmitt/action-tmate@v3
-        timeout-minutes: 1
+        timeout-minutes: 5
 
   pytest:
     name: Testing PyTest ${{ matrix.config.os }} py${{ matrix.python-version }}
@@ -120,5 +120,5 @@ jobs:
       - name: Setup tmate session
         if: ${{ failure() }}
         uses: mxschmitt/action-tmate@v3
-        timeout-minutes: 1
+        timeout-minutes: 5
 
