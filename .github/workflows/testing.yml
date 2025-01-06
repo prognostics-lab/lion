@@ -18,7 +18,7 @@ jobs:
           #   }
           - {
               os: windows-latest,
-              deps-script: "cd dependencies; git clone https://github.com/ampl/gsl.git; cd gsl; cmake -DGSL_INSTALL_MULTI_CONFIG=ON -DBUILD_SHARED_LIBS=ON -DMSVC_RUNTIME_DYNAMIC=ON -DNO_AMPL_BINDINGS=ON .; cmake --build . --config Release -j 8"
+              deps-script: "cd dependencies; git clone https://github.com/ampl/gsl.git; cd gsl; cmake -DGSL_INSTALL_MULTI_CONFIG=ON -DBUILD_SHARED_LIBS=ON -DMSVC_RUNTIME_DYNAMIC=ON -DNO_AMPL_BINDINGS=ON .; cmake --build . --config Release --target install -j 8"
             }
           - {
               os: ubuntu-latest,
@@ -75,7 +75,8 @@ jobs:
           #   }
           - {
               os: windows-latest,
-              deps-script: "cd dependencies; git clone https://github.com/ampl/gsl.git; cd gsl; cmake -DGSL_INSTALL_MULTI_CONFIG=ON -DBUILD_SHARED_LIBS=ON -DMSVC_RUNTIME_DYNAMIC=ON -DNO_AMPL_BINDINGS=ON .; cmake --build . --config Release -j 8"
+              # deps-script: "cd dependencies; git clone https://github.com/ampl/gsl.git; cd gsl; cmake -DGSL_INSTALL_MULTI_CONFIG=ON -DBUILD_SHARED_LIBS=ON -DMSVC_RUNTIME_DYNAMIC=ON -DNO_AMPL_BINDINGS=ON .; cmake --build . --config Release -j 8"
+              deps-script: "cd dependencies; git clone https://github.com/ampl/gsl.git; cd gsl; cmake -DGSL_INSTALL_MULTI_CONFIG=ON -DBUILD_SHARED_LIBS=ON -DMSVC_RUNTIME_DYNAMIC=ON -DNO_AMPL_BINDINGS=ON .; cmake --build . --config Release --target install -j 8"
             }
           - {
               os: ubuntu-latest,
