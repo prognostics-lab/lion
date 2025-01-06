@@ -18,7 +18,7 @@ jobs:
           #   }
           - {
               os: windows-latest,
-              deps-script: >
+              deps-script: |
                 cd dependencies
                 curl -L https://ftp.gnu.org/gnu/gsl/gsl-latest.tar.gz -o src.tar.gz
                 tar -xzf src.tar.gz
@@ -84,7 +84,7 @@ jobs:
           #   }
           - {
               os: windows-latest,
-              deps-script: >
+              deps-script: |
                 cd dependencies
                 curl -L https://ftp.gnu.org/gnu/gsl/gsl-latest.tar.gz -o src.tar.gz
                 tar -xzf src.tar.gz
