@@ -27,6 +27,9 @@ project(lion VERSION 0.1.0)
 set(CMAKE_DEPENDENCIES_DIR ${CMAKE_SOURCE_DIR}/dependencies)
 
 # Necessary libraries
+if(MSVC)
+    set(GSL_ROOT_DIR C:/Program Files (x86)/GSL)
+endif()
 find_package(GSL REQUIRED)
 
 # Output for files
