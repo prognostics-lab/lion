@@ -169,11 +169,9 @@ lion_status_t  lion_app_reset(lion_app_t *app);
 lion_status_t  lion_app_step(lion_app_t *app, double power, double ambient_temperature);
 lion_status_t  lion_app_run(lion_app_t *app, lion_vector_t *power, lion_vector_t *ambient_temperature);
 lion_version_t lion_app_get_version(lion_app_t *app);
-
-int      lion_app_should_close(lion_app_t *app);
-uint64_t lion_app_max_iters(lion_app_t *app);
-
-lion_status_t lion_app_cleanup(lion_app_t *app);
+int            lion_app_should_close(lion_app_t *app);
+uint64_t       lion_app_max_iters(lion_app_t *app);
+lion_status_t  lion_app_cleanup(lion_app_t *app);
 
 const char *lion_app_regime_name(lion_app_regime_t regime);
 const char *lion_app_stepper_name(lion_app_stepper_t stepper);

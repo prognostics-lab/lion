@@ -3,6 +3,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef int8_t   i8;
 typedef int16_t  i16;
 typedef int32_t  i32;
@@ -33,3 +37,7 @@ u32    lion_polyval_u32(u32 x, u32 *coeffs, u32 count);
 u64    lion_polyval_u64(u64 x, u64 *coeffs, u32 count);
 float  lion_polyval_f(float x, float *coeffs, u32 count);
 double lion_polyval_d(double x, double *coeffs, u32 count);
+
+#ifdef __cplusplus
+}
+#endif
