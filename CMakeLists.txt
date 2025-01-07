@@ -23,7 +23,7 @@ else()
 endif()
 
 # Project setup
-project(lion VERSION 0.1.0)
+project(lion VERSION 0.2.0)
 set(CMAKE_DEPENDENCIES_DIR ${CMAKE_SOURCE_DIR}/dependencies)
 
 # Necessary libraries
