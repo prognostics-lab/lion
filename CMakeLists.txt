@@ -29,6 +29,7 @@ set(CMAKE_DEPENDENCIES_DIR ${CMAKE_SOURCE_DIR}/dependencies)
 # Necessary libraries
 if(MSVC)
     # TODO: Properly configure building on Windows
+    # TODO: Add a way to set the path to the GSL installation
     set(GSL_ROOT_DIR "C:/Program Files (x86)/GSL")
 endif()
 find_package(GSL REQUIRED)
