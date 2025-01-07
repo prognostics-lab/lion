@@ -1,6 +1,7 @@
 # TODO
 This file contains a list of the TODO tasks found within the source code.
 - **(`./CMakeLists.txt`)** Properly configure building on Windows
+- **(`./CMakeLists.txt`)** Add a way to set the path to the GSL installation
 - **(`./examples/python/lab_240716_hook.py`)** See how to remove the global variable
 - **(`./examples/lab_240716_cpp/main.cpp`)** Implement hooks in the C++ wrapper
 - **(`./include/lion/status.h`)** Evaluate removal of runtime error detection on release builds
