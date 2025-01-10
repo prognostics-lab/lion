@@ -47,8 +47,8 @@ typedef struct lion_params_ocv {
 } lion_params_ocv_t;
 
 typedef enum lion_rint_model {
-  LION_RINT_MODEL_FIXED        = 0,
-  LION_RINT_MODEL_POLARIZATION = 1,
+  LION_RINT_MODEL_FIXED,
+  LION_RINT_MODEL_POLARIZATION,
 } lion_rint_model_t;
 
 typedef struct lion_params_rint_fixed {

@@ -44,29 +44,29 @@ size_t               heapinfo_count(lion_app_t *app);
 // Application declarations
 
 typedef enum lion_app_regime {
-  LION_APP_ONLYSF  = 0,
-  LION_APP_ONLYAIR = 1,
-  LION_APP_BOTH    = 2,
+  LION_APP_ONLYSF,
+  LION_APP_ONLYAIR,
+  LION_APP_BOTH,
 } lion_app_regime_t;
 
 typedef enum lion_app_stepper {
-  LION_STEPPER_RK2     = 0,
-  LION_STEPPER_RK4     = 1,
-  LION_STEPPER_RKF45   = 2,
-  LION_STEPPER_RKCK    = 3,
-  LION_STEPPER_RK8PD   = 4,
-  LION_STEPPER_RK1IMP  = 5,
-  LION_STEPPER_RK2IMP  = 6,
-  LION_STEPPER_RK4IMP  = 7,
-  LION_STEPPER_BSIMP   = 8,
-  LION_STEPPER_MSADAMS = 9,
-  LION_STEPPER_MSBDF   = 10,
+  LION_STEPPER_RK2,
+  LION_STEPPER_RK4,
+  LION_STEPPER_RKF45,
+  LION_STEPPER_RKCK,
+  LION_STEPPER_RK8PD,
+  LION_STEPPER_RK1IMP,
+  LION_STEPPER_RK2IMP,
+  LION_STEPPER_RK4IMP,
+  LION_STEPPER_BSIMP,
+  LION_STEPPER_MSADAMS,
+  LION_STEPPER_MSBDF,
 } lion_app_stepper_t;
 
 typedef enum lion_app_minimizer {
-  LION_MINIMIZER_GOLDENSECTION = 0,
-  LION_MINIMIZER_BRENT         = 1,
-  LION_MINIMIZER_QUADGOLDEN    = 2,
+  LION_MINIMIZER_GOLDENSECTION,
+  LION_MINIMIZER_BRENT,
+  LION_MINIMIZER_QUADGOLDEN,
 } lion_app_minimizer_t;
 
 typedef struct lion_app_config {

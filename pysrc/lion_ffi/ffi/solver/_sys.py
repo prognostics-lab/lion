@@ -1,7 +1,7 @@
 CTYPEDEF = """
 typedef enum lion_jacobian_method {
-  LION_JACOBIAN_ANALYTICAL = 0,
-  LION_JACOBIAN_2POINT     = 1,
+  LION_JACOBIAN_ANALYTICAL,
+  LION_JACOBIAN_2POINT,
 } lion_jacobian_method_t;
 """
 
