@@ -398,6 +398,7 @@ lion_status_t lion_app_step(lion_app_t *app, double power, double ambient_temper
     LION_CALLDF_I(app->update_hook(app), "Failed calling update hook");
   }
   app->state.step++;
+  // TODO: Add time update
   return LION_STATUS_SUCCESS;
 }
 
