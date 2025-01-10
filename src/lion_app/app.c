@@ -342,6 +342,7 @@ lion_status_t lion_app_init(lion_app_t *app) {
   logi_info("Configuring simulation driver");
   LION_CALL_I(_init_ode_driver(app), "Failed initializing ode driver");
 
+  logi_debug("Showing initialization information");
   LION_CALL_I(lion_app_show_state_debug(app), "Failed showing initialization information");
 
   // Initialization hook
@@ -350,6 +351,8 @@ lion_status_t lion_app_init(lion_app_t *app) {
     LION_CALLDF_I(app->init_hook(app), "Failed calling init hook");
   }
 
+  logi_info("Finished initialization");
+  lion_app_log_startup_info(app);
   return LION_STATUS_SUCCESS;
 }
 
@@ -396,7 +399,6 @@ lion_status_t lion_app_step(lion_app_t *app, double power, double ambient_temper
 
 lion_status_t lion_app_run(lion_app_t *app, lion_vector_t *power, lion_vector_t *ambient_temperature) {
   logi_info("Application start");
-  lion_app_log_startup_info(app);
 #ifndef NDEBUG
   if (app->_idebug_heap_head == NULL)
     LION_CALL_I(lion_app_init_debug(app), "Failed initializing debug information");
