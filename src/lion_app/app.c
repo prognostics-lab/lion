@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <inttypes.h>
 
 #ifdef _WIN32
   #include <windows.h>
@@ -384,7 +385,7 @@ lion_status_t lion_app_step(lion_app_t *app, double power, double ambient_temper
   double partial_result[2] = {app->state.soc_nominal, app->state.internal_temperature};
   LION_GSL_VCALL_I(
       gsl_odeiv2_driver_apply_fixed_step(app->driver, &app->state.time, app->conf->sim_step_seconds, 1, partial_result),
-      "Failed at step %d (t = %f)",
+      "Failed at step %" PRIu64 " (t = %f)",
       app->state.step,
       app->state.time
   );
