@@ -214,7 +214,7 @@ static void lion_app_log_startup_info(lion_app_t *app) {
   logi_info(" * Temperature model");
   logi_info(" |-> Heat capacity                : %f J K-1", app->params->temp.cp);
   logi_info(" |-> Internal thermal resistivity : %f K W-1", app->params->temp.rin);
-  logi_info(" |-> Outter thermal resistivity   : %f K W-1", app->params->temp.rout);
+  logi_info(" |-> Outer thermal resistivity   : %f K W-1", app->params->temp.rout);
   logi_info("+-------------------------------------------------------+");
   logi_info("|################# END OF INFORMATION ##################|");
   logi_info("+-------------------------------------------------------+");
