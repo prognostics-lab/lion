@@ -17,6 +17,7 @@ from lion_ffi.config import (
     INCLUDE_DIRS,
 )
 from lion_ffi.ffi import _app, _inputs, _params, _status, _vector
+from lion_ffi.ffi.solver import _sys
 
 
 LIB_TYPEDEF = """
@@ -45,6 +46,7 @@ FFI_CDEF = f"""
 // Typedefs
 {_status.CTYPEDEF}
 {_params.CTYPEDEF}
+{_sys.CTYPEDEF}
 {_inputs.CTYPEDEF}
 {_app.CTYPEDEF}
 {_vector.CTYPEDEF}
@@ -52,6 +54,7 @@ FFI_CDEF = f"""
 // Function definitions
 {_status.CDEF}
 {_params.CDEF}
+{_sys.CDEF}
 {_inputs.CDEF}
 {_vector.CDEF}
 {_app.CDEF}
