@@ -306,10 +306,13 @@ lion_status_t _init_ode_system(lion_app_t *app) {
   switch (app->conf->sim_jacobian) {
   case LION_JACOBIAN_ANALYTICAL:
     jac = &lion_slv_jac_analytical;
+    break;
   case LION_JACOBIAN_2POINT:
     jac = &lion_slv_jac_2point;
+    break;
   default:
     jac = NULL;
+    break;
   }
   gsl_odeiv2_system sys = {
     .function  = &lion_slv_system,

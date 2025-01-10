@@ -44,8 +44,6 @@ int lion_slv_system(double t, const double state[], double out[], void *inputs) 
   return GSL_SUCCESS;
 }
 
-// TODO: For some reason this approach is failing ????? :))))
-
 int lion_slv_jac_analytical(double t, const double state[], double *dfdy, double dfdt[], void *inputs) {
   lion_slv_inputs_t *p          = inputs;
   lion_app_state_t  *sys_state  = p->sys_inputs;
