@@ -10,6 +10,7 @@ import lion_ffi as _
 from lion._lion import ffi
 from lion._lion import lib as _lionl
 from lion import dtypes, models
+
 # from lion.models import ehc, init, ocv, rint, temp, vft
 from lion.exceptions import LionException
 from lion.status import Status, ffi_call
@@ -187,6 +188,19 @@ class Config:
     @log_stdlvl.setter
     def log_stdlvl(self, new_lvl: LogLvl):
         self._cdata.log_stdlvl = new_lvl.value
+
+    def as_dict(self) -> dict:
+        return {
+            "name": self.name,
+            "sim_regime": self.sim_regime,
+            "sim_stepper": self.sim_stepper,
+            "sim_minimizer": self.sim_minimizer,
+            "sim_step_seconds": self.sim_step_seconds,
+            "sim_epsabs": self.sim_epsabs,
+            "sim_epsrel": self.sim_epsrel,
+            "sim_min_maxiter": self.sim_min_maxiter,
+            "log_stdlvl": self.log_stdlvl,
+        }
 
 
 class Params:
