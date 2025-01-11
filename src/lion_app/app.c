@@ -45,7 +45,7 @@ const lion_app_config_t LION_APP_CONFIG_DEFAULT = {
   .app_name = "Application",
 
   // Simulation parameters
-  .sim_stepper      = LION_STEPPER_RK8PD,
+  .sim_stepper      = LION_STEPPER_RKF45,
   .sim_minimizer    = LION_MINIMIZER_BRENT,
   .sim_jacobian     = LION_JACOBIAN_ANALYTICAL,
   .sim_time_seconds = 10.0,
