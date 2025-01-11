@@ -9,5 +9,3 @@ class _BaseParams:
     @classmethod
     def default(cls):
         return cls()
-
-
