@@ -1,0 +1,15 @@
+include(BundleUtilities)
+
+set(bundle
+   "${CMAKE_INSTALL_PREFIX}/bin@CMAKE_EXECUTABLE_SUFFIX@")
+
+set(other_libs "gsl")
+
+# Set dirs to a list of directories where prerequisite libraries
+# may be found:
+set(dirs
+   "@CMAKE_RUNTIME_OUTPUT_DIRECTORY@"
+   "@CMAKE_LIBRARY_OUTPUT_DIRECTORY@"
+   )
+
+fixup_bundle("${bundle}" "${other_libs}" "${dirs}")
