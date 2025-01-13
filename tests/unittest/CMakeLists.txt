@@ -25,5 +25,13 @@ foreach(filepath ${TESTS_QUICK})
   # Set up the test
   add_test(NAME ${filename_we} COMMAND ${filename_we})
   set_tests_properties(${filename_we} PROPERTIES LABELS "quick")
+
+  if(MSVC)
+    add_custom_command(TARGET ${filename_we} POST_BUILD
+                    COMMAND ${CMAKE_COMMAND} -E copy
+                        $<TARGET_RUNTIME_DLLS:${filename_we}>
+                        $<TARGET_FILE_DIR:${filename_we}>
+                    COMMAND_EXPAND_LISTS)
+  endif()
 endforeach()
 
