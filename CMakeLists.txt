@@ -89,16 +89,8 @@ add_definitions("-DSOURCE_PATH_SIZE=${SOURCE_PATH_SIZE}")
 
 # Fix for building in Windows
 set(CMAKE_FIND_LIBRARY_SUFFIXES "${CMAKE_STATIC_LIBRARY_SUFFIX} ${CMAKE_SHARED_LIBRARY_SUFFIX} ${CMAKE_SHARED_MODULE_SUFFIX}")
-# if(MSVC)
-# configure_file(
-#   ${CMAKE_CURRENT_SOURCE_DIR}/FixBundle.cmake.in
-#   ${CMAKE_CURRENT_BINARY_DIR}/FixBundle.cmake
-#   @ONLY
-#   )
-# endif()
 
 # Subdirectories
-
 add_subdirectory(dependencies)
 add_subdirectory(src)
 
@@ -118,9 +110,6 @@ if(${LION_INSTALL})
       RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
       LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
       ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-      # RUNTIME_DEPENDENCIES
-      # PRE_EXCLUDE_REGEXES "api-ms-" "ext-ms-"
-      # POST_EXCLUDE_REGEXES ".*system32/.*\\.dll"
   )
 
   # headers
@@ -134,8 +123,4 @@ if(${LION_INSTALL})
   install(FILES ${CPP_HEADERS} DESTINATION          ${CMAKE_INSTALL_INCLUDEDIR}/lionpp)
   install(FILES ${UTILS_HEADERS} DESTINATION        ${CMAKE_INSTALL_INCLUDEDIR}/lionu)
   install(FILES ${UTILS_FUZZY_HEADERS} DESTINATION  ${CMAKE_INSTALL_INCLUDEDIR}/lionu/fuzzy)
-
-  # if(MSVC)
-  #   install(SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/FixBundle.cmake)
-  # endif()
 endif()
