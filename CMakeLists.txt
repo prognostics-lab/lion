@@ -31,7 +31,8 @@ if(MSVC)
     # TODO: Properly configure building on Windows
     # TODO: Add a way to set the path to the GSL installation
     # set(GSL_ROOT_DIR "C:/Program Files (x86)/GSL")
-    set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
+    # set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
+    message(${CMAKE_TOOLCHAIN_FILE})
 endif()
 find_package(GSL REQUIRED)
 
