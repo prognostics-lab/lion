@@ -70,9 +70,11 @@ lion_status_t lion_readline(lion_app_t *app, FILE *file, char *buffer, char **ou
   }
 
   buffer[count] = '\0';
-  char line[count + 1];
+  // char line[count + 1];
+  char *line = lion_malloc(app, (count + 1) * sizeof(char));
   strncpy(line, buffer, count + 1);
   *out = line;
+  lion_free(app, line);
   if (alloced)
     lion_free(app, buffer);
   return LION_STATUS_SUCCESS;
