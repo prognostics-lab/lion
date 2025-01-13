@@ -33,7 +33,7 @@ if(MSVC)
     # set(GSL_ROOT_DIR "C:/Program Files (x86)/GSL")
     # set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
     set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-    message(STATUS "toolchain=${CMAKE_TOOLCHAIN_FILE}")
+    message(STATUS "Toolchain: ${CMAKE_TOOLCHAIN_FILE}")
 endif()
 find_package(GSL REQUIRED)
 
