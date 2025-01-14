@@ -58,6 +58,8 @@ jobs:
             LION_BUILD_EXAMPLES=OFF
             CMAKE_BUILD_TYPE=${{ matrix.build-type }}
             CMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake
+          build-args: |
+            --config ${{ matrix.build-type }}
 
       - name: Configure and build
         if: runner.os != 'Windows'
