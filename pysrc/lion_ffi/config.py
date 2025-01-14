@@ -45,7 +45,7 @@ if sys.platform == "win32":
     for f in os.listdir(os.path.join(os.environ["VCPKG_ROOT"], "packages")):
         if f.startswith("gsl"):
             gsl_dir = os.path.join(
-                os.environ["VCPKG_ROOT"], "packages", gsl_dir, "include"
+                os.environ["VCPKG_ROOT"], "packages", f, "include"
             )
             INCLUDE_DIRS = [
                 *INCLUDE_DIRS,
