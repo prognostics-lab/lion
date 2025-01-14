@@ -1,2 +1,4 @@
+include pysrc/lion/_lion.c
 include pysrc/lion/_lion.*.so
 include pysrc/lion/_lion.*.dll
+include pysrc/lion/_lion.*.pyd
