@@ -33,7 +33,7 @@ CLIB_DLL_NAMES = [
 INCLUDE_DIRS = [
     str(Path.joinpath(CSOURCES_PATH).resolve()),
     str(Path.joinpath(CHEADER_PATH).resolve()),
-    os.path.join("opt", "homebrew", "include")
+    os.path.join(os.sep, "opt", "homebrew", "include")
 ]
 if sys.platform == "win32":
     INCLUDE_DIRS = [
