@@ -12,10 +12,6 @@ jobs:
       matrix:
         build-type: ["Debug", "Release"]
         config:
-          # - {
-          #     os: windows-latest,
-          #     deps-script: "cd dependencies; git clone https://github.com/ampl/gsl.git; cd gsl; cmake -DGSL_INSTALL_MULTI_CONFIG=ON -DBUILD_SHARED_LIBS=ON -DMSVC_RUNTIME_DYNAMIC=ON -DNO_AMPL_BINDINGS=ON .; cmake --build . --config Release --target install -j 8"
-          #   }
           - {
               os: windows-latest,
               deps-script: ""
@@ -104,10 +100,10 @@ jobs:
       matrix:
         python-version: ["3.11", "3.12", "3.13"]
         config:
-          # - {
-          #     os: windows-latest,
-          #     deps-script: "cd dependencies; git clone https://github.com/ampl/gsl.git; cd gsl; cmake -DGSL_INSTALL_MULTI_CONFIG=ON -DBUILD_SHARED_LIBS=ON -DMSVC_RUNTIME_DYNAMIC=ON -DNO_AMPL_BINDINGS=ON .; cmake --build . --config Release --target install -j 8"
-          #   }
+          - {
+              os: windows-latest,
+              deps-script: ""
+            }
           - {
               os: ubuntu-latest,
               deps-script: "sudo apt-get install libgsl-dev"
