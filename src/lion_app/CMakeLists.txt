@@ -16,4 +16,3 @@ target_include_directories(
          ${GSL_INCLUDE_DIRS})
 
 set_target_properties(${PROJECT_APP_NAME} PROPERTIES VERSION ${PROJECT_VERSION} SOVERSION ${PROJECT_VERSION_MAJOR})
-endif()
