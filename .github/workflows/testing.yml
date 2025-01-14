@@ -75,16 +75,16 @@ jobs:
             CMAKE_BUILD_TYPE=${{ matrix.build-type }}
 
       - name: Move dependencies (windows)
-        if: matrix.build-type == 'Release'
+        if: runnes.os == 'Windows' && matrix.build-type == 'Release'
         run: |
           mv ${{ github.workspace }}/vcpkg/installed/x64-windows-release/bin/*.dll ${{ github.workspace }}/bin/
           mv ${{ github.workspace }}/vcpkg/installed/x64-windows-release/lib/*.lib ${{ github.workspace }}/lib/
 
       - name: Move dependencies (windows)
-        if: runner.os == 'Windows'
+        if: runnes.os == 'Windows' && matrix.build-type == 'Debug'
         run: |
-          mv ${{ github.workspace }}/vcpkg/installed/x64-windows-release/bin/*.dll ${{ github.workspace }}/bin/
-          mv ${{ github.workspace }}/vcpkg/installed/x64-windows-release/lib/*.lib ${{ github.workspace }}/lib/
+          mv ${{ github.workspace }}/vcpkg/installed/x64-windows-release/bin/*.dll ${{ github.workspace }}/bin/debug/
+          mv ${{ github.workspace }}/vcpkg/installed/x64-windows-release/lib/*.lib ${{ github.workspace }}/lib/debug/
 
       - name: Run CTest
         uses: threeal/ctest-action@v1.1.0
