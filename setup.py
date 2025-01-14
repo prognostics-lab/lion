@@ -1,6 +1,7 @@
 import os
 import sys
 import pathlib
+import shutil
 from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
 
@@ -128,7 +129,9 @@ class cmake_ext(build_ext):
             "-DBUILD_SHARED_LIBS=ON",
         ]
         if sys.platform == "win32":
-            toolchain = os.path.join(os.environ["VCPKG_ROOT"], "scripts", "buildsystems", "vcpkg.cmake")
+            toolchain = os.path.join(
+                os.environ["VCPKG_ROOT"], "scripts", "buildsystems", "vcpkg.cmake"
+            )
             cmake_args = [
                 *cmake_args,
                 f"-DCMAKE_TOOLCHAIN_FILE={toolchain}",
@@ -149,6 +152,12 @@ class cmake_ext(build_ext):
         print("=== Building C FFI ===")
         ffi_builder.compile("pysrc", verbose=True)
 
+        if sys.platform == "win32":
+            print("=== Moving .dll files ===")
+            shutil.move(
+                os.path.join(cwd, "pysrc", "Release", "lion"),
+                os.path.join(cwd, "pysrc", "lion"),
+            )
 
 
 # TODO: Set version dynamically
@@ -158,5 +167,4 @@ if __name__ == "__main__":
         cmdclass={
             "build_ext": cmake_ext,
         },
-        # cffi_modules=["pysrc/lion_ffi/cffi_build.py:ffi_builder"],
     )
