@@ -154,10 +154,12 @@ class cmake_ext(build_ext):
 
         if sys.platform == "win32":
             print("=== Moving .dll files ===")
-            shutil.move(
-                os.path.join(cwd, "pysrc", "Release", "lion", "*"),
-                os.path.join(cwd, "pysrc", "lion"),
-            )
+            for f in os.listdir(os.path.join(cwd, "pysrc", "Release", "lion")):
+                print(f)
+                shutil.move(
+                    os.path.join(cwd, "pysrc", "Release", "lion", f),
+                    os.path.join(cwd, "pysrc", "lion", f),
+                )
 
 
 # TODO: Set version dynamically
