@@ -7,9 +7,11 @@ add_library(${PROJECT_MATH_NAME} ${MATH_ROOT_HEADER} ${MATH_ROOT_SOURCE}
                                  ${MATH_DYN_HEADER} ${MATH_DYN_SOURCE})
 find_library(MATH_LIBRARY m)
 if(MATH_LIBRARY)
+message(STATUS "Found math library")
 target_link_libraries(${PROJECT_MATH_NAME} PUBLIC ${PROJECT_UTILS_NAME}
                       ${GSL_LIBRARIES} ${MATH_LIBRARY})
 else()
+message(STATUS "Did not find math library")
 target_link_libraries(${PROJECT_MATH_NAME} PUBLIC ${PROJECT_UTILS_NAME}
     ${GSL_LIBRARIES})
 endif()
