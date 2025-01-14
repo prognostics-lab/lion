@@ -1,4 +1,6 @@
 name: Tests
+env:
+  VCPKG_ROOT: '${{ github.workspace }}/vcpkg'
 on:
   push:
     branches-ignore:
