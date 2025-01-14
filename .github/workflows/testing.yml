@@ -75,13 +75,13 @@ jobs:
             CMAKE_BUILD_TYPE=${{ matrix.build-type }}
 
       - name: Move dependencies (windows)
-        if: runnes.os == 'Windows' && matrix.build-type == 'Release'
+        if: runner.os == 'Windows' && matrix.build-type == 'Release'
         run: |
           mv ${{ github.workspace }}/vcpkg/installed/x64-windows-release/bin/*.dll ${{ github.workspace }}/bin/
           mv ${{ github.workspace }}/vcpkg/installed/x64-windows-release/lib/*.lib ${{ github.workspace }}/lib/
 
       - name: Move dependencies (windows)
-        if: runnes.os == 'Windows' && matrix.build-type == 'Debug'
+        if: runner.os == 'Windows' && matrix.build-type == 'Debug'
         run: |
           mv ${{ github.workspace }}/vcpkg/installed/x64-windows-release/bin/*.dll ${{ github.workspace }}/bin/debug/
           mv ${{ github.workspace }}/vcpkg/installed/x64-windows-release/lib/*.lib ${{ github.workspace }}/lib/debug/
