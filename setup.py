@@ -155,8 +155,8 @@ class cmake_ext(build_ext):
         if sys.platform == "win32":
             print("=== Moving .dll files ===")
             shutil.move(
-                os.path.join(cwd, "pysrc", "Release", "lion"),
-                os.path.join(cwd, "pysrc"),
+                os.path.join(cwd, "pysrc", "Release", "lion", "*"),
+                os.path.join(cwd, "pysrc", "lion"),
             )
 
 
