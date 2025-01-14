@@ -128,9 +128,10 @@ class cmake_ext(build_ext):
             "-DBUILD_SHARED_LIBS=ON",
         ]
         if sys.platform == "win32":
+            toolchain = os.path.join(os.environ["VCPKG_ROOT"], "scripts", "buildsystems", "vcpkg.cmake")
             cmake_args = [
                 *cmake_args,
-                f"-DCMAKE_TOOLCHAIN_FILE={os.environ['VCPKG_ROOT']}/scripts/buildsystems/vcpkg.make",
+                f"-DCMAKE_TOOLCHAIN_FILE={toolchain}",
             ]
 
         # example of build args
