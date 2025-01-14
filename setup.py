@@ -138,8 +138,6 @@ class cmake_ext(build_ext):
         build_args = [
             "--config",
             config,
-            "--",
-            "-j4",
         ]
 
         self.spawn(["cmake", "-S", ".", "-B", str(build_temp)] + cmake_args)
