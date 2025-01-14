@@ -33,10 +33,22 @@ CLIB_DLL_NAMES = [
 INCLUDE_DIRS = [
     str(Path.joinpath(CSOURCES_PATH).resolve()),
     str(Path.joinpath(CHEADER_PATH).resolve()),
-    os.path.join(os.sep, "opt", "homebrew", "include")
+    os.path.join(os.sep, "opt", "homebrew", "include"),
 ]
 if sys.platform == "win32":
     INCLUDE_DIRS = [
         *INCLUDE_DIRS,
-        os.path.join(os.environ["VCPKG_ROOT"], "installed", "x64-windows-release", "include")
+        os.path.join(
+            os.environ["VCPKG_ROOT"], "installed", "x64-windows-release", "include"
+        ),
     ]
+    for f in os.listdir(os.path.join(os.environ["VCPKG_ROOT"], "packages")):
+        if f.startswith("gsl"):
+            gsl_dir = os.path.join(
+                os.environ["VCPKG_ROOT"], "packages", gsl_dir, "include"
+            )
+            INCLUDE_DIRS = [
+                *INCLUDE_DIRS,
+                gsl_dir,
+            ]
+            break
