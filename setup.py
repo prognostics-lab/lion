@@ -73,6 +73,8 @@ LIB_SOURCE = """
 
 LINK_ARGS = [
     "-Wl,-rpath,/usr/lib",
+    "-Wl,-rpath,bin/",
+    "-Wl,-rpath,bin/debug/",
     "-Wl,-rpath,lib/",
     "-Wl,-rpath,lib/debug/",
     "-Wl,-rpath,/opt/homebrew/lib",
@@ -153,13 +155,22 @@ class cmake_ext(build_ext):
         ffi_builder.compile("pysrc", verbose=True)
 
         if sys.platform == "win32":
-            print("=== Moving .dll files ===")
+            print("=== Moving extension files ===")
             for f in os.listdir(os.path.join(cwd, "pysrc", "Release", "lion")):
                 print(f)
                 shutil.move(
                     os.path.join(cwd, "pysrc", "Release", "lion", f),
                     os.path.join(cwd, "pysrc", "lion", f),
                 )
+
+            print("=== Moving dll files ===")
+            for f in os.listdir(os.path.join(cwd, "bin")):
+                if f.endswith("dll"):
+                    print(f)
+                    shutil.move(
+                        os.path.join(cwd, "bin", f),
+                        os.path.join(cwd, "pysrc", "lion", f),
+                    )
 
 
 # TODO: Set version dynamically

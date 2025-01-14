@@ -1,7 +1,7 @@
 include pysrc/lion/_lion.c
 include pysrc/lion/_lion.obj
 include pysrc/lion/_lion.*.so
-include pysrc/lion/_lion.*.dll
+include pysrc/lion/*.dll
 include pysrc/lion/_lion.*.pyd
 include pysrc/lion/_lion.*.lib
 include pysrc/lion/_lion.*.exp
