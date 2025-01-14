@@ -156,7 +156,7 @@ class cmake_ext(build_ext):
             print("=== Moving .dll files ===")
             shutil.move(
                 os.path.join(cwd, "pysrc", "Release", "lion"),
-                os.path.join(cwd, "pysrc", "lion"),
+                os.path.join(cwd, "pysrc"),
             )
 
 
