@@ -38,7 +38,7 @@ packages = [
     "lion_ffi.ffi.solver",
     "lion_utils",
 ]
-include_package_data = true
+include-package-data = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests/python"]
