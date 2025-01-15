@@ -123,7 +123,7 @@ class Config:
 
     @name.setter
     def name(self, new_name: str):
-        self._cdata.app_name = ffi.new("char[]", new_name)
+        self._cdata.app_name = ffi.new("char[]", new_name.encode())
 
     @property
     def sim_regime(self) -> Regime:
@@ -189,17 +189,31 @@ class Config:
     def log_stdlvl(self, new_lvl: LogLvl):
         self._cdata.log_stdlvl = new_lvl.value
 
+    @classmethod
+    def from_dict(cls, d: dict):
+        return cls(
+            name=d["name"],
+            regime=Regime[d["sim_regime"]],
+            stepper=Stepper[d["sim_stepper"]],
+            minimizer=Minimizer[d["sim_minimizer"]],
+            step=d["sim_step_seconds"],
+            epsabs=d["sim_epsabs"],
+            epsrel=d["sim_epsrel"],
+            min_maxiter=d["sim_min_maxiter"],
+            log_stdlvl=LogLvl[d["log_stdlvl"]],
+        )
+
     def as_dict(self) -> dict:
         return {
-            "name": self.name,
-            "sim_regime": self.sim_regime,
-            "sim_stepper": self.sim_stepper,
-            "sim_minimizer": self.sim_minimizer,
+            "name": self.name.decode(),
+            "sim_regime": self.sim_regime.name,
+            "sim_stepper": self.sim_stepper.name,
+            "sim_minimizer": self.sim_minimizer.name,
             "sim_step_seconds": self.sim_step_seconds,
             "sim_epsabs": self.sim_epsabs,
             "sim_epsrel": self.sim_epsrel,
             "sim_min_maxiter": self.sim_min_maxiter,
-            "log_stdlvl": self.log_stdlvl,
+            "log_stdlvl": self.log_stdlvl.name,
         }
 
 
