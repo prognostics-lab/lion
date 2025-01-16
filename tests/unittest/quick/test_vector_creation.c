@@ -15,6 +15,8 @@ lion_status_t test_creation_new(lion_app_t *app) {
   LION_ASSERT_EQI(vec.data, NULL);
   LION_ASSERT_EQI(vec.capacity, 0);
   LION_ASSERT_EQI(vec.len, 0);
+
+  LION_CALL(lion_vector_cleanup(app, &vec), "Failed to clean up");
   return LION_STATUS_SUCCESS;
 }
 
@@ -29,6 +31,8 @@ lion_status_t test_creation_zero(lion_app_t *app) {
   for (uint32_t i = 0; i < len; i++) {
     LION_ASSERT_EQI(*(uint32_t *)((char *)vec.data + i * sizeof(uint32_t)), 0);
   }
+
+  LION_CALL(lion_vector_cleanup(app, &vec), "Failed to clean up");
   return LION_STATUS_SUCCESS;
 }
 
@@ -43,6 +47,8 @@ lion_status_t test_creation_with_capacity(lion_app_t *app) {
   LION_ASSERT_NEI(vec.capacity, 0);
   LION_ASSERT_EQI(vec.data_size, sizeof(uint32_t));
   LION_ASSERT_EQI(vec.len, 0);
+
+  LION_CALL(lion_vector_cleanup(app, &vec), "Failed to clean up");
   return LION_STATUS_SUCCESS;
 }
 
@@ -59,6 +65,7 @@ lion_status_t test_creation_from_array(lion_app_t *app) {
     LION_ASSERT_EQI(*(uint32_t *)((char *)vec.data + i * sizeof(uint32_t)), data[i]);
   }
 
+  LION_CALL(lion_vector_cleanup(app, &vec), "Failed to clean up");
   return LION_STATUS_SUCCESS;
 }
 
@@ -79,6 +86,7 @@ lion_status_t test_creation_from_csv(lion_app_t *app) {
     LION_ASSERT_EQF(lion_vector_get_d(app, &vec, i), expected[i]);
   }
 
+  LION_CALL(lion_vector_cleanup(app, &vec), "Failed to clean up");
   return LION_STATUS_SUCCESS;
 }
 

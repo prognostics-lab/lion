@@ -32,6 +32,8 @@ lion_status_t test_modification_push1(lion_app_t *app) {
   uint32_t contained_val;
   LION_CALL(lion_vector_get(app, &vec, 8, &contained_val), "Failed getting vec[8]");
   LION_ASSERT_EQI(contained_val, val);
+
+  LION_CALL(lion_vector_cleanup(app, &vec), "Failed to clean up");
   return LION_STATUS_SUCCESS;
 }
 
@@ -54,6 +56,8 @@ lion_status_t test_modification_push2(lion_app_t *app) {
   uint32_t contained_val;
   LION_CALL(lion_vector_get(app, &vec, 0, &contained_val), "Failed getting vec[0]");
   LION_ASSERT_EQI(contained_val, val);
+
+  LION_CALL(lion_vector_cleanup(app, &vec), "Failed to clean up");
   return LION_STATUS_SUCCESS;
 }
 
@@ -93,6 +97,8 @@ lion_status_t test_modification_extend_array(lion_app_t *app) {
     LION_ASSERT_EQI(contained_val, values[i]);
   }
   log_debug("Found no issues");
+
+  LION_CALL(lion_vector_cleanup(app, &vec), "Failed to clean up");
   return LION_STATUS_SUCCESS;
 }
 

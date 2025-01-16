@@ -26,6 +26,8 @@ lion_status_t test_methods_get(lion_app_t *app) {
   // Check that the failed call to lion_vector_get did not accidentally
   // modify val
   LION_ASSERT_EQI(val, data[len - 1]);
+
+  LION_CALL(lion_vector_cleanup(app, &vec), "Failed to clean up");
   return LION_STATUS_SUCCESS;
 }
 
@@ -70,6 +72,8 @@ lion_status_t test_methods_set(lion_app_t *app) {
   // Check that the failed call to lion_vector_get did not accidentally
   // modify val
   LION_ASSERT_EQI(val, data[len - 1]);
+
+  LION_CALL(lion_vector_cleanup(app, &vec), "Failed to clean up");
   return LION_STATUS_SUCCESS;
 }
 
