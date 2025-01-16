@@ -1,3 +1,6 @@
+[![Tests](https://github.com/case-ev/lion/actions/workflows/testing.yml/badge.svg)](https://github.com/case-ev/lion/actions/workflows/testing.yml)
+[![Docs](https://github.com/case-ev/lion/actions/workflows/mdbook-pages.yml/badge.svg)](https://github.com/case-ev/lion/actions/workflows/mdbook-pages.yml)
+
 <p align="center">
 
 ```
@@ -13,8 +16,7 @@
 
 **Lithium-Ion battery simulator built in C using [GSL](https://www.gnu.org/software/gsl)**
 </p>
-[![Tests](https://github.com/case-ev/lion/actions/workflows/testing.yml/badge.svg)](https://github.com/case-ev/lion/actions/workflows/testing.yml)
-[![Docs](https://github.com/case-ev/lion/actions/workflows/mdbook-pages.yml/badge.svg)](https://github.com/case-ev/lion/actions/workflows/mdbook-pages.yml)
+
 
 # Installation
 The installation requires CMake, both for installing the native C library and the FFI to use lion with Python.
