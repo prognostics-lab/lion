@@ -304,3 +304,4 @@ build
 pdb
 lib
 pysrc/**/*.c
+simdata/**/*.csv
