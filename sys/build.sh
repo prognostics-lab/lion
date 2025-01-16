@@ -15,7 +15,7 @@ verbose=0
 python_install=0
 lib_install=0
 
-while getopts "hcxvisetrdpG:R:P:" arg
+while getopts "hcxvisetrdpG:R:P:D:" arg
 do
     case "$arg" in
         c)
@@ -61,6 +61,8 @@ do
         P)
             platform="${OPTARG}"
             ;;
+        D)
+            params+=" -D${OPTARG}"
     esac
 done
 
@@ -82,7 +84,7 @@ else
 fi
 
 if [ $verbose -eq "1" ]; then
-  params+=" -DCMAKE_VERBOSE_MAKEFILE=1"
+    params+=" -DCMAKE_VERBOSE_MAKEFILE=1"
 fi
 
 if [[ "${force_generator}" != "" ]]; then
@@ -144,5 +146,6 @@ fi
 
 if [ $python_install -eq 1 ]; then
     echo -e "\n\n\x1b[32;20mInstalling Python wrapper\x1b[0m"
-    pip install -e .
+    pip install -r requirements.txt
+    pip install .
 fi
