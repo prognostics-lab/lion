@@ -294,6 +294,9 @@ _deps
 # External projects
 *-prefix/
 
+### mdBook ###
+book
+
 ### Project ###
 img_raw
 data_raw
