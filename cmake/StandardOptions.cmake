@@ -1,4 +1,6 @@
-option(PROJECT_ENABLE_LTO "Enable Interprocedural Optimization, aka Link Time Optimization (LTO)." ON)
+# TODO: See how to properly configure these
+
+option(PROJECT_ENABLE_LTO "Enable Interprocedural Optimization, aka Link Time Optimization (LTO)." OFF)
 if(PROJECT_ENABLE_LTO)
   include(CheckIPOSupported)
   check_ipo_supported(RESULT result OUTPUT output)
@@ -10,7 +12,7 @@ if(PROJECT_ENABLE_LTO)
 endif()
 
 
-option(PROJECT_ENABLE_CCACHE "Enable the usage of Ccache, in order to speed up rebuild times." ON)
+option(PROJECT_ENABLE_CCACHE "Enable the usage of Ccache, in order to speed up rebuild times." OFF)
 find_program(CCACHE_FOUND ccache)
 if(CCACHE_FOUND)
   set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
