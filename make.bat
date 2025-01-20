@@ -10,23 +10,23 @@ IF /I "%1"=="" GOTO all
 GOTO error
 
 :all
-	CALL make.bat build
-	GOTO :EOF
+    CALL make.bat build
+    GOTO :EOF
 
 :help
-	ECHO Usage
-	ECHO -----
-	ECHO     make [command]
-	ECHO[
-	ECHO Commands
-	ECHO --------
-	ECHO     build   : Default, generates minimal configuration and builds the library
-	ECHO     clean   : Removes all build files and targets
-	ECHO     install : Requires sudo, installs the library files and headers
-	GOTO :EOF
+    ECHO Usage
+    ECHO -----
+    ECHO     make [command]
+    ECHO[
+    ECHO Commands
+    ECHO --------
+    ECHO     build   : Default, generates minimal configuration and builds the library
+    ECHO     clean   : Removes all build files and targets
+    ECHO     install : Requires sudo, installs the library files and headers
+    GOTO :EOF
 
 :clean
-	ECHO Cleaning working directory
+    ECHO Cleaning working directory
     if exist bin (
         RMDIR /s /q bin
     )
@@ -48,32 +48,32 @@ GOTO error
     if exist pysrc/lion/_lion.* (
         RMDIR /s /q pysrc/lion/_lion.*
     )
-	GOTO :EOF
+    GOTO :EOF
 
 :configure
-	ECHO Configuring
+    ECHO Configuring
     if defined VCPKG_ROOT (
         cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake
     ) else (
         ECHO [ERROR] VCPKG_ROOT not set
     )
-	GOTO :EOF
+    GOTO :EOF
 
 :build
-	CALL make.bat configure
-	ECHO Building
-	cmake --build build --config Release
-	GOTO :EOF
+    CALL make.bat configure
+    ECHO Building
+    cmake --build build --config Release
+    GOTO :EOF
 
 :install
-	ECHO Installing
+    ECHO Installing
 
-	ECHO Set UAC = CreateObject^("Shell.Application"^) > "%temp%getadmin.vbs"
-	ECHO UAC.ShellExecute "cmake.exe", "--install build", "", "runas", 1 >> "%temp%getadmin.vbs"
-	"%temp%getadmin.vbs"
-	DEL "%temp%getadmin.vbs"
+    ECHO Set UAC = CreateObject^("Shell.Application"^) > "%temp%getadmin.vbs"
+    ECHO UAC.ShellExecute "cmake.exe", "--install build", "", "runas", 1 >> "%temp%getadmin.vbs"
+    "%temp%getadmin.vbs"
+    DEL "%temp%getadmin.vbs"
 
-	GOTO :EOF
+    GOTO :EOF
 
 :error
     IF "%1"=="" (
