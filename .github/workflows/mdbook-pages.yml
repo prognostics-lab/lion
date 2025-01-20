@@ -31,10 +31,13 @@ jobs:
         mkdir mdbook
         curl -sSL https://github.com/rust-lang/mdBook/releases/download/v0.4.43/mdbook-v0.4.43-x86_64-unknown-linux-gnu.tar.gz | tar -xz --directory=./mdbook
         echo `pwd`/mdbook >> $GITHUB_PATH
-    - name: Deploy GitHub Pages
+    - name: Build docs
       run: |
+        sudo apt install doxygen
         npm install moxygen -g
         make docs
+    - name: Deploy to GitHub Pages
+      run: |
         git worktree add gh-pages
         git config user.name "Deploy from CI"
         git config user.email ""
