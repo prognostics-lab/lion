@@ -25,7 +25,6 @@ do
             params+=" -DCMAKE_EXPORT_COMPILE_COMMANDS=1"
             ;;
         i)
-            params+=" -DLION_INSTALL=ON"
             lib_install=1
             ;;
         s)
@@ -141,7 +140,7 @@ fi
 if [[ $lib_install -eq 1 ]]; then
     PREFIX="/usr/"
     echo -e "\n\n\x1b[32;20mInstalling library to ${PREFIX}\x1b[0m"
-    sudo cmake --install build --prefix "/usr/"
+    sudo cmake --install build --prefix $PREFIX
 fi
 
 if [ $python_install -eq 1 ]; then
