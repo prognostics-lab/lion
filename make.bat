@@ -27,9 +27,7 @@ GOTO error
 	GOTO :EOF
 
 :clean
-    COLOR 02
 	ECHO "Cleaning working directory"
-    COLOR 07
     if exist bin (
         RMDIR /s /q bin
     )
@@ -54,24 +52,22 @@ GOTO error
 	GOTO :EOF
 
 :configure
-    COLOR 02
 	ECHO "Configuring"
-    COLOR 07
-	cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON
+    if defined VCPKG_ROOT (
+        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake
+    ) else (
+        ECHO "[ERROR] VCPKG_ROOT not set"
+    )
 	GOTO :EOF
 
 :build
 	CALL make.bat configure
-    COLOR 02
 	ECHO "Building"
-    COLOR 07
 	cmake --build build --config Release
 	GOTO :EOF
 
 :install
-    COLOR 02
     ECHO "Installing"
-    COLOR 07
     cmake --install build
 	GOTO :EOF
 
