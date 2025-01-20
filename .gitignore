@@ -308,3 +308,8 @@ pdb
 lib
 pysrc/**/*.c
 simdata/**/*.csv
+
+### Documentation ###
+docs/xml
+
+

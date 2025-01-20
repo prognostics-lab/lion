@@ -34,6 +34,13 @@ clean:
 	@rm -rf \
 		./bin \
 		./book \
+		./docs/html \
+		./docs/latex \
+		./docs/rtf \
+		./docs/man \
+		./docs/xml \
+		./docs/docbook \
+		./docs/sqlite3 \
 		./build \
 		./lib \
 		./pdb \
@@ -42,9 +49,13 @@ clean:
 		./pysrc/lion/_lion.*;
 
 docs:
+	@doxygen
+	@moxygen docs/xml -o docs/src/reference/api_reference_%s.md --anchors --groups
 	@cd docs; mdbook build
 
 docs-serve:
+	@doxygen
+	@moxygen docs/xml -o docs/src/reference/api_reference_%s.md --anchors --groups
 	@cd docs; mdbook serve --open
 
 configure:
