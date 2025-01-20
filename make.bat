@@ -1,6 +1,5 @@
 @ECHO off
 
-
 IF /I "%1"=="all" GOTO all
 IF /I "%1"=="help" GOTO help
 IF /I "%1"=="clean" GOTO clean
@@ -15,19 +14,19 @@ GOTO error
 	GOTO :EOF
 
 :help
-	ECHO "Usage"
-	ECHO "-----"
-	ECHO "    make <command>"
-	ECHO
-	ECHO "Commands"
-	ECHO "--------"
-	ECHO "    build   : Default, generates minimal configuration and builds the library"
-	ECHO "    clean   : Removes all build files and targets"
-	ECHO "    install : Requires sudo, installs the library files and headers"
+	ECHO Usage
+	ECHO -----
+	ECHO     make [command]
+	ECHO[
+	ECHO Commands
+	ECHO --------
+	ECHO     build   : Default, generates minimal configuration and builds the library
+	ECHO     clean   : Removes all build files and targets
+	ECHO     install : Requires sudo, installs the library files and headers
 	GOTO :EOF
 
 :clean
-	ECHO "Cleaning working directory"
+	ECHO Cleaning working directory
     if exist bin (
         RMDIR /s /q bin
     )
@@ -52,23 +51,28 @@ GOTO error
 	GOTO :EOF
 
 :configure
-	ECHO "Configuring"
+	ECHO Configuring
     if defined VCPKG_ROOT (
         cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake
     ) else (
-        ECHO "[ERROR] VCPKG_ROOT not set"
+        ECHO [ERROR] VCPKG_ROOT not set
     )
 	GOTO :EOF
 
 :build
 	CALL make.bat configure
-	ECHO "Building"
+	ECHO Building
 	cmake --build build --config Release
 	GOTO :EOF
 
 :install
-    ECHO "Installing"
-    cmake --install build
+	ECHO Installing
+
+	ECHO Set UAC = CreateObject^("Shell.Application"^) > "%temp%getadmin.vbs"
+	ECHO UAC.ShellExecute "cmake.exe", "--install build", "", "runas", 1 >> "%temp%getadmin.vbs"
+	"%temp%getadmin.vbs"
+	DEL "%temp%getadmin.vbs"
+
 	GOTO :EOF
 
 :error
