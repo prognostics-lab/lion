@@ -311,5 +311,6 @@ simdata/**/*.csv
 
 ### Documentation ###
 docs/xml
+docs/src/reference/api_reference_*.md
 
 
