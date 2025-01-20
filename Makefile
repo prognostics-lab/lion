@@ -3,6 +3,7 @@
 config_args :=
 build_args :=
 ex :=
+args :=
 
 build_type := Release
 
@@ -32,6 +33,7 @@ clean:
 	@echo -e "\x1b[32;20mCleaning working directory\x1b[0m\n"
 	@rm -rf \
 		./bin \
+		./book \
 		./build \
 		./lib \
 		./pdb \
@@ -68,11 +70,11 @@ run:
 	$(eval config_args += -DLION_BUILD_EXAMPLES=ON)
 	@$(MAKE) build config_args=$(config_args) build_args=$(build_args) build_type=$(build_type)
 	@if [ -n "$(ex)" ]; then \
-		echo -e "Running example \x1b[32;20m$(ex)\x1b[0m"; \
+		echo -e "Running example \x1b[32;20m$(ex)\x1b[0m with args \x1b[32;20m$(args)\x1b[0m"; \
 		if [ "$(build_type)" == "Release" ]; then \
-			./bin/ex.$(ex); \
+			./bin/ex.$(ex) $(args); \
 		else \
-			./bin/debug/ex.$(ex); \
+			./bin/debug/ex.$(ex) $(args); \
 		fi \
 	fi
 
