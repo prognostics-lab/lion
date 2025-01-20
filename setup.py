@@ -148,7 +148,7 @@ class cmake_ext(build_ext):
         self.spawn(["cmake", "-S", ".", "-B", str(build_temp)] + cmake_args)
         if not self.dry_run:
             self.spawn(["cmake", "--build", str(build_temp)] + build_args)
-            self.spawn(["cmake", "--install", str(build_temp)])
+            # self.spawn(["cmake", "--install", str(build_temp)])
 
         # TODO: Fix the bug where it has to be installed twice to work
         print("=== Building C FFI ===")
