@@ -1,3 +1,4 @@
+/// @file
 #pragma once
 
 #include <lion/params.h>
@@ -11,7 +12,10 @@ extern "C" {
 
 // TODO: Give a second thought to how these are organized
 
-/// \brief Jacobian calculation method.
+/// @addtogroup types
+/// @{
+
+/// @brief Jacobian calculation method.
 ///
 /// The following methods for jacobian calculation are currently supported:
 /// - LION_JACOBIAN_ANALYTICAL : uses the analytical equations to calculate the jacobian.
@@ -21,10 +25,15 @@ typedef enum lion_jacobian_method {
   LION_JACOBIAN_2POINT,     ///< Central differences method.
 } lion_jacobian_method_t;
 
-/// \brief Get the name of a jacobian calculation method.
+/// @}
+
+/// @addtogroup functions
+/// @{
+
+/// @brief Get the name of a jacobian calculation method.
 const char *lion_jacobian_name(lion_jacobian_method_t jacobian);
 
-/// \brief Update function of the system.
+/// @brief Update function of the system.
 ///
 /// Calculates the next state.
 /// @param[in]  t       Current time.
@@ -33,7 +42,7 @@ const char *lion_jacobian_name(lion_jacobian_method_t jacobian);
 /// @param[in]  inputs  Pointer to a `lion_slv_inputs_t` struct with the system state and parameters.
 int lion_slv_system(double t, const double state[], double out[], void *inputs);
 
-/// \brief Analytical jacobian.
+/// @brief Analytical jacobian.
 ///
 /// Calculates the analytical jacobian.
 /// @param[in]  t       Current time.
@@ -43,7 +52,7 @@ int lion_slv_system(double t, const double state[], double out[], void *inputs);
 /// @param[in]  inputs  Pointer to a `lion_slv_inputs_t` struct with the system state and parameters.
 int lion_slv_jac_analytical(double t, const double state[], double *dfdy, double dfdt[], void *inputs);
 
-/// \brief Two-point jacobian.
+/// @brief Two-point jacobian.
 ///
 /// Calculates the numerical jacobian using central differences.
 /// @param[in]  t       Current time.
@@ -52,6 +61,8 @@ int lion_slv_jac_analytical(double t, const double state[], double *dfdy, double
 /// @param[out] dfdt    Array with the time derivates of each update function.
 /// @param[in]  inputs  Pointer to a `lion_slv_inputs_t` struct with the system state and parameters.
 int lion_slv_jac_2point(double t, const double state[], double *dfdy, double dfdt[], void *inputs);
+
+/// @}
 
 #ifdef __cplusplus
 }

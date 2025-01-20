@@ -1,3 +1,4 @@
+/// @file
 #pragma once
 
 #include "params.h"
@@ -13,6 +14,9 @@
 #include <time.h>
 
 #define _LION_LOGFILE_MAX 64
+
+/// @defgroup types Types
+/// @defgroup functions Functions
 
 #ifdef __cplusplus
 extern "C" {
@@ -41,9 +45,12 @@ size_t               heapinfo_popaddr(lion_app_t *app, void *addr);
 size_t               heapinfo_count(lion_app_t *app);
 #endif
 
+/// @addtogroup types
+/// @{
+
 // Application declarations
 
-/// \brief Regime in which the simulation operates.
+/// @brief Regime in which the simulation operates.
 ///
 /// This enum indicates which domains the temperature model considers. Currently
 /// only surface simulation is allowed, but air considerations are planned.
@@ -53,7 +60,7 @@ typedef enum lion_app_regime {
   LION_APP_BOTH,    ///< Surface and air temperature.
 } lion_app_regime_t;
 
-/// \brief Stepper algorithm for the ode solver.
+/// @brief Stepper algorithm for the ode solver.
 ///
 /// The types of steppers allowed are those allowed by GSL, and considers
 /// both explicit and implicit solvers.
@@ -71,7 +78,7 @@ typedef enum lion_app_stepper {
   LION_STEPPER_MSBDF,   ///< Multistep backwards differentiation.
 } lion_app_stepper_t;
 
-/// \brief Minimizer algorithm for the optimization problem.
+/// @brief Minimizer algorithm for the optimization problem.
 ///
 /// The types of minimizers allowed are those allowed by GSL.
 typedef enum lion_app_minimizer {
@@ -80,7 +87,7 @@ typedef enum lion_app_minimizer {
   LION_MINIMIZER_QUADGOLDEN,    ///< Brent with safeguarded step-length.
 } lion_app_minimizer_t;
 
-/// \brief App metaparameters and hyperparameters.
+/// @brief App metaparameters and hyperparameters.
 ///
 /// These parameters are not associated to the runtime of the app itself, but rather
 /// with its configurations, choice of algorithms, parameters of those algorithms, etc.
@@ -108,7 +115,7 @@ typedef struct lion_app_config {
   int         log_filelvl; ///< Level of the file logger.
 } lion_app_config_t;
 
-/// \brief App state variables.
+/// @brief App state variables.
 ///
 /// This includes all relevant variables of the simulation, including electrical and thermal variables,
 /// degradation variables, etc.
@@ -144,7 +151,7 @@ typedef struct lion_app_state {
   double _next_internal_temperature; ///< Placeholder for the next internal temperature.
 } lion_app_state_t;
 
-/// \brief Simulation runtime, used for setup and simulation.
+/// @brief Simulation runtime, used for setup and simulation.
 ///
 /// This contains all the variables which will be used by the simulation, both during the setup
 /// and during the runtime on a step-by-step basis.
@@ -184,7 +191,12 @@ typedef struct lion_version {
   const char *patch; ///< Patch number.
 } lion_version_t;
 
-/// \brief Create a new configuration.
+/// @}
+
+/// @addtogroup functions
+/// @{
+
+/// @brief Create a new configuration.
 ///
 /// @param[out] out Variable to store the new configuration.
 lion_status_t lion_app_config_new(lion_app_config_t *out);
@@ -192,48 +204,61 @@ lion_status_t lion_app_config_new(lion_app_config_t *out);
 /// Create a default configuration.
 lion_app_config_t lion_app_config_default(void);
 
-/// \brief Create a new simulation.
+/// @brief Create a new simulation.
 ///
 /// Sets up the simulation with a set of configuration and parameters.
-/// @params[in]  conf    Pointer to the simulation configuration.
-/// @params[in]  params  Pointer to the simulation parameters.
-/// @params[out] out     Pointer to where the app will be created.
-lion_status_t  lion_app_new(lion_app_config_t *conf, lion_params_t *params, lion_app_t *out);
+/// @param[in]  conf    Pointer to the simulation configuration.
+/// @param[in]  params  Pointer to the simulation parameters.
+/// @param[out] out     Pointer to where the app will be created.
+lion_status_t lion_app_new(lion_app_config_t *conf, lion_params_t *params, lion_app_t *out);
+
 /// Initialize the simulation.
-lion_status_t  lion_app_init(lion_app_t *app);
+lion_status_t lion_app_init(lion_app_t *app);
+
 /// Reset the simulation.
-lion_status_t  lion_app_reset(lion_app_t *app);
-/// \brief Step the simulation in time.
+lion_status_t lion_app_reset(lion_app_t *app);
+
+/// @brief Step the simulation in time.
 ///
 /// Steps the simulation forward considering some power and ambient temperature values.
 /// @param[in]  app                  Simulation to step forward.
 /// @param[in]  power                Power extracted from the cell.
 /// @param[in]  ambient_temperature  Ambient temperature around the cell.
-lion_status_t  lion_app_step(lion_app_t *app, double power, double ambient_temperature);
-/// \brief Runs the simulation.
+lion_status_t lion_app_step(lion_app_t *app, double power, double ambient_temperature);
+
+/// @brief Runs the simulation.
 ///
 /// Runs the simulation considering a vector of values.
 /// @param[in]  app                  Simulation to run.
 /// @param[in]  power                Power extracted from the cell at each time step.
 /// @param[in]  ambient_temperature  Ambient temperature around the cell at each time step.
-lion_status_t  lion_app_run(lion_app_t *app, lion_vector_t *power, lion_vector_t *ambient_temperature);
+lion_status_t lion_app_run(lion_app_t *app, lion_vector_t *power, lion_vector_t *ambient_temperature);
+
 /// Get the version of the simulator.
 lion_version_t lion_app_get_version(lion_app_t *app);
+
 /// Check whether the simulation should close.
-int            lion_app_should_close(lion_app_t *app);
+int lion_app_should_close(lion_app_t *app);
+
 /// Get the max number of iterations.
-uint64_t       lion_app_max_iters(lion_app_t *app);
+uint64_t lion_app_max_iters(lion_app_t *app);
+
 /// Clean up the simulation.
-lion_status_t  lion_app_cleanup(lion_app_t *app);
+lion_status_t lion_app_cleanup(lion_app_t *app);
 
 /// Get the name of the regime.
 const char *lion_app_regime_name(lion_app_regime_t regime);
+
 /// Get the name of the stepper.
 const char *lion_app_stepper_name(lion_app_stepper_t stepper);
+
 /// Get the name of the minimizer1.
 const char *lion_app_minimizer_name(lion_app_minimizer_t minimizer);
+
 /// Get the name of the GSL error number.
 const char *lion_app_gsl_errno_name(const int num);
+
+/// @}
 
 #ifdef __cplusplus
 }
