@@ -1,3 +1,5 @@
+.PHONY : $(shell egrep "^[A-Za-z0-9_-]+\:([^\=]|$$)" $(lastword $(MAKEFILE_LIST)) | sed -E 's/(.*):.*/\1/g')
+
 all: build
 
 help:
@@ -8,6 +10,7 @@ help:
 	@echo "Commands"
 	@echo "--------"
 	@echo "    build   : Default, generates minimal configuration and builds the library"
+	@echo "    clean   : Removes all build files and targets"
 	@echo "    install : Requires sudo, installs the library files and headers"
 
 clean:
