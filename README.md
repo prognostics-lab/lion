@@ -21,11 +21,12 @@
 The installation requires CMake, both for installing the native C library and the Python bindings. In Linux and macOS, lion should work without any major hassles, but for Windows it is recommended to use [WSL](https://learn.microsoft.com/en-us/windows/wsl/) to develop applications with the library, altough installation is supported natively using vcpkg.
 
 >### Linux
-For installation in Linux, the GSL library must be installed according to your distribution, as well as CMake. Then, you can run the bash script `sys/build.sh` to build and install the library: the recommended script call is
+For installation in Linux, the GSL library must be installed according to your distribution, as well as CMake. Then, simply run
 ```bash
-sys/build.sh -trhi
+make
+sudo make install
 ```
-where `-t` builds and calls the tests using CTest, `-r` compiles the library in release mode, `-h` builds lion as shared libraries, and `-i` installs the library to the `/usr/` directory. After this, the library files can be found in `/usr/lib`, and the headers in `/usr/include/lion/`.
+to build and install the library, respectively. After this, the library files can be found in `/usr/lib`, and the headers in `/usr/include/lion/`.
 
 Additionally, the Python bindings can be installed by calling
 ```bash
