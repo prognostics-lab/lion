@@ -43,107 +43,130 @@ size_t               heapinfo_count(lion_app_t *app);
 
 // Application declarations
 
+/// \brief Regime in which the simulation operates.
+///
+/// This enum indicates which domains the temperature model considers. Currently
+/// only surface simulation is allowed, but air considerations are planned.
 typedef enum lion_app_regime {
-  LION_APP_ONLYSF,
-  LION_APP_ONLYAIR,
-  LION_APP_BOTH,
+  LION_APP_ONLYSF,  ///< Surface temperature.
+  LION_APP_ONLYAIR, ///< Air temperature.
+  LION_APP_BOTH,    ///< Surface and air temperature.
 } lion_app_regime_t;
 
+/// \brief Stepper algorithm for the ode solver.
+///
+/// The types of steppers allowed are those allowed by GSL, and considers
+/// both explicit and implicit solvers.
 typedef enum lion_app_stepper {
-  LION_STEPPER_RK2,
-  LION_STEPPER_RK4,
-  LION_STEPPER_RKF45,
-  LION_STEPPER_RKCK,
-  LION_STEPPER_RK8PD,
-  LION_STEPPER_RK1IMP,
-  LION_STEPPER_RK2IMP,
-  LION_STEPPER_RK4IMP,
-  LION_STEPPER_BSIMP,
-  LION_STEPPER_MSADAMS,
-  LION_STEPPER_MSBDF,
+  LION_STEPPER_RK2,     ///< Explicit Runge-Kutta (2, 3).
+  LION_STEPPER_RK4,     ///< Explicit Runge-Kutta 4.
+  LION_STEPPER_RKF45,   ///< Explicit Runge-Kutta-Fehlberg (4, 5).
+  LION_STEPPER_RKCK,    ///< Explicit Runge-Kutta Cash-Karp (4, 5).
+  LION_STEPPER_RK8PD,   ///< Explicit Runge-Kutta Prince-Dormand (8, 9).
+  LION_STEPPER_RK1IMP,  ///< Implicit Euler.
+  LION_STEPPER_RK2IMP,  ///< Implicit Runge-Kutta 2.
+  LION_STEPPER_RK4IMP,  ///< Implicit Runge-Kutta 4.
+  LION_STEPPER_BSIMP,   ///< Implicit Bulirsch-Stoer.
+  LION_STEPPER_MSADAMS, ///< Multistep Adams.
+  LION_STEPPER_MSBDF,   ///< Multistep backwards differentiation.
 } lion_app_stepper_t;
 
+/// \brief Minimizer algorithm for the optimization problem.
+///
+/// The types of minimizers allowed are those allowed by GSL.
 typedef enum lion_app_minimizer {
-  LION_MINIMIZER_GOLDENSECTION,
-  LION_MINIMIZER_BRENT,
-  LION_MINIMIZER_QUADGOLDEN,
+  LION_MINIMIZER_GOLDENSECTION, ///< Golden section.
+  LION_MINIMIZER_BRENT,         ///< Brent.
+  LION_MINIMIZER_QUADGOLDEN,    ///< Brent with safeguarded step-length.
 } lion_app_minimizer_t;
 
+/// \brief App metaparameters and hyperparameters.
+///
+/// These parameters are not associated to the runtime of the app itself, but rather
+/// with its configurations, choice of algorithms, parameters of those algorithms, etc.
 typedef struct lion_app_config {
   /* App metadata */
 
-  const char *app_name;
+  const char *app_name; ///< Name of the simulation.
 
   /* Simulation metadata */
 
-  lion_app_regime_t      sim_regime;
-  lion_app_stepper_t     sim_stepper;
-  lion_app_minimizer_t   sim_minimizer;
-  lion_jacobian_method_t sim_jacobian;
-  double                 sim_time_seconds;
-  double                 sim_step_seconds;
-  double                 sim_epsabs;
-  double                 sim_epsrel;
-  uint64_t               sim_min_maxiter;
+  lion_app_regime_t      sim_regime;       ///< Regime to simulate.
+  lion_app_stepper_t     sim_stepper;      ///< Stepper algorithm.
+  lion_app_minimizer_t   sim_minimizer;    ///< Minimizer algorithm.
+  lion_jacobian_method_t sim_jacobian;     ///< Jacobian method.
+  double                 sim_time_seconds; ///< Total simulation time in seconds.
+  double                 sim_step_seconds; ///< Time of each simulation step in seconds.
+  double                 sim_epsabs;       ///< Absolute epsilon for update.
+  double                 sim_epsrel;       ///< Relative epsilon for update.
+  uint64_t               sim_min_maxiter;  ///< Maximum iterations of each minimization problem.
 
   /* Logging configuration */
 
-  const char *log_dir;
-  int         log_stdlvl;
-  int         log_filelvl;
+  const char *log_dir;     ///< Directory for the logs.
+  int         log_stdlvl;  ///< Level of the stderr logger.
+  int         log_filelvl; ///< Level of the file logger.
 } lion_app_config_t;
 
+/// \brief App state variables.
+///
+/// This includes all relevant variables of the simulation, including electrical and thermal variables,
+/// degradation variables, etc.
 typedef struct lion_app_state {
-  double   time;
-  uint64_t step; // Step = 1 is the first one for practical reasons
+  double   time; ///< Simulation time.
+  uint64_t step; ///< Simulation step index (starts at 1).
 
   // System inputs
-  double power;
-  double ambient_temperature;
+  double power;               ///< Power being drawn from the cell.
+  double ambient_temperature; ///< Ambient temperature around the cell.
 
   // Electrical state
-  double voltage;
-  double current;
-  double open_circuit_voltage;
-  double internal_resistance;
+  double voltage;              ///< Voltage in the terminals of the cell.
+  double current;              ///< Current drawn from the cell.
+  double open_circuit_voltage; ///< Open circuit voltage of the cell.
+  double internal_resistance;  ///< Internal resistance of the cell.
 
   // Thermal state
-  double ehc;
-  double generated_heat;
-  double internal_temperature;
-  double surface_temperature;
+  double ehc;                  ///< Entropic heat coefficient according to an empirical model.
+  double generated_heat;       ///< Heat generated by the cell due to ohmic and entropic heating.
+  double internal_temperature; ///< Internal temperature of the cell.
+  double surface_temperature;  ///< Surface temperature of the cell.
 
   // Charge state
-  double kappa;
-  double soc_nominal;
-  double capacity_nominal;
-  double soc_use;
-  double capacity_use;
+  double kappa;            ///< Dimensionless variable which quantifies the changes in electrolite conductivity.
+  double soc_nominal;      ///< Nominal state of charge.
+  double capacity_nominal; ///< Nominal capacity.
+  double soc_use;          ///< Usable state of charge considering temperature.
+  double capacity_use;     ///< Usable capacity considering temperature.
 
   // Next state placeholders
-  double _next_soc_nominal;
-  double _next_internal_temperature;
+  double _next_soc_nominal;          ///< Placeholder for the next nominal state of charge.
+  double _next_internal_temperature; ///< Placeholder for the next internal temperature.
 } lion_app_state_t;
 
+/// \brief Simulation runtime, used for setup and simulation.
+///
+/// This contains all the variables which will be used by the simulation, both during the setup
+/// and during the runtime on a step-by-step basis.
 typedef struct lion_app {
-  lion_app_config_t *conf;
-  lion_params_t     *params;
-  lion_app_state_t   state;
-  lion_slv_inputs_t  inputs;
-  lion_status_t (*init_hook)(lion_app_t *app);
-  lion_status_t (*update_hook)(lion_app_t *app);
-  lion_status_t (*finished_hook)(lion_app_t *app);
+  lion_app_config_t *conf;                         ///< Hyperparameters and app metadata.
+  lion_params_t     *params;                       ///< System parameters.
+  lion_app_state_t   state;                        ///< System state.
+  lion_slv_inputs_t  inputs;                       ///< Inputs to the solver.
+  lion_status_t (*init_hook)(lion_app_t *app);     ///< Hook called upon initialization.
+  lion_status_t (*update_hook)(lion_app_t *app);   ///< Hook called on each update of the simulation.
+  lion_status_t (*finished_hook)(lion_app_t *app); ///< Hook called when the simulation is finished.
 
   /* Data handles */
 
-  gsl_odeiv2_system              sys;
-  gsl_odeiv2_driver             *driver;
-  gsl_min_fminimizer            *sys_min;
-  const gsl_odeiv2_step_type    *step_type;
-  const gsl_min_fminimizer_type *minimizer;
+  gsl_odeiv2_system              sys;                   ///< Handle to the ode system.
+  gsl_odeiv2_driver             *driver;                ///< Driver for the ode system.
+  gsl_min_fminimizer            *sys_min;               ///< Handle to the minimizer.
+  const gsl_odeiv2_step_type    *step_type;             ///< Stepper used by the ode system.
+  const gsl_min_fminimizer_type *minimizer;             ///< Minimizer used by the optimizer.
 
-  char  log_filename[FILENAME_MAX + _LION_LOGFILE_MAX];
-  FILE *log_file;
+  char  log_filename[FILENAME_MAX + _LION_LOGFILE_MAX]; ///< Name of the log file.
+  FILE *log_file;                                       ///< Handle to the log file.
 
 #ifndef NDEBUG
   /* Internal debug information */
@@ -154,28 +177,62 @@ typedef struct lion_app {
 #endif
 } lion_app_t;
 
+/// Version of the simulator.
 typedef struct lion_version {
-  const char *major;
-  const char *minor;
-  const char *patch;
+  const char *major; ///< Major version.
+  const char *minor; ///< Minor version.
+  const char *patch; ///< Patch number.
 } lion_version_t;
 
-lion_status_t     lion_app_config_new(lion_app_config_t *out);
+/// \brief Create a new configuration.
+///
+/// @param[out] out Variable to store the new configuration.
+lion_status_t lion_app_config_new(lion_app_config_t *out);
+
+/// Create a default configuration.
 lion_app_config_t lion_app_config_default(void);
 
+/// \brief Create a new simulation.
+///
+/// Sets up the simulation with a set of configuration and parameters.
+/// @params[in]  conf    Pointer to the simulation configuration.
+/// @params[in]  params  Pointer to the simulation parameters.
+/// @params[out] out     Pointer to where the app will be created.
 lion_status_t  lion_app_new(lion_app_config_t *conf, lion_params_t *params, lion_app_t *out);
+/// Initialize the simulation.
 lion_status_t  lion_app_init(lion_app_t *app);
+/// Reset the simulation.
 lion_status_t  lion_app_reset(lion_app_t *app);
+/// \brief Step the simulation in time.
+///
+/// Steps the simulation forward considering some power and ambient temperature values.
+/// @param[in]  app                  Simulation to step forward.
+/// @param[in]  power                Power extracted from the cell.
+/// @param[in]  ambient_temperature  Ambient temperature around the cell.
 lion_status_t  lion_app_step(lion_app_t *app, double power, double ambient_temperature);
+/// \brief Runs the simulation.
+///
+/// Runs the simulation considering a vector of values.
+/// @param[in]  app                  Simulation to run.
+/// @param[in]  power                Power extracted from the cell at each time step.
+/// @param[in]  ambient_temperature  Ambient temperature around the cell at each time step.
 lion_status_t  lion_app_run(lion_app_t *app, lion_vector_t *power, lion_vector_t *ambient_temperature);
+/// Get the version of the simulator.
 lion_version_t lion_app_get_version(lion_app_t *app);
+/// Check whether the simulation should close.
 int            lion_app_should_close(lion_app_t *app);
+/// Get the max number of iterations.
 uint64_t       lion_app_max_iters(lion_app_t *app);
+/// Clean up the simulation.
 lion_status_t  lion_app_cleanup(lion_app_t *app);
 
+/// Get the name of the regime.
 const char *lion_app_regime_name(lion_app_regime_t regime);
+/// Get the name of the stepper.
 const char *lion_app_stepper_name(lion_app_stepper_t stepper);
+/// Get the name of the minimizer1.
 const char *lion_app_minimizer_name(lion_app_minimizer_t minimizer);
+/// Get the name of the GSL error number.
 const char *lion_app_gsl_errno_name(const int num);
 
 #ifdef __cplusplus
