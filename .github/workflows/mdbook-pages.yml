@@ -33,9 +33,8 @@ jobs:
         echo `pwd`/mdbook >> $GITHUB_PATH
     - name: Deploy GitHub Pages
       run: |
-        cd docs
-        mdbook build
-        cd ..
+        npm install moxygen -g
+        make docs
         git worktree add gh-pages
         git config user.name "Deploy from CI"
         git config user.email ""
