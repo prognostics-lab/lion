@@ -11,7 +11,7 @@ target_link_libraries(
                              ${GSL_LIBRARIES})
 target_include_directories(
   ${PROJECT_APP_NAME}
-  PRIVATE ${PROJECT_BINARY_DIR} ${PROJECT_SOURCE_DIR}
+  PUBLIC ${PROJECT_BINARY_DIR} ${PROJECT_SOURCE_DIR}
          ${PROJECT_SOURCE_DIR_LOCATION} ${PROJECT_HEADERS} ${CMAKE_SOURCE_DIR}
          ${GSL_INCLUDE_DIRS})
 
