@@ -98,3 +98,5 @@ install(TARGETS ${PROJECT_APP_NAME} ${PROJECT_CPP_NAME} ${PROJECT_MATH_NAME} ${P
 
 # headers
 install(DIRECTORY ${PROJECT_HEADERS}/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+# TODO: Add creation of a `.cmake` file to find the library
