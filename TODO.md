@@ -1,6 +1,7 @@
 # TODO
 This file contains a list of the TODO tasks found within the source code.
 - **(`./CMakeLists.txt`)** See if it is necessary
+- **(`./CMakeLists.txt`)** Add creation of a `.cmake` file to find the library
 - **(`./cmake/Vcpkg.cmake`)** Analyze the proper way to handle this scenario
 - **(`./cmake/StandardOptions.cmake`)** See how to properly configure these
 - **(`./examples/python/lab_240716_hook.py`)** See how to remove the global variable
