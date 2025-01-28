@@ -4,30 +4,29 @@ This file contains a list of the TODO tasks found within the source code.
 - **(`./CMakeLists.txt`)** Add creation of a `.cmake` file to find the library
 - **(`./cmake/Vcpkg.cmake`)** Analyze the proper way to handle this scenario
 - **(`./cmake/StandardOptions.cmake`)** See how to properly configure these
-- **(`./examples/python/lab_240716_hook.py`)** See how to remove the global variable
 - **(`./examples/lab_240716_cpp/main.cpp`)** Implement hooks in the C++ wrapper
+- **(`./examples/python/lab_240716_hook.py`)** See how to remove the global variable
 - **(`./include/lion/status.h`)** Evaluate removal of runtime error detection on release builds
-- **(`./include/lion/vector.h`)** See what happens when `new_capacity` < `old_capacity`
 - **(`./include/lion/solver/sys.h`)** Add logic to change dimension depending on simtype
 - **(`./include/lion/solver/sys.h`)** Give a second thought to how these are organized
-- **(`./pysrc/lion/models/temp.py`)** Change this when I eventually decide to implement other models
+- **(`./include/lion/vector.h`)** See what happens when `new_capacity` < `old_capacity`
 - **(`./pysrc/lion/models/rint.py`)** Test whether this implementation fails when setting different models
 - **(`./pysrc/lion/models/rint.py`)** Implement configuring the polynomial coefficients
-- **(`./pysrc/lion/app.py`)** Figure out a way to let C handle the defaults
-- **(`./pysrc/lion/app.py`)** Refactor these helper methods to depend on the output of `get_keys`
+- **(`./pysrc/lion/models/temp.py`)** Change this when I eventually decide to implement other models
 - **(`./pysrc/lion/vector.py`)** Fix the bug that happens when the first element is less general than the rest
 - **(`./pysrc/lion/vector.py`)** Determine a more efficient way of creating from numpy array
 - **(`./pysrc/lion/vector.py`)** Implemented reading csv directly instead of using pandas
 - **(`./pysrc/lion/vector.py`)** Determine a more efficient way of converting to numpy array
+- **(`./pysrc/lion/app.py`)** Figure out a way to let C handle the defaults
 - **(`./setup.py`)** Fix the bug where it has to be installed twice to work
 - **(`./setup.py`)** Set version dynamically
-- **(`./src/lion_app/vector.c`)** Implement saving vector to csv file
-- **(`./src/lion_app/solver/jacobian_twopoint.c`)** Implement the calculation of the numerical Jacobian
+- **(`./src/lion_math/lion_math.h`)** Double check implementation of each model
+- **(`./src/lion_math/capacity.h`)** Implement state of health
 - **(`./src/lion_app/app.c`)** Evaluate implementation of concurrency
 - **(`./src/lion_app/app.c`)** Add some mechanism to avoid race conditions
 - **(`./src/lion_app/app.c`)** Add time update
-- **(`./src/lion_math/lion_math.h`)** Double check implementation of each model
-- **(`./src/lion_math/capacity.h`)** Implement state of health
+- **(`./src/lion_app/solver/jacobian_twopoint.c`)** Implement the calculation of the numerical Jacobian
+- **(`./src/lion_app/vector.c`)** Implement saving vector to csv file
 - **(`./tests/unittest/quick/test_math_differential.c`)** Add tests for all calculations
 - **(`./tests/unittest/quick/test_math_differential.c`)** Add calculation of current
 - **(`./tests/unittest/quick/test_math_algebraic.c`)** Add tests for algebraic equations
