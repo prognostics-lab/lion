@@ -16,11 +16,19 @@
 
 [![Documentation](https://img.shields.io/badge/Documentation-000000?style=flat&logo=mdbook&logoColor=white)](https://case-ev.github.io/lion/)
 
-<h2 align="center">About</h2>
+- [About](#about)
+- [Installation](#installation)
+    - [Linux](#linux)
+    - [macOS](#macos)
+    - [Windows](#windows)
+- [License](#license)
+- [References](#references)
 
-lion simulates the electrothermal behavior of lithium-ion cells, taking into consideration effects such as temperature-induced capacity changes, ohmic and entropic heat generation, polarization resistance, etc. For more information, see [1], which establishes the bases for this simulator (altough more advancements have been introduced as research continues).
+<h2 id="about" align="center">About</h2>
 
-<h2 align="center">Installation</h2>
+lion simulates the electrothermal behavior of lithium-ion cells, taking into consideration effects such as temperature-induced capacity changes, ohmic and entropic heat generation, polarization resistance, etc. For more information, see [[1]](#ref1), which establishes the bases for this simulator (altough more advancements have been introduced as research continues).
+
+<h2 id="installation" align="center">Installation</h2>
 
 The installation requires CMake, both for installing the native C library and the Python bindings. In Linux and macOS, lion should work without any major hassles, but for Windows it is recommended to use [WSL](https://learn.microsoft.com/en-us/windows/wsl/) to develop applications with the library, altough installation is supported natively using vcpkg.
 
@@ -67,10 +75,11 @@ make docs-serve
 to compile and open the docs in your browser.
 
 ---
-<h2 align="center">License</h2>
+<h2 id="license" align="center">License</h2>
 
 lion is distributed under the MIT license. See `LICENSE` for more information.
 
-<h2 align="center">References</h2>
+<h2 id="references" align="center">References</h2>
 
+<a name="ref1"></a>
 **[1]** Allendes, C., Beltrán, A., García, J. E., Troncoso-Kurtovic, D., Masserano, B., Brito Schiele, B., Rivera, V., Jaramillo, F., Orchard, M. E., Silva, J. F., Rozas, H., & Rangarajan, S. (2024). Modeling and Simulation of Thermal Effects on Electrical Behavior in Lithium-Ion Cells. Annual Conference of the PHM Society, 16(1). https://doi.org/10.36001/phmconf.2024.v16i1.4080
