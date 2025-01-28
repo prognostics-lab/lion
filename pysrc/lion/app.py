@@ -312,183 +312,23 @@ class State:
     def __init__(self, app: "App"):
         self._app = app
 
-    # TODO: Refactor these helper methods to depend on the output of `get_keys`
-    @staticmethod
-    def get_keys() -> list:
-        return [
-            "time",
-            "step",
-            "power",
-            "ambient_temperature",
-            "voltage",
-            "current",
-            "open_circuit_voltage",
-            "internal_resistance",
-            "ehc",
-            "generated_heat",
-            "internal_temperature",
-            "surface_temperature",
-            "kappa",
-            "soc_nominal",
-            "capacity_nominal",
-            "soc_use",
-            "capacity_use",
-        ]
+    def get_keys(self) -> list:
+        return dir(self._app._cdata.state)
 
     def as_dict(self) -> dict:
-        return {
-            "time": self.time,
-            "step": self.step,
-            "power": self.power,
-            "ambient_temperature": self.ambient_temperature,
-            "voltage": self.voltage,
-            "current": self.current,
-            "open_circuit_voltage": self.open_circuit_voltage,
-            "internal_resistance": self.internal_resistance,
-            "ehc": self.ehc,
-            "generated_heat": self.generated_heat,
-            "internal_temperature": self.internal_temperature,
-            "surface_temperature": self.surface_temperature,
-            "kappa": self.kappa,
-            "soc_nominal": self.soc_nominal,
-            "capacity_nominal": self.capacity_nominal,
-            "soc_use": self.soc_use,
-            "capacity_use": self.capacity_use,
-        }
+        return {key: getattr(self, key) for key in self.get_keys()}
 
     def as_list(self) -> list:
-        return [
-            self.time,
-            self.step,
-            self.power,
-            self.ambient_temperature,
-            self.voltage,
-            self.current,
-            self.open_circuit_voltage,
-            self.internal_resistance,
-            self.ehc,
-            self.generated_heat,
-            self.internal_temperature,
-            self.surface_temperature,
-            self.kappa,
-            self.soc_nominal,
-            self.capacity_nominal,
-            self.soc_use,
-            self.capacity_use,
-        ]
+        return [getattr(self, key) for key in self.get_keys()]
 
     def as_numpy(self) -> np.ndarray:
-        return np.array(
-            [
-                self.time,
-                self.step,
-                self.power,
-                self.ambient_temperature,
-                self.voltage,
-                self.current,
-                self.open_circuit_voltage,
-                self.internal_resistance,
-                self.ehc,
-                self.generated_heat,
-                self.internal_temperature,
-                self.surface_temperature,
-                self.kappa,
-                self.soc_nominal,
-                self.capacity_nominal,
-                self.soc_use,
-                self.capacity_use,
-            ]
-        )
+        return np.array(self.as_list())
 
     def as_table(self) -> str:
-        return f"""\
-*** App state ***
--> time: {self.time}
--> step: {self.step}
--> power: {self.power}
--> ambient_temperature: {self.ambient_temperature}
--> voltage: {self.voltage}
--> current: {self.current}
--> open_circuit_voltage: {self.open_circuit_voltage}
--> internal_resistance: {self.internal_resistance}
--> ehc: {self.ehc}
--> generated_heat: {self.generated_heat}
--> internal_temperature: {self.internal_temperature}
--> surface_temperature: {self.surface_temperature}
--> kappa: {self.kappa}
--> soc_nominal: {self.soc_nominal}
--> capacity_nominal: {self.capacity_nominal}
--> soc_use: {self.soc_use}
--> capacity_use: {self.capacity_use}
-"""
+        return "\n".join(f"-> {key}: {getattr(self, key)}" for key in self.get_keys())
 
-    @property
-    def time(self) -> float:
-        return self._app._cdata.state.time
-
-    @property
-    def step(self) -> int:
-        return self._app._cdata.state.step
-
-    @property
-    def power(self) -> float:
-        return self._app._cdata.state.power
-
-    @property
-    def ambient_temperature(self) -> float:
-        return self._app._cdata.state.ambient_temperature
-
-    @property
-    def voltage(self) -> float:
-        return self._app._cdata.state.voltage
-
-    @property
-    def current(self) -> float:
-        return self._app._cdata.state.current
-
-    @property
-    def open_circuit_voltage(self) -> float:
-        return self._app._cdata.state.open_circuit_voltage
-
-    @property
-    def internal_resistance(self) -> float:
-        return self._app._cdata.state.internal_resistance
-
-    @property
-    def ehc(self) -> float:
-        return self._app._cdata.state.ehc
-
-    @property
-    def generated_heat(self) -> float:
-        return self._app._cdata.state.generated_heat
-
-    @property
-    def internal_temperature(self) -> float:
-        return self._app._cdata.state.internal_temperature
-
-    @property
-    def surface_temperature(self) -> float:
-        return self._app._cdata.state.surface_temperature
-
-    @property
-    def kappa(self) -> float:
-        return self._app._cdata.state.kappa
-
-    @property
-    def soc_nominal(self) -> float:
-        return self._app._cdata.state.soc_nominal
-
-    @property
-    def capacity_nominal(self) -> float:
-        return self._app._cdata.state.capacity_nominal
-
-    @property
-    def soc_use(self) -> float:
-        return self._app._cdata.state.soc_use
-
-    @property
-    def capacity_use(self) -> float:
-        return self._app._cdata.state.capacity_use
+    def __getattr__(self, name: str):
+        return getattr(self._app._cdata.state, name)
 
 
 class App:
