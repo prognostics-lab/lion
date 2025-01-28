@@ -128,10 +128,15 @@ typedef struct lion_app_state {
   double ambient_temperature; ///< Ambient temperature around the cell.
 
   // Electrical state
-  double voltage;              ///< Voltage in the terminals of the cell.
-  double current;              ///< Current drawn from the cell.
-  double open_circuit_voltage; ///< Open circuit voltage of the cell.
-  double internal_resistance;  ///< Internal resistance of the cell.
+  double voltage;                  ///< Voltage in the terminals of the cell.
+  double current;                  ///< Current drawn from the cell.
+  double ref_open_circuit_voltage; ///< Reference open circuit voltage of the cell.
+  double open_circuit_voltage;     ///< Temperature aware open circuit voltage of the cell.
+  double internal_resistance;      ///< Internal resistance of the cell.
+
+  // Degradation state
+  double soh;            ///< State of health of the cell
+  double _acc_discharge; ///< Accumulated discharge
 
   // Thermal state
   double ehc;                  ///< Entropic heat coefficient according to an empirical model.
