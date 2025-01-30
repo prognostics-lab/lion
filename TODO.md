@@ -20,6 +20,7 @@ This file contains a list of the TODO tasks found within the source code.
 - **(`./pysrc/lion/app.py`)** Figure out a way to let C handle the defaults
 - **(`./setup.py`)** Fix the bug where it has to be installed twice to work
 - **(`./setup.py`)** Set version dynamically
+- **(`./src/lion_math/dynamics/soh.c`)** Expand the model to include the different effects
 - **(`./src/lion_math/lion_math.h`)** Double check implementation of each model
 - **(`./src/lion_math/capacity.h`)** Implement state of health
 - **(`./src/lion_app/app.c`)** Evaluate implementation of concurrency
