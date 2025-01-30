@@ -135,8 +135,13 @@ typedef struct lion_app_state {
   double internal_resistance;      ///< Internal resistance of the cell.
 
   // Degradation state
-  double soh;            ///< State of health of the cell
-  double _acc_discharge; ///< Accumulated discharge
+  uint64_t cycle;          ///< Number of cycles the battery has been through
+  double   soh;            ///< State of health of the cell
+  uint64_t _cycle_step;    ///< Step within the cycle
+  double   _soc_mean;      ///< Average state of charge of the cycle
+  double   _soc_max;       ///< Maximum state of charge of the cycle
+  double   _soc_min;       ///< Minimum state of charge of the cycle
+  double   _acc_discharge; ///< Accumulated discharge
 
   // Thermal state
   double ehc;                  ///< Entropic heat coefficient according to an empirical model.
