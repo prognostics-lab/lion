@@ -3,19 +3,17 @@
 #include <stddef.h>
 #include <stdint.h>
 
-// clang-format off
-#define __LION_GENERATOR_ALLTYPES(macro)                                       \
-  macro(int8_t, i8)                                                                    \
-  macro(int16_t, i16)                                                                   \
-  macro(int32_t, i32)                                                                   \
-  macro(int64_t, i64)                                                                   \
-  macro(uint8_t,  u8)                                                                    \
-  macro(uint16_t, u16)                                                                   \
-  macro(uint32_t, u32)                                                                   \
-  macro(uint64_t, u64)                                                                   \
-  macro(float, f)                                                                 \
-  macro(double, d)
-// clang-format on
+#define __LION_GENERATOR_ALLTYPES(macro)                                                                                                             \
+  macro(int8_t, i8);                                                                                                                                 \
+  macro(int16_t, i16);                                                                                                                               \
+  macro(int32_t, i32);                                                                                                                               \
+  macro(int64_t, i64);                                                                                                                               \
+  macro(uint8_t, u8);                                                                                                                                \
+  macro(uint16_t, u16);                                                                                                                              \
+  macro(uint32_t, u32);                                                                                                                              \
+  macro(uint64_t, u64);                                                                                                                              \
+  macro(float, f);                                                                                                                                   \
+  macro(double, d);
 
 #define _SUM_GENERATOR(T, S)                                                                                                                         \
   T lion_sum_##S(T *vals, size_t count) {                                                                                                            \
@@ -35,7 +33,5 @@
     return res;                                                                                                                                      \
   }
 
-// clang-format off
-__LION_GENERATOR_ALLTYPES(_SUM_GENERATOR)
-__LION_GENERATOR_ALLTYPES(_POLYVAL_GENERATOR)
-// clang-format on
+__LION_GENERATOR_ALLTYPES(_SUM_GENERATOR);
+__LION_GENERATOR_ALLTYPES(_POLYVAL_GENERATOR);
