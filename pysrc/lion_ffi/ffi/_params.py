@@ -70,6 +70,11 @@ typedef struct lion_params_rint {
   } params;
 } lion_params_rint_t;
 
+typedef struct lion_params_soh {
+  uint64_t total_cycles;
+  double   final_soh;
+} lion_params_soh_t;
+
 typedef struct lion_params {
   lion_params_init_t init;
   lion_params_ehc_t ehc;
@@ -82,13 +87,14 @@ typedef struct lion_params {
 
 
 CDEF = """
-lion_params_ehc_t               lion_params_default_ehc(void);
 lion_params_init_t              lion_params_default_init(void);
+lion_params_ehc_t               lion_params_default_ehc(void);
 lion_params_ocv_t               lion_params_default_ocv(void);
+lion_params_vft_t               lion_params_default_vft(void);
+lion_params_temp_t              lion_params_default_temp(void);
 lion_params_rint_fixed_t        lion_params_default_rint_fixed(void);
 lion_params_rint_polarization_t lion_params_default_rint_polarization(void);
 lion_params_rint_t              lion_params_default_rint(void);
-lion_params_temp_t              lion_params_default_temp(void);
-lion_params_vft_t               lion_params_default_vft(void);
+lion_params_soh_t               lion_params_default_soh(void);
 lion_params_t                   lion_params_default(void);
 """

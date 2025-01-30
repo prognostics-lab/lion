@@ -220,9 +220,11 @@ class Config:
 class Params:
     """Lion application parameters"""
 
-    __slots__ = ("_cdata", "_init", "_ehc", "_ocv", "_vft", "_temp", "_rint")
+    __slots__ = ("_cdata", "_init", "_ehc", "_ocv", "_vft", "_temp", "_rint", "_soh")
 
-    def __init__(self, init=None, ehc=None, ocv=None, vft=None, temp=None, rint=None):
+    def __init__(
+        self, init=None, ehc=None, ocv=None, vft=None, temp=None, rint=None, soh=None
+    ):
         self._cdata = ffi.new("lion_params_t *", _lionl.lion_params_default())
 
         # TODO: Figure out a way to let C handle the defaults
@@ -257,6 +259,11 @@ class Params:
         else:
             self.rint = rint
 
+        if soh is None:
+            self.soh = models.Soh()
+        else:
+            self.soh = soh
+
     @property
     def init(self) -> models.Initial:
         return self._cdata.init
@@ -281,6 +288,10 @@ class Params:
     def rint(self) -> models.Resistance:
         return self._cdata.rint
 
+    @property
+    def soh(self) -> models.Soh:
+        return self._cdata.soh
+
     @init.setter
     def init(self, new: models.Initial) -> None:
         new.set_parameters(self._cdata.init)
@@ -304,6 +315,10 @@ class Params:
     @rint.setter
     def rint(self, new: models.Resistance) -> None:
         new.set_parameters(self._cdata.rint)
+
+    @soh.setter
+    def soh(self, new: models.Soh) -> None:
+        new.set_parameters(self._cdata.soh)
 
 
 class State:

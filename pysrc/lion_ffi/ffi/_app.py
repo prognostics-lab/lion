@@ -62,7 +62,8 @@ typedef struct lion_app_state {
   double open_circuit_voltage;
   double internal_resistance;
 
-  double soh;
+  uint64_t cycle;
+  double   soh;
 
   double ehc;
   double generated_heat;
