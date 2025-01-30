@@ -9,7 +9,7 @@ lion_status_t lion_slv_update(lion_app_t *app) {
   // assumes that app->state.{power, ambient_temperature} have been filled with
   // the corresponding input
   app->state.kappa            = lion_kappa(app->state.internal_temperature, app->params);
-  app->state.capacity_nominal = app->params->init.capacity;
+  app->state.capacity_nominal = app->state.soh * app->params->init.capacity;
   app->state.soc_use          = lion_soc_usable(app->state.soc_nominal, app->state.kappa, app->params);
   app->state.capacity_use     = lion_capacity_usable(app->state.capacity_nominal, app->state.kappa, app->params);
   app->state.ehc              = lion_ehc(app->state.soc_use, app->params);
@@ -28,7 +28,7 @@ lion_status_t lion_slv_update(lion_app_t *app) {
       app->conf->sim_min_maxiter,
       app->params
   );
-  app->state.internal_resistance = lion_resistance(app->state.soc_use, app->state.current, app->params);
+  app->state.internal_resistance = lion_resistance(app->state.soc_use, app->state.current, app->params) / app->state.soh;
   app->state.voltage             = lion_voltage_from_current(app->state.power, app->state.current, app->params);
 
   app->state.generated_heat =
