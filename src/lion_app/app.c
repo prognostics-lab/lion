@@ -5,8 +5,10 @@
 #include <gsl/gsl_odeiv2.h>
 #include <inttypes.h>
 #include <lion/lion.h>
+#include <lion_math/dynamics/soh.h>
 #include <lion_utils/macros.h>
 #include <lion_utils/vendor/log.h>
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -218,6 +220,9 @@ static void lion_app_log_startup_info(lion_app_t *app) {
   logi_info(" |-> Outer thermal resistivity    : %f K W-1", app->params->temp.rout);
   logi_info(" * Internal resistance model");
   logi_info(" |-> Model                        : %s", lion_params_rint_get_name(app->params->rint.model));
+  logi_info(" * Degradation model");
+  logi_info(" |-> Total cycles                 : %" PRIu64 " cycles", app->params->soh.total_cycles);
+  logi_info(" |-> SoH at EoL                   : %f %%", 100.0 * app->params->soh.final_soh);
   logi_info("+-------------------------------------------------------+");
   logi_info("|################# END OF INFORMATION ##################|");
   logi_info("+-------------------------------------------------------+");
@@ -289,14 +294,17 @@ lion_status_t _init_initial_state(lion_app_t *app) {
   logi_debug("Setting up initial conditions");
   // The current is set at first because it is used as an initial guess
   // for the optimization problem
-  app->state.current                    = 0.0;
   app->state._next_soc_nominal          = app->params->init.soc;
   app->state._next_internal_temperature = app->params->init.temp_in;
+  app->state._acc_discharge             = 0.0;
+  app->state._soc_mean                  = 0.0;
+  app->state._soc_max                   = 0.0;
+  app->state._soc_min                   = 1.0;
+  app->state.soh                        = app->params->init.soh;
+  app->state.current                    = app->params->init.current_guess;
   app->state.time                       = 0.0;
   app->state.step                       = 0;
-  // logi_debug("Setting first inputs, should be irrelevant");
-  // app->state.power               = 0.0;
-  // app->state.ambient_temperature = app->params->init.temp_in;
+  app->state.cycle                      = 0;
   return LION_STATUS_SUCCESS;
 }
 
@@ -318,7 +326,7 @@ lion_status_t _init_ode_system(lion_app_t *app) {
     break;
   }
   gsl_odeiv2_system sys = {
-    .function  = &lion_slv_system,
+    .function  = &lion_slv_system_continuous,
     .jacobian  = jac,
     .dimension = LION_SLV_DIMENSION,
     .params    = &app->inputs,
@@ -393,6 +401,31 @@ lion_status_t lion_app_step(lion_app_t *app, double power, double ambient_temper
   );
   app->state._next_soc_nominal          = partial_result[0];
   app->state._next_internal_temperature = partial_result[1];
+
+  // Update SoC statistics
+  app->state._soc_mean = ((double)app->state._cycle_step * app->state._soc_mean + app->state.soc_nominal) / (double)(app->state._cycle_step + 1);
+  if (app->state.soc_nominal > app->state._soc_max)
+    app->state._soc_max = app->state.soc_nominal;
+  if (app->state.soc_nominal < app->state._soc_min)
+    app->state._soc_min = app->state.soc_nominal;
+
+  // Update the degradation state of the cell
+  app->state._acc_discharge += GSL_MAX_DBL(app->state.current * app->conf->sim_step_seconds, 0.0);
+  if (app->state._acc_discharge >= app->state.capacity_nominal) {
+    // A cycle has been completed so we update the SoH
+    app->state._acc_discharge = fmod(app->state._acc_discharge, app->state.capacity_nominal);
+    app->state.soh            = lion_soh_next(app->state.soh, app->state._soc_mean, app->state._soc_max, app->state._soc_min, app->params);
+
+    // Restart placeholder values
+    app->state._soc_mean   = 0.0;
+    app->state._soc_max    = 0.0;
+    app->state._soc_min    = 1.0;
+    app->state._cycle_step = 0;
+
+    app->state.cycle++;
+  } else {
+    app->state._cycle_step++;
+  }
 
   if (app->update_hook != NULL) {
     // TODO: Evaluate implementation of concurrency
