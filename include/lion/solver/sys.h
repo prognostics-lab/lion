@@ -33,14 +33,15 @@ typedef enum lion_jacobian_method {
 /// @brief Get the name of a jacobian calculation method.
 const char *lion_jacobian_name(lion_jacobian_method_t jacobian);
 
-/// @brief Update function of the system.
+/// @brief Derivative of the system.
 ///
-/// Calculates the next state.
+/// Assuming the system is modelled through some equation dx/dt = f(x; t, p),
+/// where p are some parameters, then this function would correspond to f.
 /// @param[in]  t       Current time.
 /// @param[in]  state   Array with the current state.
 /// @param[out] out     Array for the next state, same size as `state`.
 /// @param[in]  inputs  Pointer to a `lion_slv_inputs_t` struct with the system state and parameters.
-int lion_slv_system(double t, const double state[], double out[], void *inputs);
+int lion_slv_system_continuous(double t, const double state[], double out[], void *inputs);
 
 /// @brief Analytical jacobian.
 ///
