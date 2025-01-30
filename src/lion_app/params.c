@@ -153,3 +153,14 @@ lion_params_t lion_params_default(void) {
   lion_params_t out = LION_PARAMS_DEFAULT;
   return out;
 }
+
+const char *lion_params_rint_get_name(lion_rint_model_t model) {
+  switch (model) {
+  case LION_RINT_MODEL_FIXED:
+    return "LION_RINT_MODEL_FIXED";
+  case LION_RINT_MODEL_POLARIZATION:
+    return "LION_RINT_MODEL_POLARIZATION";
+  default:
+    return "N/A";
+  }
+}

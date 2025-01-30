@@ -3,6 +3,7 @@
 
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_odeiv2.h>
+#include <inttypes.h>
 #include <lion/lion.h>
 #include <lion_utils/macros.h>
 #include <lion_utils/vendor/log.h>
@@ -10,7 +11,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <inttypes.h>
 
 #ifdef _WIN32
   #include <windows.h>
@@ -215,7 +215,9 @@ static void lion_app_log_startup_info(lion_app_t *app) {
   logi_info(" * Temperature model");
   logi_info(" |-> Heat capacity                : %f J K-1", app->params->temp.cp);
   logi_info(" |-> Internal thermal resistivity : %f K W-1", app->params->temp.rin);
-  logi_info(" |-> Outer thermal resistivity   : %f K W-1", app->params->temp.rout);
+  logi_info(" |-> Outer thermal resistivity    : %f K W-1", app->params->temp.rout);
+  logi_info(" * Internal resistance model");
+  logi_info(" |-> Model                        : %s", lion_params_rint_get_name(app->params->rint.model));
   logi_info("+-------------------------------------------------------+");
   logi_info("|################# END OF INFORMATION ##################|");
   logi_info("+-------------------------------------------------------+");
