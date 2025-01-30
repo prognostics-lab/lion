@@ -4,3 +4,4 @@ from .ocv import Ocv
 from .rint import Resistance, ResistanceFixed, ResistancePolarization
 from .temp import Temperature, TemperatureSurface
 from .vft import Vft
+from .soh import Soh
