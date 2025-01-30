@@ -21,7 +21,13 @@ else()
 endif()
 
 # Project setup
-project(lion VERSION 0.2.0)
+file(READ "VERSION" _version)
+string(REGEX MATCH "([0-9]*).([0-9]*).([0-9]*)" _ ${_version})
+set(_ver_major ${CMAKE_MATCH_1})
+set(_ver_minor ${CMAKE_MATCH_2})
+set(_ver_patch ${CMAKE_MATCH_3})
+project(lion VERSION ${_ver_major}.${_ver_minor}.${_ver_patch})
+message(STATUS "Project version: ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
 set(CMAKE_DEPENDENCIES_DIR ${CMAKE_SOURCE_DIR}/dependencies)
 include(GNUInstallDirs)
 

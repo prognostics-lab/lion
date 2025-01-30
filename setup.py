@@ -173,7 +173,6 @@ class cmake_ext(build_ext):
                     )
 
 
-# TODO: Set version dynamically
 if __name__ == "__main__":
     setup(
         ext_modules=[CMakeExtension("lion")],

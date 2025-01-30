@@ -2,7 +2,6 @@
 name = "lion"
 description = "Lithium-ion battery simulator"
 readme = "README.md"
-version = "0.2.0"
 license = {file = "LICENSE"}
 authors = [{name = "CASE"}]
 maintainers = [
@@ -18,6 +17,7 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
 ]
+dynamic = ["version"]
 
 [project.urls]
 homepage = "https://github.com/case-ev/lion"
@@ -39,6 +39,9 @@ packages = [
     "lion_utils",
 ]
 include-package-data = true
+
+[tool.setuptools.dynamic]
+version = {file = "VERSION"}
 
 [tool.pytest.ini_options]
 testpaths = ["tests/python"]
