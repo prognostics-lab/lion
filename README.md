@@ -21,6 +21,7 @@
     - [Linux](#linux)
     - [macOS](#macos)
     - [Windows](#windows)
+    - [Documentation](#documentation)
 - [License](#license)
 - [References](#references)
 
