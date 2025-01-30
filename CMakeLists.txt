@@ -21,7 +21,7 @@ else()
 endif()
 
 # Project setup
-file(READ "${CMAKE_SOURCE_DIR}/VERSION" _version)
+file(READ ".VERSION" _version)
 string(REGEX MATCH "([0-9]*).([0-9]*).([0-9]*)" _ ${_version})
 set(_ver_major ${CMAKE_MATCH_1})
 set(_ver_minor ${CMAKE_MATCH_2})
