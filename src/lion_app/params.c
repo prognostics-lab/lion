@@ -107,6 +107,12 @@
     .params.fixed = LION_PARAMS_DEFAULT_RINT_FIXED,                                                                                                  \
   }
 
+#define LION_PARAMS_DEFAULT_SOH                                                                                                                      \
+  {                                                                                                                                                  \
+    .total_cycles = 1000,                                                                                                                            \
+    .final_soh    = 0.7,                                                                                                                             \
+  }
+
 #define LION_PARAMS_DEFAULT                                                                                                                          \
   {                                                                                                                                                  \
     .init = LION_PARAMS_DEFAULT_INIT,                                                                                                                \
@@ -115,40 +121,54 @@
     .vft  = LION_PARAMS_DEFAULT_VFT,                                                                                                                 \
     .temp = LION_PARAMS_DEFAULT_TEMP,                                                                                                                \
     .rint = LION_PARAMS_DEFAULT_RINT,                                                                                                                \
+    .soh  = LION_PARAMS_DEFAULT_SOH,                                                                                                                 \
   }
 
 lion_params_init_t lion_params_default_init(void) {
   lion_params_init_t out = LION_PARAMS_DEFAULT_INIT;
   return out;
 }
+
 lion_params_ehc_t lion_params_default_ehc(void) {
   lion_params_ehc_t out = LION_PARAMS_DEFAULT_EHC;
   return out;
 }
+
 lion_params_ocv_t lion_params_default_ocv(void) {
   lion_params_ocv_t out = LION_PARAMS_DEFAULT_OCV;
   return out;
 }
+
 lion_params_vft_t lion_params_default_vft(void) {
   lion_params_vft_t out = LION_PARAMS_DEFAULT_VFT;
   return out;
 }
+
 lion_params_temp_t lion_params_default_temp(void) {
   lion_params_temp_t out = LION_PARAMS_DEFAULT_TEMP;
   return out;
 }
+
 lion_params_rint_fixed_t lion_params_default_rint_fixed(void) {
   lion_params_rint_fixed_t out = LION_PARAMS_DEFAULT_RINT_FIXED;
   return out;
 }
+
 lion_params_rint_polarization_t lion_params_default_rint_polarization(void) {
   lion_params_rint_polarization_t out = LION_PARAMS_DEFAULT_RINT_POLARIZATION;
   return out;
 }
+
 lion_params_rint_t lion_params_default_rint(void) {
   lion_params_rint_t out = LION_PARAMS_DEFAULT_RINT;
   return out;
 }
+
+lion_params_soh_t lion_params_default_soh(void) {
+  lion_params_soh_t out = LION_PARAMS_DEFAULT_SOH;
+  return out;
+}
+
 lion_params_t lion_params_default(void) {
   lion_params_t out = LION_PARAMS_DEFAULT;
   return out;

@@ -2,6 +2,7 @@
 #pragma once
 
 #include <lionu/fuzzy.h>
+#include <stdint.h>
 
 #define LION_FUZZY_SETS_COUNT  8
 #define LION_FUZZY_SETS_DEGREE 4
@@ -90,6 +91,12 @@ typedef struct lion_params_rint {
   } params; ///< Model parameters.
 } lion_params_rint_t;
 
+/// @brief Parameters for the degradation model.
+typedef struct lion_params_soh {
+  uint64_t total_cycles; ///< Nominal number of cycles the cell has.
+  double   final_soh;    ///< Nominal state of health after `total_cycles` (end of life)
+} lion_params_soh_t;
+
 /// @brief Parameters of the system.
 typedef struct lion_params {
   lion_params_init_t init; ///< Initial conditions.
@@ -98,6 +105,7 @@ typedef struct lion_params {
   lion_params_vft_t  vft;  ///< Temperature-dependence of capacity.
   lion_params_temp_t temp; ///< Temperature model.
   lion_params_rint_t rint; ///< Internal resistance model.
+  lion_params_soh_t  soh;  ///< Degradation model.
 } lion_params_t;
 
 /// @}
@@ -105,14 +113,20 @@ typedef struct lion_params {
 /// @addtogroup functions
 /// @{
 
-/// Get default entropic heat coefficient parameters.
-lion_params_ehc_t lion_params_default_ehc(void);
-
 /// Get default initial conditions parameters.
 lion_params_init_t lion_params_default_init(void);
 
+/// Get default entropic heat coefficient parameters.
+lion_params_ehc_t lion_params_default_ehc(void);
+
 /// Get default open-circuit voltage parameters.
 lion_params_ocv_t lion_params_default_ocv(void);
+
+/// Get default capacity parameters.
+lion_params_vft_t lion_params_default_vft(void);
+
+/// Get default temperature parameters.
+lion_params_temp_t lion_params_default_temp(void);
 
 /// Get default fixed internal resistance parameters.
 lion_params_rint_fixed_t lion_params_default_rint_fixed(void);
@@ -123,11 +137,8 @@ lion_params_rint_polarization_t lion_params_default_rint_polarization(void);
 /// Get default internal resistance parameters.
 lion_params_rint_t lion_params_default_rint(void);
 
-/// Get default temperature parameters.
-lion_params_temp_t lion_params_default_temp(void);
-
-/// Get default capacity parameters.
-lion_params_vft_t lion_params_default_vft(void);
+/// Get default degradation model parameters.
+lion_params_soh_t lion_params_default_soh(void);
 
 /// Get default system parameters.
 lion_params_t lion_params_default(void);
