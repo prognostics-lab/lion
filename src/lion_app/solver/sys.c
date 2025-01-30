@@ -26,7 +26,7 @@ const char *lion_jacobian_name(lion_jacobian_method_t jacobian) {
   return "Unexpected return";
 }
 
-int lion_slv_system(double t, const double state[], double out[], void *inputs) {
+int lion_slv_system_continuous(double t, const double state[], double out[], void *inputs) {
   /*
      state[0] -> state of charge
      state[1] -> internal temperature
