@@ -7,8 +7,6 @@ This file contains a list of the TODO tasks found within the source code.
 - **(`./examples/lab_240716_cpp/main.cpp`)** Implement hooks in the C++ wrapper
 - **(`./examples/python/lab_240716_hook.py`)** See how to remove the global variable
 - **(`./include/lion/status.h`)** Evaluate removal of runtime error detection on release builds
-- **(`./include/lion/solver/sys.h`)** Add logic to change dimension depending on simtype
-- **(`./include/lion/solver/sys.h`)** Give a second thought to how these are organized
 - **(`./include/lion/vector.h`)** See what happens when `new_capacity` < `old_capacity`
 - **(`./pysrc/lion/models/rint.py`)** Test whether this implementation fails when setting different models
 - **(`./pysrc/lion/models/rint.py`)** Implement configuring the polynomial coefficients
