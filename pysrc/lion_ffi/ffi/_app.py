@@ -27,6 +27,11 @@ typedef enum lion_app_minimizer {
   LION_MINIMIZER_QUADGOLDEN,
 } lion_app_minimizer_t;
 
+typedef enum lion_jacobian_method {
+  LION_JACOBIAN_ANALYTICAL,
+  LION_JACOBIAN_2POINT,
+} lion_jacobian_method_t;
+
 extern "Python" lion_status_t init_pythoncb(lion_app_t *);
 extern "Python" lion_status_t update_pythoncb(lion_app_t *);
 extern "Python" lion_status_t finished_pythoncb(lion_app_t *);
@@ -79,6 +84,11 @@ typedef struct lion_app_state {
   ...;
 } lion_app_state_t;
 
+typedef struct lion_slv_inputs {
+  lion_app_state_t *sys_inputs;
+  lion_params_t    *sys_params;
+} lion_slv_inputs_t;
+
 typedef struct lion_app {
   lion_app_config_t *conf;
   lion_params_t     *params;
@@ -109,8 +119,4 @@ int lion_app_should_close(lion_app_t *app);
 uint64_t lion_app_max_iters(lion_app_t *app);
 
 lion_status_t lion_app_cleanup(lion_app_t *app);
-
-const char *lion_app_regime_name(lion_app_regime_t regime);
-const char *lion_app_stepper_name(lion_app_stepper_t stepper);
-const char *lion_app_minimizer_name(lion_app_minimizer_t minimizer);
 """

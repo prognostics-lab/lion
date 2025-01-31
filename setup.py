@@ -17,8 +17,7 @@ from lion_ffi.config import (
     CLIB_RELEASE_PATH,
     INCLUDE_DIRS,
 )
-from lion_ffi.ffi import _app, _inputs, _params, _status, _vector
-from lion_ffi.ffi.solver import _sys
+from lion_ffi.ffi import _app, _params, _status, _vector, _names
 
 
 LIB_TYPEDEF = """
@@ -47,18 +46,16 @@ FFI_CDEF = f"""
 // Typedefs
 {_status.CTYPEDEF}
 {_params.CTYPEDEF}
-{_sys.CTYPEDEF}
-{_inputs.CTYPEDEF}
 {_app.CTYPEDEF}
+{_names.CTYPEDEF}
 {_vector.CTYPEDEF}
 
 // Function definitions
 {_status.CDEF}
 {_params.CDEF}
-{_sys.CDEF}
-{_inputs.CDEF}
-{_vector.CDEF}
 {_app.CDEF}
+{_names.CDEF}
+{_vector.CDEF}
 """
 
 # for i, line in enumerate(FFI_CDEF.splitlines()):

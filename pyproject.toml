@@ -35,7 +35,6 @@ packages = [
     "lion.models",
     "lion_ffi",
     "lion_ffi.ffi",
-    "lion_ffi.ffi.solver",
     "lion_utils",
 ]
 include-package-data = true
