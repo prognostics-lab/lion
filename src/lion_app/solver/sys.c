@@ -1,11 +1,10 @@
+#include "sys.h"
+
 #include "jacobian.h"
 
-#include <gsl/gsl_errno.h>
 #include <gsl/gsl_matrix.h>
 #include <lion/app.h>
 #include <lion/params.h>
-#include <lion/solver/inputs.h>
-#include <lion/solver/sys.h>
 #include <lion_math/capacity.h>
 #include <lion_math/current.h>
 #include <lion_math/dynamics/soc.h>
@@ -13,18 +12,6 @@
 #include <lion_math/internal_resistance.h>
 #include <lion_math/open_circuit.h>
 #include <lion_utils/vendor/log.h>
-
-const char *lion_jacobian_name(lion_jacobian_method_t jacobian) {
-  switch (jacobian) {
-  case LION_JACOBIAN_ANALYTICAL:
-    return "LION_JACOBIAN_ANALYTICAL";
-  case LION_JACOBIAN_2POINT:
-    return "LION_JACOBIAN_2POINT";
-  default:
-    return "Unknown";
-  }
-  return "Unexpected return";
-}
 
 int lion_slv_system_continuous(double t, const double state[], double out[], void *inputs) {
   /*

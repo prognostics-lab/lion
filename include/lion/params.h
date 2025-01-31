@@ -143,8 +143,6 @@ lion_params_soh_t lion_params_default_soh(void);
 /// Get default system parameters.
 lion_params_t lion_params_default(void);
 
-const char *lion_params_rint_get_name(lion_rint_model_t model);
-
 /// @}
 
 #ifdef __cplusplus

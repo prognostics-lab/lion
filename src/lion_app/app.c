@@ -1,5 +1,7 @@
 #include "app_run.h"
 #include "mem.h"
+#include "solver/sys.h"
+#include "solver/update.h"
 
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_odeiv2.h>
@@ -514,63 +516,3 @@ lion_version_t lion_app_get_version(lion_app_t *app) {
 int lion_app_should_close(lion_app_t *app) { return 0; }
 
 uint64_t lion_app_max_iters(lion_app_t *app) { return (uint64_t)(app->conf->sim_time_seconds / app->conf->sim_step_seconds); }
-
-const char *lion_app_regime_name(lion_app_regime_t regime) {
-  switch (regime) {
-  case LION_APP_ONLYSF:
-    return "LION_APP_ONLYSF";
-  case LION_APP_ONLYAIR:
-    return "LION_APP_ONLYAIR";
-  case LION_APP_BOTH:
-    return "LION_APP_BOTH";
-  default:
-    return "Regime not found";
-  }
-  return "Unexpected return";
-}
-
-const char *lion_app_stepper_name(lion_app_stepper_t stepper) {
-  switch (stepper) {
-  case LION_STEPPER_RK2:
-    return "LION_STEPPER_RK2";
-  case LION_STEPPER_RK4:
-    return "LION_STEPPER_RK4";
-  case LION_STEPPER_RKF45:
-    return "LION_STEPPER_RKF45";
-  case LION_STEPPER_RKCK:
-    return "LION_STEPPER_RKCK";
-  case LION_STEPPER_RK8PD:
-    return "LION_STEPPER_RK8PD";
-  case LION_STEPPER_RK1IMP:
-    return "LION_STEPPER_RK1IMP";
-  case LION_STEPPER_RK2IMP:
-    return "LION_STEPPER_RK2IMP";
-  case LION_STEPPER_RK4IMP:
-    return "LION_STEPPER_RK4IMP";
-  case LION_STEPPER_BSIMP:
-    return "LION_STEPPER_BSIMP";
-  case LION_STEPPER_MSADAMS:
-    return "LION_STEPPER_MSADAMS";
-  case LION_STEPPER_MSBDF:
-    return "LION_STEPPER_MSBDF";
-  default:
-    return "Stepper not found";
-  }
-  return "Unexpected return";
-}
-
-const char *lion_app_minimizer_name(lion_app_minimizer_t minimizer) {
-  switch (minimizer) {
-  case LION_MINIMIZER_GOLDENSECTION:
-    return "LION_MINIMIZER_GOLDENSECTION";
-  case LION_MINIMIZER_BRENT:
-    return "LION_MINIMIZER_BRENT";
-  case LION_MINIMIZER_QUADGOLDEN:
-    return "LION_MINIMIZER_QUADGOLDEN";
-  default:
-    return "Minimizer not found";
-  }
-  return "Unexpected return";
-}
-
-const char *lion_app_gsl_errno_name(const int num) { return gsl_strerror(num); }

@@ -1,5 +1,6 @@
+#include "update.h"
+
 #include <lion/lion.h>
-#include <lion/solver/update.h>
 #include <lion_math/lion_math.h>
 #include <lion_utils/macros.h>
 

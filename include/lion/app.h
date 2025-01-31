@@ -2,8 +2,6 @@
 #pragma once
 
 #include "params.h"
-#include "solver/inputs.h"
-#include "solver/sys.h"
 #include "status.h"
 #include "vector.h"
 
@@ -87,6 +85,16 @@ typedef enum lion_app_minimizer {
   LION_MINIMIZER_QUADGOLDEN,    ///< Brent with safeguarded step-length.
 } lion_app_minimizer_t;
 
+/// @brief Jacobian calculation method.
+///
+/// The following methods for jacobian calculation are currently supported:
+/// - LION_JACOBIAN_ANALYTICAL : uses the analytical equations to calculate the jacobian.
+/// - LION_JACOBIAN_2POINT     : uses central differences to numerically calculate the jacobian.
+typedef enum lion_jacobian_method {
+  LION_JACOBIAN_ANALYTICAL, ///< Analytical method.
+  LION_JACOBIAN_2POINT,     ///< Central differences method.
+} lion_jacobian_method_t;
+
 /// @brief App metaparameters and hyperparameters.
 ///
 /// These parameters are not associated to the runtime of the app itself, but rather
@@ -160,6 +168,15 @@ typedef struct lion_app_state {
   double _next_soc_nominal;          ///< Placeholder for the next nominal state of charge.
   double _next_internal_temperature; ///< Placeholder for the next internal temperature.
 } lion_app_state_t;
+
+/// @brief Inputs for the solver.
+///
+/// Both the current state and the parameters of the system are passed at each iteration of the solver,
+/// to be used for the update function as well as the Jacobian calculation.
+typedef struct lion_slv_inputs {
+  lion_app_state_t *sys_inputs; ///< System state.
+  lion_params_t    *sys_params; ///< System parameters.
+} lion_slv_inputs_t;
 
 /// @brief Simulation runtime, used for setup and simulation.
 ///
@@ -255,18 +272,6 @@ uint64_t lion_app_max_iters(lion_app_t *app);
 
 /// Clean up the simulation.
 lion_status_t lion_app_cleanup(lion_app_t *app);
-
-/// Get the name of the regime.
-const char *lion_app_regime_name(lion_app_regime_t regime);
-
-/// Get the name of the stepper.
-const char *lion_app_stepper_name(lion_app_stepper_t stepper);
-
-/// Get the name of the minimizer1.
-const char *lion_app_minimizer_name(lion_app_minimizer_t minimizer);
-
-/// Get the name of the GSL error number.
-const char *lion_app_gsl_errno_name(const int num);
 
 /// @}
 
