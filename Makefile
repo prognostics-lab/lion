@@ -58,7 +58,11 @@ docs-serve:
 	@moxygen docs/xml -o docs/src/reference/api_reference_%s.md --anchors --groups
 	@cd docs; mdbook serve --open
 
-docs-install: docs
+man:
+	@doxygen
+	@doxy2man docs/xml/group__functions.xml -o docs/man/man3 --short-pkg lion --pkg lion
+
+man-install:
 	@cp -rf docs/man/man3/lion_* /usr/share/man/man3/
 
 configure:
