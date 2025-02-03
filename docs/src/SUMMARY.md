@@ -5,6 +5,10 @@
 # Instructions
 
 - [Installation](instructions/installation.md)
+    - [Linux](instructions/installation/linux.md)
+    - [macOS](instructions/installation/macos.md)
+    - [Windows](instructions/installation/windows.md)
+- [Documentation](instructions/docs.md)
 
 # Usage
 
