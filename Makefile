@@ -58,6 +58,9 @@ docs-serve:
 	@moxygen docs/xml -o docs/src/reference/api_reference_%s.md --anchors --groups
 	@cd docs; mdbook serve --open
 
+docs-install: docs
+	@cp -rf docs/man/man3/lion_* /usr/share/man/man3/
+
 configure:
 	@echo -e "\x1b[32;20mConfiguring\x1b[0m"
 	@cmake \

@@ -310,7 +310,7 @@ pysrc/**/*.c
 simdata/**/*.csv
 
 ### Documentation ###
+docs/man
 docs/xml
 docs/src/reference/api_reference_*.md
-
 
