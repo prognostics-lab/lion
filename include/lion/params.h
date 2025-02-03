@@ -1,4 +1,5 @@
 /// @file
+/// @brief Parameters for the simulation.
 #pragma once
 
 #include <lionu/fuzzy.h>

@@ -1,4 +1,5 @@
 /// @file
+/// @brief Status of a lion call.
 #pragma once
 
 #ifdef __cplusplus

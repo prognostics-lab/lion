@@ -1,3 +1,5 @@
+/// @file
+/// @brief Header with every definition.
 #pragma once
 
 #include "app.h"

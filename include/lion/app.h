@@ -1,4 +1,5 @@
 /// @file
+/// @brief App creation, configuration and simulation.
 #pragma once
 
 #include "params.h"

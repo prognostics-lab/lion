@@ -1,3 +1,5 @@
+/// @file
+/// @brief Names for different lion enums and values.
 #pragma once
 
 #include "app.h"

@@ -1,4 +1,5 @@
 /// @file
+/// @brief Container of data.
 #pragma once
 
 #include "status.h"
