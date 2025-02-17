@@ -1,21 +1,21 @@
 #include <gsl/gsl_errno.h>
 #include <lion/names.h>
 
-const char *lion_app_regime_name(lion_app_regime_t regime) {
+const char *lion_regime_name(lion_regime_t regime) {
   switch (regime) {
-  case LION_APP_ONLYSF:
-    return "LION_APP_ONLYSF";
-  case LION_APP_ONLYAIR:
-    return "LION_APP_ONLYAIR";
-  case LION_APP_BOTH:
-    return "LION_APP_BOTH";
+  case LION_ONLYSF:
+    return "LION_ONLYSF";
+  case LION_ONLYAIR:
+    return "LION_ONLYAIR";
+  case LION_BOTH:
+    return "LION_BOTH";
   default:
     return "N/A";
   }
   return "Unexpected return";
 }
 
-const char *lion_app_stepper_name(lion_app_stepper_t stepper) {
+const char *lion_stepper_name(lion_stepper_t stepper) {
   switch (stepper) {
   case LION_STEPPER_RK2:
     return "LION_STEPPER_RK2";
@@ -45,7 +45,7 @@ const char *lion_app_stepper_name(lion_app_stepper_t stepper) {
   return "Unexpected return";
 }
 
-const char *lion_app_minimizer_name(lion_app_minimizer_t minimizer) {
+const char *lion_minimizer_name(lion_minimizer_t minimizer) {
   switch (minimizer) {
   case LION_MINIMIZER_GOLDENSECTION:
     return "LION_MINIMIZER_GOLDENSECTION";
@@ -59,7 +59,7 @@ const char *lion_app_minimizer_name(lion_app_minimizer_t minimizer) {
   return "Unexpected return";
 }
 
-const char *lion_app_gsl_errno_name(const int num) { return gsl_strerror(num); }
+const char *lion_gsl_errno_name(const int num) { return gsl_strerror(num); }
 
 const char *lion_jacobian_name(lion_jacobian_method_t jacobian) {
   switch (jacobian) {

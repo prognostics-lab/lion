@@ -6,8 +6,6 @@
 extern "C" {
 #endif
 
-// TODO: Evaluate removal of runtime error detection on release builds
-
 /// @addtogroup types
 /// @{
 

@@ -1,13 +1,13 @@
 #include "mem.h"
 
 #include <lion/lion.h>
-#include <lion_app/files.h>
+#include <lion_sim/files.h>
 #include <lion_utils/macros.h>
 #include <lion_utils/vendor/log.h>
 #include <stdio.h>
 #include <string.h>
 
-lion_status_t lion_vector_new(lion_app_t *app, const size_t data_size, lion_vector_t *out) {
+lion_status_t lion_vector_new(lion_sim_t *sim, const size_t data_size, lion_vector_t *out) {
   lion_vector_t result = {
     .data      = NULL,
     .data_size = data_size,
@@ -18,8 +18,8 @@ lion_status_t lion_vector_new(lion_app_t *app, const size_t data_size, lion_vect
   return LION_STATUS_SUCCESS;
 }
 
-lion_status_t lion_vector_zero(lion_app_t *app, const size_t len, const size_t data_size, lion_vector_t *out) {
-  void *data = lion_calloc(app, len, data_size);
+lion_status_t lion_vector_zero(lion_sim_t *sim, const size_t len, const size_t data_size, lion_vector_t *out) {
+  void *data = lion_calloc(sim, len, data_size);
   if (data == NULL) {
     logi_error("Could not allocate enough data");
     return LION_STATUS_FAILURE;
@@ -35,8 +35,8 @@ lion_status_t lion_vector_zero(lion_app_t *app, const size_t len, const size_t d
   return LION_STATUS_SUCCESS;
 }
 
-lion_status_t lion_vector_with_capacity(lion_app_t *app, const size_t capacity, const size_t data_size, lion_vector_t *out) {
-  void *data = lion_malloc(app, data_size * capacity);
+lion_status_t lion_vector_with_capacity(lion_sim_t *sim, const size_t capacity, const size_t data_size, lion_vector_t *out) {
+  void *data = lion_malloc(sim, data_size * capacity);
   if (data == NULL) {
     logi_error("Could not allocate enough data");
     return LION_STATUS_FAILURE;
@@ -52,8 +52,8 @@ lion_status_t lion_vector_with_capacity(lion_app_t *app, const size_t capacity, 
   return LION_STATUS_SUCCESS;
 }
 
-lion_status_t lion_vector_from_array(lion_app_t *app, const void *data, const size_t len, const size_t data_size, lion_vector_t *out) {
-  void *new_data = lion_malloc(app, len * data_size);
+lion_status_t lion_vector_from_array(lion_sim_t *sim, const void *data, const size_t len, const size_t data_size, lion_vector_t *out) {
+  void *new_data = lion_malloc(sim, len * data_size);
   if (new_data == NULL) {
     logi_error("Could not allocate enough data");
     return LION_STATUS_FAILURE;
@@ -70,7 +70,7 @@ lion_status_t lion_vector_from_array(lion_app_t *app, const void *data, const si
   return LION_STATUS_SUCCESS;
 }
 
-lion_status_t lion_vector_from_csv(lion_app_t *app, const char *filename, const size_t data_size, const char *format, lion_vector_t *out) {
+lion_status_t lion_vector_from_csv(lion_sim_t *sim, const char *filename, const size_t data_size, const char *format, lion_vector_t *out) {
   logi_warn("This function assumes only one column with a header");
 
   logi_debug("Opening file '%s'", filename);
@@ -82,7 +82,7 @@ lion_status_t lion_vector_from_csv(lion_app_t *app, const char *filename, const 
   }
 
   logi_debug("Allocating line buffer");
-  char *line_buffer = lion_malloc(app, sizeof(char) * 128);
+  char *line_buffer = lion_malloc(sim, sizeof(char) * 128);
   if (line_buffer == NULL) {
     logi_error("Could not allocate line buffer");
     fclose(f);
@@ -98,67 +98,67 @@ lion_status_t lion_vector_from_csv(lion_app_t *app, const char *filename, const 
   }
   logi_debug("Initializing output vector");
   lion_vector_t values;
-  LION_CALL_I(lion_vector_with_capacity(app, lines, sizeof(double), &values), "Could not initialize vector");
+  LION_CALL_I(lion_vector_with_capacity(sim, lines, sizeof(double), &values), "Could not initialize vector");
 
   logi_debug("Creating temporary retainers");
   double val;
   char  *buffer;
   logi_debug("Discarding first line");
-  LION_VCALL_I(lion_readline(app, f, line_buffer, &buffer), "Failed reading first line");
+  LION_VCALL_I(lion_readline(sim, f, line_buffer, &buffer), "Failed reading first line");
 
   logi_debug("Reading values");
   for (int i = 0; i < lines; i++) {
-    LION_VCALL_I(lion_readline(app, f, line_buffer, &buffer), "Failed reading line %i", i);
+    LION_VCALL_I(lion_readline(sim, f, line_buffer, &buffer), "Failed reading line %i", i);
     int ret = sscanf(line_buffer, format, &val);
     if (ret != 1) {
       logi_error("Found failure at %i-th value, ret = %i", i, ret);
       fclose(f);
       return LION_STATUS_FAILURE;
     }
-    LION_VCALL_I(lion_vector_push(app, &values, &val), "Failed pushing %i-th value", i);
+    LION_VCALL_I(lion_vector_push(sim, &values, &val), "Failed pushing %i-th value", i);
   }
 
   logi_debug("Finished reading values");
   *out = values;
   fclose(f);
-  lion_free(app, line_buffer);
+  lion_free(sim, line_buffer);
   return LION_STATUS_SUCCESS;
 }
 
-lion_status_t lion_vector_linspace_d(lion_app_t *app, double low, double high, int num, lion_vector_t *out) {
+lion_status_t lion_vector_linspace_d(lion_sim_t *sim, double low, double high, int num, lion_vector_t *out) {
   lion_vector_t vec;
-  LION_VCALL_I(lion_vector_with_capacity(app, num, sizeof(double), &vec), "Failed allocating vector with %d elements", num);
+  LION_VCALL_I(lion_vector_with_capacity(sim, num, sizeof(double), &vec), "Failed allocating vector with %d elements", num);
   double step = (high - low) / (double)(num - 1);
   for (int i = 0; i < num; i++) {
-    LION_VCALL_I(lion_vector_push_d(app, &vec, low + i * step), "Failed pushing %d-th element", i);
+    LION_VCALL_I(lion_vector_push_d(sim, &vec, low + i * step), "Failed pushing %d-th element", i);
   }
   *out = vec;
   return LION_STATUS_SUCCESS;
 }
 
-lion_status_t lion_vector_linspace_f(lion_app_t *app, float low, float high, int num, lion_vector_t *out) {
+lion_status_t lion_vector_linspace_f(lion_sim_t *sim, float low, float high, int num, lion_vector_t *out) {
   lion_vector_t vec;
-  LION_VCALL_I(lion_vector_with_capacity(app, num, sizeof(float), &vec), "Failed allocating vector with %d elements", num);
+  LION_VCALL_I(lion_vector_with_capacity(sim, num, sizeof(float), &vec), "Failed allocating vector with %d elements", num);
   float step = (high - low) / (float)(num - 1);
   for (int i = 0; i < num; i++) {
-    LION_VCALL_I(lion_vector_push_f(app, &vec, low + i * step), "Failed pushing %d-th element", i);
+    LION_VCALL_I(lion_vector_push_f(sim, &vec, low + i * step), "Failed pushing %d-th element", i);
   }
   *out = vec;
   return LION_STATUS_SUCCESS;
 }
 
-lion_status_t lion_vector_to_csv(lion_app_t *app, lion_vector_t *vec, const char *header, const char *filename) {
+lion_status_t lion_vector_to_csv(lion_sim_t *sim, lion_vector_t *vec, const char *header, const char *filename) {
   // TODO: Implement saving vector to csv file
   logi_error("Saving to csv not currently implemented");
   return LION_STATUS_FAILURE;
 }
 
-lion_status_t lion_vector_cleanup(lion_app_t *app, const lion_vector_t *const vec) {
-  lion_free(app, vec->data);
+lion_status_t lion_vector_cleanup(lion_sim_t *sim, const lion_vector_t *const vec) {
+  lion_free(sim, vec->data);
   return LION_STATUS_SUCCESS;
 }
 
-lion_status_t lion_vector_get(lion_app_t *app, const lion_vector_t *vec, const size_t i, void *out) {
+lion_status_t lion_vector_get(lion_sim_t *sim, const lion_vector_t *vec, const size_t i, void *out) {
   if (vec->data == NULL || i >= vec->len || out == NULL) {
     logi_error("Out of bounds or output is NULL");
     return LION_STATUS_FAILURE;
@@ -167,41 +167,41 @@ lion_status_t lion_vector_get(lion_app_t *app, const lion_vector_t *vec, const s
   return LION_STATUS_SUCCESS;
 }
 
-int8_t lion_vector_get_i8(lion_app_t *app, const lion_vector_t *vec, const size_t i) { return *(int8_t *)((char *)vec->data + i * vec->data_size); }
+int8_t lion_vector_get_i8(lion_sim_t *sim, const lion_vector_t *vec, const size_t i) { return *(int8_t *)((char *)vec->data + i * vec->data_size); }
 
-int16_t lion_vector_get_i16(lion_app_t *app, const lion_vector_t *vec, const size_t i) {
+int16_t lion_vector_get_i16(lion_sim_t *sim, const lion_vector_t *vec, const size_t i) {
   return *(int16_t *)((char *)vec->data + i * vec->data_size);
 }
 
-int32_t lion_vector_get_i32(lion_app_t *app, const lion_vector_t *vec, const size_t i) {
+int32_t lion_vector_get_i32(lion_sim_t *sim, const lion_vector_t *vec, const size_t i) {
   return *(int32_t *)((char *)vec->data + i * vec->data_size);
 }
 
-int64_t lion_vector_get_i64(lion_app_t *app, const lion_vector_t *vec, const size_t i) {
+int64_t lion_vector_get_i64(lion_sim_t *sim, const lion_vector_t *vec, const size_t i) {
   return *(int64_t *)((char *)vec->data + i * vec->data_size);
 }
 
-uint8_t lion_vector_get_u8(lion_app_t *app, const lion_vector_t *vec, const size_t i) { return *(uint8_t *)((char *)vec->data + i * vec->data_size); }
+uint8_t lion_vector_get_u8(lion_sim_t *sim, const lion_vector_t *vec, const size_t i) { return *(uint8_t *)((char *)vec->data + i * vec->data_size); }
 
-uint16_t lion_vector_get_u16(lion_app_t *app, const lion_vector_t *vec, const size_t i) {
+uint16_t lion_vector_get_u16(lion_sim_t *sim, const lion_vector_t *vec, const size_t i) {
   return *(uint16_t *)((char *)vec->data + i * vec->data_size);
 }
 
-uint32_t lion_vector_get_u32(lion_app_t *app, const lion_vector_t *vec, const size_t i) {
+uint32_t lion_vector_get_u32(lion_sim_t *sim, const lion_vector_t *vec, const size_t i) {
   return *(uint32_t *)((char *)vec->data + i * vec->data_size);
 }
 
-uint64_t lion_vector_get_u64(lion_app_t *app, const lion_vector_t *vec, const size_t i) {
+uint64_t lion_vector_get_u64(lion_sim_t *sim, const lion_vector_t *vec, const size_t i) {
   return *(uint64_t *)((char *)vec->data + i * vec->data_size);
 }
 
-float lion_vector_get_f(lion_app_t *app, const lion_vector_t *vec, const size_t i) { return *(float *)((char *)vec->data + i * vec->data_size); }
+float lion_vector_get_f(lion_sim_t *sim, const lion_vector_t *vec, const size_t i) { return *(float *)((char *)vec->data + i * vec->data_size); }
 
-double lion_vector_get_d(lion_app_t *app, const lion_vector_t *vec, const size_t i) { return *(double *)((char *)vec->data + i * vec->data_size); }
+double lion_vector_get_d(lion_sim_t *sim, const lion_vector_t *vec, const size_t i) { return *(double *)((char *)vec->data + i * vec->data_size); }
 
-void *lion_vector_get_p(lion_app_t *app, const lion_vector_t *vec, const size_t i) { return (void *)((char *)vec->data + i * vec->data_size); }
+void *lion_vector_get_p(lion_sim_t *sim, const lion_vector_t *vec, const size_t i) { return (void *)((char *)vec->data + i * vec->data_size); }
 
-lion_status_t lion_vector_set(lion_app_t *app, lion_vector_t *vec, const size_t i, const void *src) {
+lion_status_t lion_vector_set(lion_sim_t *sim, lion_vector_t *vec, const size_t i, const void *src) {
   if (vec->data == NULL || i >= vec->len || src == NULL) {
     logi_error("Out of bounds or source is NULL");
     return LION_STATUS_FAILURE;
@@ -210,8 +210,8 @@ lion_status_t lion_vector_set(lion_app_t *app, lion_vector_t *vec, const size_t 
   return LION_STATUS_SUCCESS;
 }
 
-lion_status_t lion_vector_resize(lion_app_t *app, lion_vector_t *vec, const size_t new_capacity) {
-  void *data = lion_realloc(app, vec->data, new_capacity * vec->data_size);
+lion_status_t lion_vector_resize(lion_sim_t *sim, lion_vector_t *vec, const size_t new_capacity) {
+  void *data = lion_realloc(sim, vec->data, new_capacity * vec->data_size);
   if (data == NULL) {
     logi_error("Could not allocate enough data");
     return LION_STATUS_FAILURE;
@@ -225,7 +225,7 @@ lion_status_t lion_vector_resize(lion_app_t *app, lion_vector_t *vec, const size
   return LION_STATUS_SUCCESS;
 }
 
-lion_status_t lion_vector_push(lion_app_t *app, lion_vector_t *vec, const void *src) {
+lion_status_t lion_vector_push(lion_sim_t *sim, lion_vector_t *vec, const void *src) {
   if (src == NULL) {
     logi_error("Source is NULL");
     return LION_STATUS_FAILURE;
@@ -240,7 +240,7 @@ lion_status_t lion_vector_push(lion_app_t *app, lion_vector_t *vec, const void *
       new_size = vec->data_size;
     }
     logi_debug("Reallocating for %d B", new_size);
-    void *new_data = lion_realloc(app, vec->data, new_size);
+    void *new_data = lion_realloc(sim, vec->data, new_size);
     if (new_data == NULL) {
       logi_error("Could not allocate enough data");
       return LION_STATUS_FAILURE;
@@ -258,11 +258,11 @@ lion_status_t lion_vector_push(lion_app_t *app, lion_vector_t *vec, const void *
   return LION_STATUS_SUCCESS;
 }
 
-lion_status_t lion_vector_push_d(lion_app_t *app, lion_vector_t *vec, double src) { return lion_vector_push(app, vec, &src); }
+lion_status_t lion_vector_push_d(lion_sim_t *sim, lion_vector_t *vec, double src) { return lion_vector_push(sim, vec, &src); }
 
-lion_status_t lion_vector_push_f(lion_app_t *app, lion_vector_t *vec, float src) { return lion_vector_push(app, vec, &src); }
+lion_status_t lion_vector_push_f(lion_sim_t *sim, lion_vector_t *vec, float src) { return lion_vector_push(sim, vec, &src); }
 
-lion_status_t lion_vector_extend_array(lion_app_t *app, lion_vector_t *vec, const void *src, const size_t len) {
+lion_status_t lion_vector_extend_array(lion_sim_t *sim, lion_vector_t *vec, const void *src, const size_t len) {
   if (src == NULL) {
     logi_error("Source is NULL");
     return LION_STATUS_FAILURE;
@@ -279,7 +279,7 @@ lion_status_t lion_vector_extend_array(lion_app_t *app, lion_vector_t *vec, cons
     // memory
     logi_info("Allocating memory for extension of vector");
     logi_debug("Allocating %d more bytes", delta * vec->data_size);
-    void *new_data = lion_realloc(app, vec->data, (vec->capacity + delta) * vec->data_size);
+    void *new_data = lion_realloc(sim, vec->data, (vec->capacity + delta) * vec->data_size);
     if (new_data == NULL) {
       logi_error("Reallocation failed");
       return LION_STATUS_FAILURE;
@@ -300,6 +300,6 @@ lion_status_t lion_vector_extend_array(lion_app_t *app, lion_vector_t *vec, cons
   return LION_STATUS_SUCCESS;
 }
 
-extern inline size_t lion_vector_total_size(lion_app_t *app, const lion_vector_t *vec) { return vec->len * vec->data_size; }
+extern inline size_t lion_vector_total_size(lion_sim_t *sim, const lion_vector_t *vec) { return vec->len * vec->data_size; }
 
-extern inline size_t lion_vector_alloc_size(lion_app_t *app, const lion_vector_t *vec) { return vec->capacity * vec->data_size; }
+extern inline size_t lion_vector_alloc_size(lion_sim_t *sim, const lion_vector_t *vec) { return vec->capacity * vec->data_size; }

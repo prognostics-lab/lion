@@ -9,7 +9,7 @@
 // Since this is the debug information we can't track allocations or an infinite
 // loop is formed
 
-_idebug_heap_info_t *heapinfo_new(lion_app_t *app) {
+_idebug_heap_info_t *heapinfo_new(lion_sim_t *sim) {
   logi_trace("Creating new node with heap info");
   _idebug_heap_info_t *node = malloc(sizeof(_idebug_heap_info_t));
   if (node == NULL) {
@@ -26,9 +26,9 @@ _idebug_heap_info_t *heapinfo_new(lion_app_t *app) {
 
 void heapinfo_free_node(_idebug_heap_info_t *node) { free(node); }
 
-void heapinfo_clean(lion_app_t *app) {
+void heapinfo_clean(lion_sim_t *sim) {
   logi_trace("Removing heap info");
-  _idebug_heap_info_t *node = app->_idebug_heap_head;
+  _idebug_heap_info_t *node = sim->_idebug_heap_head;
   _idebug_heap_info_t *next;
   while (node != NULL) {
     next = node->next;
@@ -37,9 +37,9 @@ void heapinfo_clean(lion_app_t *app) {
   }
 }
 
-void heapinfo_push(lion_app_t *app, void *addr, size_t size, const char *file, int line) {
+void heapinfo_push(lion_sim_t *sim, void *addr, size_t size, const char *file, int line) {
   logi_trace("Pushing %#p @ %s:%d", addr, file, line);
-  _idebug_heap_info_t *head  = app->_idebug_heap_head;
+  _idebug_heap_info_t *head  = sim->_idebug_heap_head;
   size_t               count = 0;
   if (head->addr == NULL) {
     logi_trace("Pushing to start of list");
@@ -56,7 +56,7 @@ void heapinfo_push(lion_app_t *app, void *addr, size_t size, const char *file, i
     count++;
     head = head->next;
   }
-  _idebug_heap_info_t *node = heapinfo_new(app);
+  _idebug_heap_info_t *node = heapinfo_new(sim);
   if (node == NULL) {
     logi_error("Could not push element");
     return;
@@ -70,15 +70,15 @@ void heapinfo_push(lion_app_t *app, void *addr, size_t size, const char *file, i
   logi_trace("Count after push is %d", count + 1);
 }
 
-size_t heapinfo_popaddr(lion_app_t *app, void *addr) {
+size_t heapinfo_popaddr(lion_sim_t *sim, void *addr) {
   logi_trace("Searching element with address %#p", addr);
   size_t               count = 0;
-  _idebug_heap_info_t *curr  = app->_idebug_heap_head;
+  _idebug_heap_info_t *curr  = sim->_idebug_heap_head;
   if (curr->addr == addr) {
     // First element is the one to pop (border case)
     logi_trace("HEAP INFO (%d) %#p", count, curr->addr);
     logi_trace("Popping %#p @ %s:%d", curr->addr, curr->file, curr->line);
-    app->_idebug_heap_head = curr->next;
+    sim->_idebug_heap_head = curr->next;
     size_t size            = curr->size;
     heapinfo_free_node(curr);
     return size;
@@ -103,8 +103,8 @@ size_t heapinfo_popaddr(lion_app_t *app, void *addr) {
   return 0;
 }
 
-size_t heapinfo_count(lion_app_t *app) {
-  _idebug_heap_info_t *head  = app->_idebug_heap_head;
+size_t heapinfo_count(lion_sim_t *sim) {
+  _idebug_heap_info_t *head  = sim->_idebug_heap_head;
   size_t               count = 0;
   while (head != NULL) {
     count++;

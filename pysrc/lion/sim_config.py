@@ -10,9 +10,9 @@ from lion_utils.logger import LOGGER
 
 
 class Regime(Enum):
-    ONLYSF = _lionl.LION_APP_ONLYSF
-    ONLYAIR = _lionl.LION_APP_ONLYAIR
-    BOTH = _lionl.LION_APP_BOTH
+    ONLYSF = _lionl.LION_ONLYSF
+    ONLYAIR = _lionl.LION_ONLYAIR
+    BOTH = _lionl.LION_BOTH
 
 
 class Stepper(Enum):

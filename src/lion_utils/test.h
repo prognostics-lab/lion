@@ -53,9 +53,9 @@
 
 /* Test utilities */
 
-#define LION_CALL_TEST(app, test)                                                                                                                    \
+#define LION_CALL_TEST(sim, test)                                                                                                                    \
   log_info("TEST: *" #test "*");                                                                                                                     \
-  if (test(app) == TEST_FAIL) {                                                                                                                      \
+  if (test(sim) == TEST_FAIL) {                                                                                                                      \
     log_error("Found failing test");                                                                                                                 \
     return TEST_FAIL;                                                                                                                                \
   }

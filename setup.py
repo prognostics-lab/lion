@@ -17,7 +17,7 @@ from lion_ffi.config import (
     CLIB_RELEASE_PATH,
     INCLUDE_DIRS,
 )
-from lion_ffi.ffi import _app, _params, _status, _vector, _names
+from lion_ffi.ffi import _sim, _params, _status, _vector, _names
 
 
 LIB_TYPEDEF = """
@@ -46,14 +46,14 @@ FFI_CDEF = f"""
 // Typedefs
 {_status.CTYPEDEF}
 {_params.CTYPEDEF}
-{_app.CTYPEDEF}
+{_sim.CTYPEDEF}
 {_names.CTYPEDEF}
 {_vector.CTYPEDEF}
 
 // Function definitions
 {_status.CDEF}
 {_params.CDEF}
-{_app.CDEF}
+{_sim.CDEF}
 {_names.CDEF}
 {_vector.CDEF}
 """
@@ -83,7 +83,7 @@ ffi_builder.cdef(FFI_CDEF)
 ffi_builder.set_source(
     "lion._lion",
     LIB_SOURCE,
-    libraries=["lion_app", "lion_math", "lion_utils"],
+    libraries=["lion_sim", "lion_math", "lion_utils"],
     library_dirs=[
         str(CBIN_DEBUG_PATH),
         str(CLIB_DEBUG_PATH),

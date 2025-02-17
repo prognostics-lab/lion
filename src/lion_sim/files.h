@@ -1,6 +1,6 @@
 #pragma once
 
-#include <lion/app.h>
+#include <lion/sim.h>
 #include <lion/status.h>
 #include <stdio.h>
 
@@ -9,7 +9,7 @@ extern "C" {
 #endif
 
 int           lion_count_lines(FILE *file);
-lion_status_t lion_readline(lion_app_t *app, FILE *file, char *buffer, char **out);
+lion_status_t lion_readline(lion_sim_t *sim, FILE *file, char *buffer, char **out);
 
 #ifdef __cplusplus
 }

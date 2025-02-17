@@ -14,31 +14,31 @@ from lion import dtypes, models
 # from lion.models import ehc, init, ocv, rint, temp, vft
 from lion.exceptions import LionException
 from lion.status import Status, ffi_call
-from lion.app_config import Stepper, Regime, Minimizer
+from lion.sim_config import Stepper, Regime, Minimizer
 from lion.vector import Vector, Vectorizable
 from lion_utils.logger import LOGGER
 
 
-def _generate_init_pythoncb(app: "App", func: Callable[["App"], Status]):
+def _generate_init_pythoncb(sim: "Sim", func: Callable[["Sim"], Status]):
     @ffi.def_extern()
     def init_pythoncb(_):
-        return func(app).value
+        return func(sim).value
 
     return init_pythoncb
 
 
-def _generate_update_pythoncb(app: "App", func: Callable[["App"], Status]):
+def _generate_update_pythoncb(sim: "Sim", func: Callable[["Sim"], Status]):
     @ffi.def_extern()
     def update_pythoncb(_):
-        return func(app).value
+        return func(sim).value
 
     return update_pythoncb
 
 
-def _generate_finished_pythoncb(app: "App", func: Callable[["App"], Status]):
+def _generate_finished_pythoncb(sim: "Sim", func: Callable[["Sim"], Status]):
     @ffi.def_extern()
     def finished_pythoncb(_):
-        return func(app).value
+        return func(sim).value
 
     return finished_pythoncb
 
@@ -75,7 +75,7 @@ def lvl_from_logger() -> LogLvl | None:
 
 
 class Config:
-    """Lion application configuration"""
+    """Lion simulation configuration"""
 
     __slots__ = ("_cdata",)
 
@@ -91,7 +91,7 @@ class Config:
         min_maxiter: int | None = None,
         log_stdlvl: LogLvl | None = None,
     ):
-        self._cdata = ffi.new("lion_app_config_t *", _lionl.lion_app_config_default())
+        self._cdata = ffi.new("lion_sim_config_t *", _lionl.lion_sim_config_default())
 
         if name is not None:
             self.name = name
@@ -119,11 +119,11 @@ class Config:
 
     @property
     def name(self) -> str:
-        return ffi.string(self._cdata.app_name)
+        return ffi.string(self._cdata.sim_name)
 
     @name.setter
     def name(self, new_name: str):
-        self._cdata.app_name = ffi.new("char[]", new_name.encode())
+        self._cdata.sim_name = ffi.new("char[]", new_name.encode())
 
     @property
     def sim_regime(self) -> Regime:
@@ -218,7 +218,7 @@ class Config:
 
 
 class Params:
-    """Lion application parameters"""
+    """Lion simulation parameters"""
 
     __slots__ = ("_cdata", "_init", "_ehc", "_ocv", "_vft", "_temp", "_rint", "_soh")
 
@@ -322,13 +322,13 @@ class Params:
 
 
 class State:
-    __slots__ = ("_app",)
+    __slots__ = ("_sim",)
 
-    def __init__(self, app: "App"):
-        self._app = app
+    def __init__(self, sim: "Sim"):
+        self._sim = sim
 
     def get_keys(self) -> list:
-        return dir(self._app._cdata.state)
+        return dir(self._sim._cdata.state)
 
     def as_dict(self) -> dict:
         return {key: getattr(self, key) for key in self.get_keys()}
@@ -343,11 +343,11 @@ class State:
         return "\n".join(f"-> {key}: {getattr(self, key)}" for key in self.get_keys())
 
     def __getattr__(self, name: str):
-        return getattr(self._app._cdata.state, name)
+        return getattr(self._sim._cdata.state, name)
 
 
-class App:
-    """Lion application to run"""
+class Sim:
+    """Lion simulation to run"""
 
     __slots__ = ("_cdata", "_initialized", "state", "config", "params")
 
@@ -355,12 +355,12 @@ class App:
         self,
         config: Config | None = None,
         params: Params | None = None,
-        init: Callable[["App"], State] | None = None,
-        update: Callable[["App"], State] | None = None,
-        finished: Callable[["App"], State] | None = None,
+        init: Callable[["Sim"], State] | None = None,
+        update: Callable[["Sim"], State] | None = None,
+        finished: Callable[["Sim"], State] | None = None,
     ):
-        LOGGER.debug("Creating lion.App")
-        self._cdata = ffi.new("lion_app_t *")
+        LOGGER.debug("Creating lion.Sim")
+        self._cdata = ffi.new("lion_sim_t *")
         self._initialized = False
         if config is None:
             self.config = Config()
@@ -372,7 +372,7 @@ class App:
             self.params = params
 
         self.state = State(self)
-        _lionl.lion_app_new(self.config._cdata, self.params._cdata, self._cdata)
+        _lionl.lion_sim_new(self.config._cdata, self.params._cdata, self._cdata)
 
         if init is not None:
             self.init_hook = init
@@ -382,22 +382,22 @@ class App:
             self.finished_hook = finished
 
     def __del__(self):
-        LOGGER.debug("Cleaning up lion.App")
+        LOGGER.debug("Cleaning up lion.Sim")
         try:
-            ffi_call(_lionl.lion_app_cleanup(self._cdata), "Failed cleanup of app")
+            ffi_call(_lionl.lion_sim_cleanup(self._cdata), "Failed cleanup of sim")
         except LionException as e:
-            LOGGER.error(f"App cleanup failed with exception '{e}'")
+            LOGGER.error(f"Sim cleanup failed with exception '{e}'")
 
     def init(self):
         ffi_call(
-            _lionl.lion_app_init(self._cdata),
+            _lionl.lion_sim_init(self._cdata),
             "Failed initializing",
         )
         self._initialized = True
 
     def reset(self):
         ffi_call(
-            _lionl.lion_app_reset(self._cdata),
+            _lionl.lion_sim_reset(self._cdata),
             "Failed resetting",
         )
 
@@ -405,14 +405,14 @@ class App:
         if not self._initialized:
             LOGGER.warn("Auto-initializing before step")
             self.init()
-        ffi_call(_lionl.lion_app_step(self._cdata, power, amb_temp), "Failed stepping")
+        ffi_call(_lionl.lion_sim_step(self._cdata, power, amb_temp), "Failed stepping")
 
     def run(self, power: Vectorizable, amb_temp: Vectorizable):
         try:
             power = Vector.new(power, dtypes.FLOAT64)
             amb_temp = Vector.new(amb_temp, dtypes.FLOAT64)
             ffi_call(
-                _lionl.lion_app_run(self._cdata, power._cdata, amb_temp._cdata),
+                _lionl.lion_sim_run(self._cdata, power._cdata, amb_temp._cdata),
                 "Failed running",
             )
         except TypeError:
@@ -426,7 +426,7 @@ class App:
         raise NotImplementedError("Can't fetch C functions")
 
     @init_hook.setter
-    def init_hook(self, new_func: Callable[["App"], Status]):
+    def init_hook(self, new_func: Callable[["Sim"], Status]):
         _generate_init_pythoncb(self, new_func)
         self._cdata.init_hook = _lionl.init_pythoncb
 
@@ -435,7 +435,7 @@ class App:
         raise NotImplementedError("Can't fetch C functions")
 
     @update_hook.setter
-    def update_hook(self, new_func: Callable[["App"], Status]):
+    def update_hook(self, new_func: Callable[["Sim"], Status]):
         _generate_update_pythoncb(self, new_func)
         self._cdata.update_hook = _lionl.update_pythoncb
 
@@ -444,6 +444,6 @@ class App:
         raise NotImplementedError("Can't fetch C functions")
 
     @finished_hook.setter
-    def finished_hook(self, new_func: Callable[["App"], Status]):
+    def finished_hook(self, new_func: Callable[["Sim"], Status]):
         _generate_finished_pythoncb(self, new_func)
         self._cdata.finished_hook = _lionl.finished_pythoncb

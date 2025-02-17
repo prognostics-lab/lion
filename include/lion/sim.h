@@ -1,5 +1,5 @@
 /// @file
-/// @brief App creation, configuration and simulation.
+/// @brief Simulation creation, configuration and running.
 #pragma once
 
 #include "params.h"
@@ -23,7 +23,7 @@ extern "C" {
 
 // Forward declarations
 
-typedef struct lion_app lion_app_t;
+typedef struct lion_sim lion_sim_t;
 
 // Debug declarations
 
@@ -36,34 +36,32 @@ typedef struct _idebug_heap_info {
   struct _idebug_heap_info *next;
 } _idebug_heap_info_t;
 
-_idebug_heap_info_t *heapinfo_new(lion_app_t *app);
+_idebug_heap_info_t *heapinfo_new(lion_sim_t *sim);
 void                 heapinfo_free_node(_idebug_heap_info_t *node);
-void                 heapinfo_clean(lion_app_t *app);
-void                 heapinfo_push(lion_app_t *app, void *addr, size_t size, const char *file, int line);
-size_t               heapinfo_popaddr(lion_app_t *app, void *addr);
-size_t               heapinfo_count(lion_app_t *app);
+void                 heapinfo_clean(lion_sim_t *sim);
+void                 heapinfo_push(lion_sim_t *sim, void *addr, size_t size, const char *file, int line);
+size_t               heapinfo_popaddr(lion_sim_t *sim, void *addr);
+size_t               heapinfo_count(lion_sim_t *sim);
 #endif
 
 /// @addtogroup types
 /// @{
 
-// Application declarations
-
 /// @brief Regime in which the simulation operates.
 ///
 /// This enum indicates which domains the temperature model considers. Currently
 /// only surface simulation is allowed, but air considerations are planned.
-typedef enum lion_app_regime {
-  LION_APP_ONLYSF,  ///< Surface temperature.
-  LION_APP_ONLYAIR, ///< Air temperature.
-  LION_APP_BOTH,    ///< Surface and air temperature.
-} lion_app_regime_t;
+typedef enum lion_regime {
+  LION_ONLYSF,  ///< Surface temperature.
+  LION_ONLYAIR, ///< Air temperature.
+  LION_BOTH,    ///< Surface and air temperature.
+} lion_regime_t;
 
 /// @brief Stepper algorithm for the ode solver.
 ///
 /// The types of steppers allowed are those allowed by GSL, and considers
 /// both explicit and implicit solvers.
-typedef enum lion_app_stepper {
+typedef enum lion_stepper {
   LION_STEPPER_RK2,     ///< Explicit Runge-Kutta (2, 3).
   LION_STEPPER_RK4,     ///< Explicit Runge-Kutta 4.
   LION_STEPPER_RKF45,   ///< Explicit Runge-Kutta-Fehlberg (4, 5).
@@ -75,16 +73,16 @@ typedef enum lion_app_stepper {
   LION_STEPPER_BSIMP,   ///< Implicit Bulirsch-Stoer.
   LION_STEPPER_MSADAMS, ///< Multistep Adams.
   LION_STEPPER_MSBDF,   ///< Multistep backwards differentiation.
-} lion_app_stepper_t;
+} lion_stepper_t;
 
 /// @brief Minimizer algorithm for the optimization problem.
 ///
 /// The types of minimizers allowed are those allowed by GSL.
-typedef enum lion_app_minimizer {
+typedef enum lion_minimizer {
   LION_MINIMIZER_GOLDENSECTION, ///< Golden section.
   LION_MINIMIZER_BRENT,         ///< Brent.
   LION_MINIMIZER_QUADGOLDEN,    ///< Brent with safeguarded step-length.
-} lion_app_minimizer_t;
+} lion_minimizer_t;
 
 /// @brief Jacobian calculation method.
 ///
@@ -96,20 +94,20 @@ typedef enum lion_jacobian_method {
   LION_JACOBIAN_2POINT,     ///< Central differences method.
 } lion_jacobian_method_t;
 
-/// @brief App metaparameters and hyperparameters.
+/// @brief Simulation metaparameters and hyperparameters.
 ///
-/// These parameters are not associated to the runtime of the app itself, but rather
+/// These parameters are not associated to the runtime of the sim itself, but rather
 /// with its configurations, choice of algorithms, parameters of those algorithms, etc.
-typedef struct lion_app_config {
-  /* App metadata */
+typedef struct lion_sim_config {
+  /* Sim metadata */
 
-  const char *app_name; ///< Name of the simulation.
+  const char *sim_name; ///< Name of the simulation.
 
   /* Simulation metadata */
 
-  lion_app_regime_t      sim_regime;       ///< Regime to simulate.
-  lion_app_stepper_t     sim_stepper;      ///< Stepper algorithm.
-  lion_app_minimizer_t   sim_minimizer;    ///< Minimizer algorithm.
+  lion_regime_t          sim_regime;       ///< Regime to simulate.
+  lion_stepper_t         sim_stepper;      ///< Stepper algorithm.
+  lion_minimizer_t       sim_minimizer;    ///< Minimizer algorithm.
   lion_jacobian_method_t sim_jacobian;     ///< Jacobian method.
   double                 sim_time_seconds; ///< Total simulation time in seconds.
   double                 sim_step_seconds; ///< Time of each simulation step in seconds.
@@ -122,13 +120,13 @@ typedef struct lion_app_config {
   const char *log_dir;     ///< Directory for the logs.
   int         log_stdlvl;  ///< Level of the stderr logger.
   int         log_filelvl; ///< Level of the file logger.
-} lion_app_config_t;
+} lion_sim_config_t;
 
-/// @brief App state variables.
+/// @brief Simulation state variables.
 ///
 /// This includes all relevant variables of the simulation, including electrical and thermal variables,
 /// degradation variables, etc.
-typedef struct lion_app_state {
+typedef struct lion_sim_state {
   double   time; ///< Simulation time.
   uint64_t step; ///< Simulation step index (starts at 1).
 
@@ -168,14 +166,14 @@ typedef struct lion_app_state {
   // Next state placeholders
   double _next_soc_nominal;          ///< Placeholder for the next nominal state of charge.
   double _next_internal_temperature; ///< Placeholder for the next internal temperature.
-} lion_app_state_t;
+} lion_sim_state_t;
 
 /// @brief Inputs for the solver.
 ///
 /// Both the current state and the parameters of the system are passed at each iteration of the solver,
 /// to be used for the update function as well as the Jacobian calculation.
 typedef struct lion_slv_inputs {
-  lion_app_state_t *sys_inputs; ///< System state.
+  lion_sim_state_t *sys_inputs; ///< System state.
   lion_params_t    *sys_params; ///< System parameters.
 } lion_slv_inputs_t;
 
@@ -183,14 +181,14 @@ typedef struct lion_slv_inputs {
 ///
 /// This contains all the variables which will be used by the simulation, both during the setup
 /// and during the runtime on a step-by-step basis.
-typedef struct lion_app {
-  lion_app_config_t *conf;                         ///< Hyperparameters and app metadata.
+typedef struct lion_sim {
+  lion_sim_config_t *conf;                         ///< Hyperparameters and sim metadata.
   lion_params_t     *params;                       ///< System parameters.
-  lion_app_state_t   state;                        ///< System state.
+  lion_sim_state_t   state;                        ///< System state.
   lion_slv_inputs_t  inputs;                       ///< Inputs to the solver.
-  lion_status_t (*init_hook)(lion_app_t *app);     ///< Hook called upon initialization.
-  lion_status_t (*update_hook)(lion_app_t *app);   ///< Hook called on each update of the simulation.
-  lion_status_t (*finished_hook)(lion_app_t *app); ///< Hook called when the simulation is finished.
+  lion_status_t (*init_hook)(lion_sim_t *sim);     ///< Hook called upon initialization.
+  lion_status_t (*update_hook)(lion_sim_t *sim);   ///< Hook called on each update of the simulation.
+  lion_status_t (*finished_hook)(lion_sim_t *sim); ///< Hook called when the simulation is finished.
 
   /* Data handles */
 
@@ -210,7 +208,7 @@ typedef struct lion_app {
   size_t               _idebug_malloced_size;
   _idebug_heap_info_t *_idebug_heap_head;
 #endif
-} lion_app_t;
+} lion_sim_t;
 
 /// Version of the simulator.
 typedef struct lion_version {
@@ -227,52 +225,52 @@ typedef struct lion_version {
 /// @brief Create a new configuration.
 ///
 /// @param[out] out Variable to store the new configuration.
-lion_status_t lion_app_config_new(lion_app_config_t *out);
+lion_status_t lion_sim_config_new(lion_sim_config_t *out);
 
 /// Create a default configuration.
-lion_app_config_t lion_app_config_default(void);
+lion_sim_config_t lion_sim_config_default(void);
 
 /// @brief Create a new simulation.
 ///
 /// Sets up the simulation with a set of configuration and parameters.
 /// @param[in]  conf    Pointer to the simulation configuration.
 /// @param[in]  params  Pointer to the simulation parameters.
-/// @param[out] out     Pointer to where the app will be created.
-lion_status_t lion_app_new(lion_app_config_t *conf, lion_params_t *params, lion_app_t *out);
+/// @param[out] out     Pointer to where the sim will be created.
+lion_status_t lion_sim_new(lion_sim_config_t *conf, lion_params_t *params, lion_sim_t *out);
 
 /// Initialize the simulation.
-lion_status_t lion_app_init(lion_app_t *app);
+lion_status_t lion_sim_init(lion_sim_t *sim);
 
 /// Reset the simulation.
-lion_status_t lion_app_reset(lion_app_t *app);
+lion_status_t lion_sim_reset(lion_sim_t *sim);
 
 /// @brief Step the simulation in time.
 ///
 /// Steps the simulation forward considering some power and ambient temperature values.
-/// @param[in]  app                  Simulation to step forward.
+/// @param[in]  sim                  Simulation to step forward.
 /// @param[in]  power                Power extracted from the cell.
 /// @param[in]  ambient_temperature  Ambient temperature around the cell.
-lion_status_t lion_app_step(lion_app_t *app, double power, double ambient_temperature);
+lion_status_t lion_sim_step(lion_sim_t *sim, double power, double ambient_temperature);
 
 /// @brief Runs the simulation.
 ///
 /// Runs the simulation considering a vector of values.
-/// @param[in]  app                  Simulation to run.
+/// @param[in]  sim                  Simulation to run.
 /// @param[in]  power                Power extracted from the cell at each time step.
 /// @param[in]  ambient_temperature  Ambient temperature around the cell at each time step.
-lion_status_t lion_app_run(lion_app_t *app, lion_vector_t *power, lion_vector_t *ambient_temperature);
+lion_status_t lion_sim_run(lion_sim_t *sim, lion_vector_t *power, lion_vector_t *ambient_temperature);
 
 /// Get the version of the simulator.
-lion_version_t lion_app_get_version(lion_app_t *app);
+lion_version_t lion_sim_get_version(lion_sim_t *sim);
 
 /// Check whether the simulation should close.
-int lion_app_should_close(lion_app_t *app);
+int lion_sim_should_close(lion_sim_t *sim);
 
 /// Get the max number of iterations.
-uint64_t lion_app_max_iters(lion_app_t *app);
+uint64_t lion_sim_max_iters(lion_sim_t *sim);
 
 /// Clean up the simulation.
-lion_status_t lion_app_cleanup(lion_app_t *app);
+lion_status_t lion_sim_cleanup(lion_sim_t *sim);
 
 /// @}
 

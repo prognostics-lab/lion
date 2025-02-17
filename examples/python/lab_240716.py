@@ -1,6 +1,6 @@
 import pandas as pd
 
-from lion import App, Config, Params, Stepper
+from lion import Sim, Config, Params, Stepper
 from lion_utils.logger import LOGGER
 
 
@@ -21,8 +21,8 @@ def main(power_filename, ambtemp_filename):
     LOGGER.info("Setting up parameters")
     params = Params()
 
-    LOGGER.info("Running application")
-    app = App(conf, params)
-    app.run(power, ambtemp)
+    LOGGER.info("Running simulation")
+    sim = Sim(conf, params)
+    sim.run(power, ambtemp)
 
     LOGGER.info("Done!")

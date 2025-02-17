@@ -20,12 +20,12 @@ CLIB_DEBUG_PATH = Path.joinpath(ROOT_PATH, "lib", DEBUG_DIRNAME)
 CSOURCES_PATH = Path.joinpath(ROOT_PATH, "src")
 
 CLIB_SO_NAMES = [
-    "liblion_app.so",
+    "liblion_sim.so",
     "liblion_math.so",
     "liblion_utils.so",
 ]
 CLIB_DLL_NAMES = [
-    "lion_app.dll",
+    "lion_sim.dll",
     "lion_math.dll",
     "lion_utils.dll",
 ]

@@ -2,7 +2,7 @@
 
 #include "mem.h"
 
-#include <lion/app.h>
+#include <lion/sim.h>
 #include <lion_utils/vendor/log.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -31,13 +31,13 @@ int lion_count_lines(FILE *file) {
   return counter;
 }
 
-lion_status_t lion_readline(lion_app_t *app, FILE *file, char *buffer, char **out) {
+lion_status_t lion_readline(lion_sim_t *sim, FILE *file, char *buffer, char **out) {
   int    alloced    = 0;
   size_t max_length = 128;
   if (buffer == NULL) {
     alloced = 1;
     logi_info("No preallocated buffer was passed, allocating one");
-    buffer = lion_malloc(app, sizeof(char) * max_length);
+    buffer = lion_malloc(sim, sizeof(char) * max_length);
   }
 
   if (buffer == NULL) {
@@ -53,7 +53,7 @@ lion_status_t lion_readline(lion_app_t *app, FILE *file, char *buffer, char **ou
       if (alloced) {
         logi_debug("Encountered max length, reallocating");
         max_length += 128;
-        buffer      = lion_realloc(app, buffer, max_length);
+        buffer      = lion_realloc(sim, buffer, max_length);
         if (buffer == NULL) {
           logi_error("Error reallocating space for line buffer");
           return LION_STATUS_FAILURE;
@@ -71,11 +71,11 @@ lion_status_t lion_readline(lion_app_t *app, FILE *file, char *buffer, char **ou
 
   buffer[count] = '\0';
   // char line[count + 1];
-  char *line = lion_malloc(app, (count + 1) * sizeof(char));
+  char *line    = lion_malloc(sim, (count + 1) * sizeof(char));
   strncpy(line, buffer, count + 1);
   *out = line;
-  lion_free(app, line);
+  lion_free(sim, line);
   if (alloced)
-    lion_free(app, buffer);
+    lion_free(sim, buffer);
   return LION_STATUS_SUCCESS;
 }

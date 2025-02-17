@@ -17,7 +17,7 @@ FILE         *curropt_file = NULL;
 lion_vector_t currs;
 #endif
 
-lion_status_t init_hook(lion_app_t *app) {
+lion_status_t init_hook(lion_sim_t *sim) {
   // data csv file
   csv_file = fopen(OUTCSV_FILENAME, "w+");
   if (csv_file == NULL) {
@@ -39,62 +39,62 @@ lion_status_t init_hook(lion_app_t *app) {
     log_error("Failed to open curropt output file");
     return LION_STATUS_FAILURE;
   }
-  LION_CALL(lion_vector_linspace_d(app, -10.0, 10.0, 101, &currs), "Failed creating currents");
+  LION_CALL(lion_vector_linspace_d(sim, -10.0, 10.0, 101, &currs), "Failed creating currents");
   for (int i = 0; i < currs.len - 1; i++) {
-    fprintf(curropt_file, "%lf,", lion_vector_get_d(app, &currs, i));
+    fprintf(curropt_file, "%lf,", lion_vector_get_d(sim, &currs, i));
   }
-  fprintf(curropt_file, "%lf\n", lion_vector_get_d(app, &currs, currs.len - 1));
+  fprintf(curropt_file, "%lf\n", lion_vector_get_d(sim, &currs, currs.len - 1));
 #endif
   return LION_STATUS_SUCCESS;
 }
 
-lion_status_t update_hook(lion_app_t *app) {
+lion_status_t update_hook(lion_sim_t *sim) {
   // Store current state in csv file
   fprintf(
       csv_file,
       "%lf,%lu,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf\n",
-      app->state.time,
-      app->state.step,
-      app->state.power,
-      app->state.ambient_temperature,
-      app->state.voltage,
-      app->state.current,
-      app->state.open_circuit_voltage,
-      app->state.internal_resistance,
-      app->state.ehc,
-      app->state.generated_heat,
-      app->state.internal_temperature,
-      app->state.surface_temperature,
-      app->state.kappa,
-      app->state.soc_nominal,
-      app->state.capacity_nominal,
-      app->state.soc_use,
-      app->state.capacity_use
+      sim->state.time,
+      sim->state.step,
+      sim->state.power,
+      sim->state.ambient_temperature,
+      sim->state.voltage,
+      sim->state.current,
+      sim->state.open_circuit_voltage,
+      sim->state.internal_resistance,
+      sim->state.ehc,
+      sim->state.generated_heat,
+      sim->state.internal_temperature,
+      sim->state.surface_temperature,
+      sim->state.kappa,
+      sim->state.soc_nominal,
+      sim->state.capacity_nominal,
+      sim->state.soc_use,
+      sim->state.capacity_use
   );
 
 #ifndef NDEBUG
   // Check the objective function of the current optimization process
   struct lion_optimization_iter_params params = {
-      .power  = app->state.power,
-      .voc    = app->state.open_circuit_voltage,
-      .soc    = app->state.soc_use,
-      .params = app->params,
+    .power  = sim->state.power,
+    .voc    = sim->state.open_circuit_voltage,
+    .soc    = sim->state.soc_use,
+    .params = sim->params,
   };
 
   double c, target;
   for (int i = 0; i < currs.len - 1; i++) {
-    c      = lion_vector_get_d(app, &currs, i); // current
+    c      = lion_vector_get_d(sim, &currs, i); // current
     target = lion_current_optimize_targetfn(c, &params);
     fprintf(curropt_file, "%lf,", target);
   }
-  c      = lion_vector_get_d(app, &currs, currs.len - 1); // current
+  c      = lion_vector_get_d(sim, &currs, currs.len - 1); // current
   target = lion_current_optimize_targetfn(c, &params);
   fprintf(curropt_file, "%lf\n", target);
 #endif
   return LION_STATUS_SUCCESS;
 }
 
-lion_status_t finished_hook(lion_app_t *app) {
+lion_status_t finished_hook(lion_sim_t *sim) {
   fclose(csv_file);
 #ifndef NDEBUG
   fclose(curropt_file);
@@ -150,7 +150,7 @@ int main(int argc, char *argv[]) {
   log_info("Ambient temperature path: '%s'", ambtemp_filename);
 
   log_info("Setting up configuration");
-  lion_app_config_t conf = lion_app_config_default();
+  lion_sim_config_t conf = lion_sim_config_default();
   // Metadata
   conf.log_dir           = "logs";
   conf.log_stdlvl        = LOG_DEBUG;
@@ -175,33 +175,33 @@ int main(int argc, char *argv[]) {
   params.rint.model               = LION_RINT_MODEL_POLARIZATION;
   params.rint.params.polarization = lion_params_default_rint_polarization();
 
-  log_info("Creating application");
-  lion_app_t app;
-  LION_CALL(lion_app_new(&conf, &params, &app), "Failed creating application");
-  app.init_hook     = &init_hook;
-  app.update_hook   = &update_hook;
-  app.finished_hook = &finished_hook;
+  log_info("Creating simulation");
+  lion_sim_t sim;
+  LION_CALL(lion_sim_new(&conf, &params, &sim), "Failed creating simulation");
+  sim.init_hook     = &init_hook;
+  sim.update_hook   = &update_hook;
+  sim.finished_hook = &finished_hook;
 
   log_info("Configuring system inputs");
   lion_vector_t power;
   lion_vector_t amb_temp;
   LION_VCALL(
-      lion_vector_from_csv(&app, power_filename, sizeof(double), "%lf", &power), "Failed creating power profile from csv file '%s'", power_filename
+      lion_vector_from_csv(&sim, power_filename, sizeof(double), "%lf", &power), "Failed creating power profile from csv file '%s'", power_filename
   );
   LION_VCALL(
-      lion_vector_from_csv(&app, ambtemp_filename, sizeof(double), "%lf", &amb_temp),
+      lion_vector_from_csv(&sim, ambtemp_filename, sizeof(double), "%lf", &amb_temp),
       "Failed creating ambient temperature profile from csv file '%s'",
       ambtemp_filename
   );
 
-  log_info("Running application");
-  LION_CALL(lion_app_run(&app, &power, &amb_temp), "Failed running app");
+  log_info("Running simulation");
+  LION_CALL(lion_sim_run(&sim, &power, &amb_temp), "Failed running simulation");
 
   log_info("Cleaning up");
-  LION_CALL(lion_vector_cleanup(&app, &power), "Failed cleaning power vector");
-  LION_CALL(lion_vector_cleanup(&app, &amb_temp), "Failed cleaning ambient temperature vector");
+  LION_CALL(lion_vector_cleanup(&sim, &power), "Failed cleaning power vector");
+  LION_CALL(lion_vector_cleanup(&sim, &amb_temp), "Failed cleaning ambient temperature vector");
 #ifndef NDEBUG
-  LION_CALL(lion_vector_cleanup(&app, &currs), "Failed cleaning currents");
+  LION_CALL(lion_vector_cleanup(&sim, &currs), "Failed cleaning currents");
 #endif
-  LION_CALL(lion_app_cleanup(&app), "Failed cleaning app");
+  LION_CALL(lion_sim_cleanup(&sim), "Failed cleaning simulation");
 }

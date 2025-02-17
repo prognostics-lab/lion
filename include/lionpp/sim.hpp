@@ -1,18 +1,18 @@
 #pragma once
 
-#include <lion/app.h>
+#include <lion/sim.h>
 #include <lionpp/status.hpp>
 #include <vector>
 
 namespace lion {
 
-enum AppRegime {
-  ONLYSF  = LION_APP_ONLYSF,
-  ONLYAIR = LION_APP_ONLYAIR,
-  BOTH    = LION_APP_BOTH,
+enum SimRegime {
+  ONLYSF  = LION_ONLYSF,
+  ONLYAIR = LION_ONLYAIR,
+  BOTH    = LION_BOTH,
 };
 
-class AppStepper {
+class SimStepper {
 public:
   enum Value {
     RK2     = LION_STEPPER_RK2,
@@ -28,43 +28,43 @@ public:
     MSBDF   = LION_STEPPER_MSBDF,
   };
 
-  AppStepper() = default;
-  AppStepper(Value val) : value(val) {}
+  SimStepper() = default;
+  SimStepper(Value val) : value(val) {}
 
   constexpr operator Value() const { return value; }
-  constexpr operator lion_app_stepper_t() const { return static_cast<lion_app_stepper_t>(value); }
+  constexpr operator lion_stepper_t() const { return static_cast<lion_stepper_t>(value); }
 
   explicit       operator bool() const = delete;
-  constexpr bool operator==(AppStepper a) const { return value == a.value; }
-  constexpr bool operator!=(AppStepper a) const { return value != a.value; }
+  constexpr bool operator==(SimStepper a) const { return value == a.value; }
+  constexpr bool operator!=(SimStepper a) const { return value != a.value; }
 
 private:
   Value value;
 };
 
-enum AppMinimizer {
+enum SimMinimizer {
   GOLDENSECTION = LION_MINIMIZER_GOLDENSECTION,
   BRENT         = LION_MINIMIZER_BRENT,
   QUADGOLDEN    = LION_MINIMIZER_QUADGOLDEN,
 };
 
-class AppConfig {
+class SimConfig {
 public:
-  AppConfig();
-  ~AppConfig();
+  SimConfig();
+  ~SimConfig();
 
-  operator lion_app_config_t();
+  operator lion_sim_config_t();
 
-  lion_app_config_t *get_handle();
+  lion_sim_config_t *get_handle();
 
 private:
-  lion_app_config_t handle;
+  lion_sim_config_t handle;
 };
 
-class AppParams {
+class SimParams {
 public:
-  AppParams();
-  ~AppParams();
+  SimParams();
+  ~SimParams();
 
   lion_params_init_t &init();
   lion_params_ehc_t  &ehc();
@@ -81,14 +81,14 @@ private:
   lion_params_t handle;
 };
 
-class App {
+class Sim {
 public:
-  App(AppConfig *conf, AppParams *params);
-  App(App const &)            = delete;
-  App &operator=(App const &) = delete;
-  ~App();
+  Sim(SimConfig *conf, SimParams *params);
+  Sim(Sim const &)            = delete;
+  Sim &operator=(Sim const &) = delete;
+  ~Sim();
 
-  operator lion_app_t *();
+  operator lion_sim_t *();
 
   Status   step(double power, double amb_temp);
   Status   run(std::vector<double> const &power, std::vector<double> const &amb_temp);
@@ -96,7 +96,7 @@ public:
   uint64_t max_iters() const;
 
 private:
-  lion_app_t *handle;
+  lion_sim_t *handle;
 };
 
 } // namespace lion

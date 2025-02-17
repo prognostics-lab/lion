@@ -3,8 +3,8 @@
 #include "jacobian.h"
 
 #include <gsl/gsl_matrix.h>
-#include <lion/app.h>
 #include <lion/params.h>
+#include <lion/sim.h>
 #include <lion_math/capacity.h>
 #include <lion_math/current.h>
 #include <lion_math/dynamics/soc.h>
@@ -18,11 +18,11 @@ int lion_slv_system_continuous(double t, const double state[], double out[], voi
      state[0] -> state of charge
      state[1] -> internal temperature
 
-     inputs[0] -> *lion_app_state_t
+     inputs[0] -> *lion_sim_state_t
      inputs[1] -> *lion_params_t
    */
   lion_slv_inputs_t *p          = inputs;
-  lion_app_state_t  *sys_inputs = p->sys_inputs;
+  lion_sim_state_t  *sys_inputs = p->sys_inputs;
   lion_params_t     *sys_params = p->sys_params;
 
   (void)t;
@@ -33,7 +33,7 @@ int lion_slv_system_continuous(double t, const double state[], double out[], voi
 
 int lion_slv_jac_analytical(double t, const double state[], double *dfdy, double dfdt[], void *inputs) {
   lion_slv_inputs_t *p          = inputs;
-  lion_app_state_t  *sys_state  = p->sys_inputs;
+  lion_sim_state_t  *sys_state  = p->sys_inputs;
   lion_params_t     *sys_params = p->sys_params;
 
   (void)t;
@@ -59,7 +59,7 @@ int lion_slv_jac_analytical(double t, const double state[], double *dfdy, double
 
 int lion_slv_jac_2point(double t, const double state[], double *dfdy, double dfdt[], void *inputs) {
   lion_slv_inputs_t *p          = inputs;
-  lion_app_state_t  *sys_state  = p->sys_inputs;
+  lion_sim_state_t  *sys_state  = p->sys_inputs;
   lion_params_t     *sys_params = p->sys_params;
 
   (void)t;

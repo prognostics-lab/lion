@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-from lion import App, Config, Params, Stepper, Status, State
+from lion import Sim, Config, Params, Stepper, Status, State
 from lion_utils.logger import LOGGER
 
 
@@ -11,19 +11,19 @@ STATE_SIZE = 17
 _mat = None
 
 
-def init_hook(app: App) -> Status:
+def init_hook(sim: Sim) -> Status:
     print("*** Init hook called ***")
     return Status.SUCCESS
 
 
-def update_hook(app: App) -> Status:
+def update_hook(sim: Sim) -> Status:
     # Updates the data matrix
     global _mat
-    _mat[app.state.step] = app.state.as_numpy()
+    _mat[sim.state.step] = sim.state.as_numpy()
     return Status.SUCCESS
 
 
-def finished_hook(app: App) -> Status:
+def finished_hook(sim: Sim) -> Status:
     print("*** Finished hook called ***")
     return Status.SUCCESS
 
@@ -51,12 +51,12 @@ def main(power_filename, ambtemp_filename, show=False, save=False):
     params.temp.rin = 3
     params.temp.rout = 9
 
-    LOGGER.info("Running application")
-    app = App(conf, params)
-    app.init_hook = init_hook
-    app.update_hook = update_hook
-    app.finished_hook = finished_hook
-    app.run(power, ambtemp)
+    LOGGER.info("Running simulation")
+    sim = Sim(conf, params)
+    sim.init_hook = init_hook
+    sim.update_hook = update_hook
+    sim.finished_hook = finished_hook
+    sim.run(power, ambtemp)
 
     LOGGER.info("Processing data")
     print(_mat)

@@ -7,7 +7,7 @@ add_library(${PROJECT_CPP_NAME} ${CPP_ROOT_HEADER} ${CPP_ROOT_SOURCE}
                                 ${CPP_SLVR_HEADER} ${CPP_SLVR_SOURCE})
 
 target_link_libraries(
-  ${PROJECT_CPP_NAME} PUBLIC ${PROJECT_APP_NAME})
+  ${PROJECT_CPP_NAME} PUBLIC ${PROJECT_SIM_NAME})
 target_include_directories(
   ${PROJECT_CPP_NAME}
   PUBLIC ${PROJECT_BINARY_DIR} ${PROJECT_SOURCE_DIR}

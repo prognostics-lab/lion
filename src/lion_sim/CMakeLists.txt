@@ -1,0 +1,18 @@
+file(GLOB SIM_ROOT_SOURCE *.c)
+file(GLOB SIM_ROOT_HEADER *.h)
+file(GLOB SIM_SLVR_SOURCE solver/*.c)
+file(GLOB SIM_SLVR_HEADER solver/*.h)
+
+add_library(${PROJECT_SIM_NAME} ${SIM_ROOT_HEADER} ${SIM_ROOT_SOURCE}
+                                ${SIM_SLVR_HEADER} ${SIM_SLVR_SOURCE})
+
+target_link_libraries(
+  ${PROJECT_SIM_NAME} PUBLIC ${PROJECT_MATH_NAME} ${PROJECT_UTILS_NAME}
+                             ${GSL_LIBRARIES})
+target_include_directories(
+  ${PROJECT_SIM_NAME}
+  PUBLIC ${PROJECT_BINARY_DIR} ${PROJECT_SOURCE_DIR}
+         ${PROJECT_SOURCE_DIR_LOCATION} ${PROJECT_HEADERS} ${CMAKE_SOURCE_DIR}
+         ${GSL_INCLUDE_DIRS})
+
+set_target_properties(${PROJECT_SIM_NAME} PROPERTIES VERSION ${PROJECT_VERSION} SOVERSION ${PROJECT_VERSION_MAJOR})

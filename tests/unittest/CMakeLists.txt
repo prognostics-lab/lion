@@ -9,7 +9,7 @@ foreach(filepath ${TESTS_QUICK})
 
   # Compile the test
   add_executable(${filename_we} ${filepath})
-  target_link_libraries(${filename_we} PUBLIC ${PROJECT_APP_NAME}
+  target_link_libraries(${filename_we} PUBLIC ${PROJECT_SIM_NAME}
                                               ${PROJECT_UTILS_NAME})
   target_include_directories(
     ${filename_we}

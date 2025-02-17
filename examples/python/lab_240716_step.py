@@ -1,7 +1,7 @@
 import pandas as pd
 from tqdm import tqdm
 
-from lion import App, Config, Params, Stepper
+from lion import Sim, Config, Params, Stepper
 from lion_utils.logger import LOGGER
 
 
@@ -23,12 +23,12 @@ def main(power_filename, ambtemp_filename):
     LOGGER.info("Setting up parameters")
     params = Params()
 
-    LOGGER.info("Running application")
-    app = App(conf, params)
+    LOGGER.info("Running simulation")
+    sim = Sim(conf, params)
 
     for p, t in tqdm(zip(power, ambtemp), "Stepping", total=len(power)):
-        app.step(p, t)
-        _dict = {key: [val] for key, val in app.state.as_dict().items()}
+        sim.step(p, t)
+        _dict = {key: [val] for key, val in sim.state.as_dict().items()}
         df = pd.concat([df, pd.DataFrame(_dict)], ignore_index=True)
 
     LOGGER.info("Done!")
