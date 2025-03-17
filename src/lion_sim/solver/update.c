@@ -5,7 +5,7 @@
 #include <lion_utils/macros.h>
 
 lion_status_t lion_slv_update(lion_sim_t *sim) {
-  // This function assumes sim->state.{internal_temperature, soc_nominal}
+  // This function assumes sim->state.{internal_temperature, soc_nominal, soh}
   // have been properly set, and spreads those initial values, and it also
   // assumes that sim->state.{power, ambient_temperature} have been filled with
   // the corresponding input
