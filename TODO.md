@@ -4,13 +4,13 @@ This file contains a list of the TODO tasks found within the source code.
 - **(`./CMakeLists.txt`)** Add creation of a `.cmake` file to find the library
 - **(`./cmake/StandardOptions.cmake`)** See how to properly configure these
 - **(`./cmake/Vcpkg.cmake`)** Analyze the proper way to handle this scenario
-- **(`./examples/lab_240716_cpp/main.cpp`)** Implement hooks in the C++ wrsimer
 - **(`./examples/python/lab_240716_hook.py`)** See how to remove the global variable
+- **(`./examples/lab_240716_cpp/main.cpp`)** Implement hooks in the C++ wrsimer
 - **(`./include/lion/vector.h`)** See what happens when `new_capacity` < `old_capacity`
-- **(`./pysrc/lion/sim.py`)** Figure out a way to let C handle the defaults
 - **(`./pysrc/lion/models/temp.py`)** Change this when I eventually decide to implement other models
 - **(`./pysrc/lion/models/rint.py`)** Test whether this implementation fails when setting different models
 - **(`./pysrc/lion/models/rint.py`)** Implement configuring the polynomial coefficients
+- **(`./pysrc/lion/sim.py`)** Figure out a way to let C handle the defaults
 - **(`./pysrc/lion/vector.py`)** Fix the bug that happens when the first element is less general than the rest
 - **(`./pysrc/lion/vector.py`)** Determine a more efficient way of creating from numpy array
 - **(`./pysrc/lion/vector.py`)** Implemented reading csv directly instead of using pandas
@@ -21,10 +21,10 @@ This file contains a list of the TODO tasks found within the source code.
 - **(`./src/lion_sim/sim.c`)** Evaluate implementation of concurrency
 - **(`./src/lion_sim/sim.c`)** Add some mechanism to avoid race conditions
 - **(`./src/lion_sim/sim.c`)** Add time update
-- **(`./src/lion_math/capacity.h`)** Implement state of health
 - **(`./src/lion_math/lion_math.h`)** Double check implementation of each model
+- **(`./src/lion_math/capacity.h`)** Implement state of health
 - **(`./src/lion_math/dynamics/soh.c`)** Expand the model to include the different effects
+- **(`./tests/unittest/quick/test_math_algebraic.c`)** Add tests for algebraic equations
 - **(`./tests/unittest/quick/test_math_differential.c`)** Add tests for all calculations
 - **(`./tests/unittest/quick/test_math_differential.c`)** Add calculation of current
-- **(`./tests/unittest/quick/test_math_algebraic.c`)** Add tests for algebraic equations
 - **(`./tools/gen_todo.sh`)** Ignore TODOs in dependencies
