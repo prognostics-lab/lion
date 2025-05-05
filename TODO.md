@@ -7,23 +7,27 @@ This file contains a list of the TODO tasks found within the source code.
 - **(`./examples/python/lab_240716_hook.py`)** See how to remove the global variable
 - **(`./examples/lab_240716_cpp/main.cpp`)** Implement hooks in the C++ wrsimer
 - **(`./include/lion/vector.h`)** See what happens when `new_capacity` < `old_capacity`
-- **(`./pysrc/lion/models/temp.py`)** Change this when I eventually decide to implement other models
 - **(`./pysrc/lion/models/rint.py`)** Test whether this implementation fails when setting different models
 - **(`./pysrc/lion/models/rint.py`)** Implement configuring the polynomial coefficients
-- **(`./pysrc/lion/sim.py`)** Figure out a way to let C handle the defaults
+- **(`./pysrc/lion/models/temp.py`)** Change this when I eventually decide to implement other models
 - **(`./pysrc/lion/vector.py`)** Fix the bug that happens when the first element is less general than the rest
 - **(`./pysrc/lion/vector.py`)** Determine a more efficient way of creating from numpy array
 - **(`./pysrc/lion/vector.py`)** Implemented reading csv directly instead of using pandas
 - **(`./pysrc/lion/vector.py`)** Determine a more efficient way of converting to numpy array
+- **(`./pysrc/lion/sim.py`)** Figure out a way to let C handle the defaults
 - **(`./setup.py`)** Fix the bug where it has to be installed twice to work
-- **(`./src/lion_sim/solver/jacobian_twopoint.c`)** Implement the calculation of the numerical Jacobian
-- **(`./src/lion_sim/vector.c`)** Implement saving vector to csv file
-- **(`./src/lion_sim/sim.c`)** Evaluate implementation of concurrency
-- **(`./src/lion_sim/sim.c`)** Add some mechanism to avoid race conditions
-- **(`./src/lion_sim/sim.c`)** Add time update
 - **(`./src/lion_math/lion_math.h`)** Double check implementation of each model
 - **(`./src/lion_math/capacity.h`)** Implement state of health
 - **(`./src/lion_math/dynamics/soh.c`)** Expand the model to include the different effects
+- **(`./src/lion_math/dynamics/soh.c`)** Implement kNN to estimate degradation factor
+- **(`./src/lion_math/dynamics/soh.c`)** Evaluate implementing kNN through an outside library
+- **(`./src/lion_math/dynamics/soh.c`)** Evaluate implementing temperature correction
+- **(`./src/lion_math/dynamics/soh.c`)** Implement KDE to introduce noise into the rate
+- **(`./src/lion_sim/vector.c`)** Implement saving vector to csv file
+- **(`./src/lion_sim/solver/jacobian_twopoint.c`)** Implement the calculation of the numerical Jacobian
+- **(`./src/lion_sim/sim.c`)** Evaluate implementation of concurrency
+- **(`./src/lion_sim/sim.c`)** Add some mechanism to avoid race conditions
+- **(`./src/lion_sim/sim.c`)** Add time update
 - **(`./tests/unittest/quick/test_math_algebraic.c`)** Add tests for algebraic equations
 - **(`./tests/unittest/quick/test_math_differential.c`)** Add tests for all calculations
 - **(`./tests/unittest/quick/test_math_differential.c`)** Add calculation of current
