@@ -111,6 +111,20 @@
   {                                                                                                                                                  \
     .total_cycles = 1000,                                                                                                                            \
     .final_soh    = 0.7,                                                                                                                             \
+    .table =                                                                                                                                         \
+        {                                                                                                                                            \
+                {.max = 100.0, .min = 0.0, .coeff = 1.0},                                                                                                  \
+                {.max = 100.0, .min = 25.0, .coeff = 0.7875},                                                                                              \
+                {.max = 75.0, .min = 0.0, .coeff = 1.12525},                                                                                               \
+                {.max = 100.0, .min = 50.0, .coeff = 0.4375},                                                                                              \
+                {.max = 75.0, .min = 25.0, .coeff = 0.68750},                                                                                              \
+                {.max = 50.0, .min = 0.0, .coeff = 1.03125},                                                                                               \
+                {.max = 100.0, .min = 75.0, .coeff = 0.40625},                                                                                             \
+                {.max = 75.0, .min = 50.0, .coeff = 0.29700},                                                                                              \
+                {.max = 62.5, .min = 37.5, .coeff = 0.28125},                                                                                              \
+                {.max = 50.0, .min = 25.0, .coeff = 0.62500},                                                                                              \
+                {.max = 25.0, .min = 0.0, .coeff = 1.00000},                                                                                               \
+                },                                                                                                                                           \
   }
 
 #define LION_PARAMS_DEFAULT                                                                                                                          \

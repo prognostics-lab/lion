@@ -7,6 +7,7 @@
 
 #define LION_FUZZY_SETS_COUNT  8
 #define LION_FUZZY_SETS_DEGREE 4
+#define LION_SOH_TABLE_COUNT   11
 
 #ifdef __cplusplus
 extern "C" {
@@ -92,10 +93,17 @@ typedef struct lion_params_rint {
   } params; ///< Model parameters.
 } lion_params_rint_t;
 
+typedef struct lion_params_degradation_element {
+  double max;
+  double min;
+  double coeff;
+} lion_params_degradation_element_t;
+
 /// @brief Parameters for the degradation model.
 typedef struct lion_params_soh {
-  uint64_t total_cycles; ///< Nominal number of cycles the cell has.
-  double   final_soh;    ///< Nominal state of health after `total_cycles` (end of life)
+  uint64_t                          total_cycles;                ///< Nominal number of cycles the cell has.
+  double                            final_soh;                   ///< Nominal state of health after `total_cycles` (end of life)
+  lion_params_degradation_element_t table[LION_SOH_TABLE_COUNT]; ///< Table of nominal degradation coefficients
 } lion_params_soh_t;
 
 /// @brief Parameters of the system.
