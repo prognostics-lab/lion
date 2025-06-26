@@ -10,7 +10,7 @@ lion_status_t lion_slv_update(lion_sim_t *sim) {
   // assumes that sim->state.{power, ambient_temperature} have been filled with
   // the corresponding input
   sim->state.kappa            = lion_kappa(sim->state.internal_temperature, sim->params);
-  sim->state.capacity_nominal = lion_capacity_nominal(sim->params.init.capacity, sim->state.soh);
+  sim->state.capacity_nominal = lion_capacity_nominal(sim->params->init.capacity, sim->state.soh, sim->params);
   sim->state.soc_use          = lion_soc_usable(sim->state.soc_nominal, sim->state.kappa, sim->params);
   sim->state.capacity_use     = lion_capacity_usable(sim->state.capacity_nominal, sim->state.kappa, sim->params);
   sim->state.ehc              = lion_ehc(sim->state.soc_use, sim->params);
