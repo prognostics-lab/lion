@@ -37,7 +37,7 @@ double lion_current_grad_voc(double power, double open_circuit_voltage, double i
 
 double lion_current_optimize_targetfn(double current, void *params) {
   struct lion_optimization_iter_params *p            = params;
-  double                                rint         = lion_resistance(p->soc, current, p->params);
+  double                                rint         = lion_resistance(p->soc, current, 1.0, p->params);
   double                                pred_current = lion_current(p->power, p->voc, rint, p->params);
   double                                val          = gsl_pow_2(fabs(current - pred_current));
   return val;

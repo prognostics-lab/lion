@@ -5,12 +5,12 @@
 #include <lionu/fuzzy.h>
 #include <lionu/math.h>
 
-double lion_resistance_fixed(double soc, double current, lion_params_t *params) {
+double lion_resistance_fixed(double soc, double current, double soh, lion_params_t *params) {
   lion_params_rint_fixed_t *p = &params->rint.params.fixed;
-  return p->internal_resistance;
+  return p->internal_resistance / soh;
 }
 
-double lion_resistance_polarization(double soc, double current, lion_params_t *params) {
+double lion_resistance_polarization(double soc, double current, double soh, lion_params_t *params) {
   lion_params_rint_polarization_t *p = &params->rint.params.polarization;
 
   // Evaluate memberships
@@ -31,15 +31,15 @@ double lion_resistance_polarization(double soc, double current, lion_params_t *p
   for (int i = 0; i < LION_FUZZY_SETS_COUNT; i++) {
     num += memberships[i] * lion_polyval_d(soc, p->poly[i], LION_FUZZY_SETS_DEGREE);
   }
-  return num / memberships_sum;
+  return num / memberships_sum / soh;
 }
 
-double lion_resistance(double soc, double current, lion_params_t *params) {
+double lion_resistance(double soc, double current, double soh, lion_params_t *params) {
   switch (params->rint.model) {
   case LION_RINT_MODEL_FIXED:
-    return lion_resistance_fixed(soc, current, params);
+    return lion_resistance_fixed(soc, current, soh, params);
   case LION_RINT_MODEL_POLARIZATION:
-    return lion_resistance_polarization(soc, current, params);
+    return lion_resistance_polarization(soc, current, soh, params);
   default:
     logi_error("Internal resistance model not valid");
     return -1.0;

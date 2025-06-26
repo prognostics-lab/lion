@@ -6,7 +6,7 @@
 extern "C" {
 #endif
 
-double lion_resistance(double soc, double current, lion_params_t *params);
+double lion_resistance(double soc, double current, double soh, lion_params_t *params);
 
 #ifdef __cplusplus
 }

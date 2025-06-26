@@ -29,7 +29,7 @@ lion_status_t lion_slv_update(lion_sim_t *sim) {
       sim->conf->sim_min_maxiter,
       sim->params
   );
-  sim->state.internal_resistance = lion_resistance(sim->state.soc_use, sim->state.current, sim->params) / sim->state.soh;
+  sim->state.internal_resistance = lion_resistance(sim->state.soc_use, sim->state.current, sim->state.soh, sim->params);
   sim->state.voltage             = lion_voltage_from_current(sim->state.power, sim->state.current, sim->params);
 
   sim->state.generated_heat =
