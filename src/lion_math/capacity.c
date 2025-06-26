@@ -17,3 +17,5 @@ double lion_kappa_grad(double internal_temperature, lion_params_t *params) {
 double lion_soc_usable(double soc, double kappa, lion_params_t *params) { return 1.0 + (soc - 1.0) / kappa; }
 
 double lion_capacity_usable(double capacity, double kappa, lion_params_t *params) { return kappa * capacity; }
+
+double lion_capacity_nominal(double capacity, double soh, lion_params_t *params) { return soh * capacity; }
