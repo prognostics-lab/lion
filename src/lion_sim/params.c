@@ -113,25 +113,40 @@
     .final_soh    = 0.7,                                                                                                                             \
   }
 
+// .table        = {                                                                                                                                \
+    //                  {.max = 100.0, .min = 0.0, .coeff = 1.0},                                                                                               \
+    //                  {.max = 100.0, .min = 25.0, .coeff = 0.7875},                                                                                           \
+    //                  {.max = 75.0, .min = 0.0, .coeff = 1.12525},                                                                                            \
+    //                  {.max = 100.0, .min = 50.0, .coeff = 0.4375},                                                                                           \
+    //                  {.max = 75.0, .min = 25.0, .coeff = 0.68750},                                                                                           \
+    //                  {.max = 50.0, .min = 0.0, .coeff = 1.03125},                                                                                            \
+    //                  {.max = 100.0, .min = 75.0, .coeff = 0.40625},                                                                                          \
+    //                  {.max = 75.0, .min = 50.0, .coeff = 0.29700},                                                                                           \
+    //                  {.max = 62.5, .min = 37.5, .coeff = 0.28125},                                                                                           \
+    //                  {.max = 50.0, .min = 25.0, .coeff = 0.62500},                                                                                           \
+    //                  {.max = 25.0, .min = 0.0, .coeff = 1.00000},                                                                                            \
+    //                  },
+
 #define LION_PARAMS_DEFAULT_SOH_MASSERANO                                                                                                            \
   {                                                                                                                                                  \
-    .total_cycles = 1000,                                                                                                                            \
-    .final_soh    = 0.7,                                                                                                                             \
-    .table =                                                                                                                                         \
-        {                                                                                                                                            \
-                {.max = 100.0, .min = 0.0, .coeff = 1.0},                                                                                                  \
-                {.max = 100.0, .min = 25.0, .coeff = 0.7875},                                                                                              \
-                {.max = 75.0, .min = 0.0, .coeff = 1.12525},                                                                                               \
-                {.max = 100.0, .min = 50.0, .coeff = 0.4375},                                                                                              \
-                {.max = 75.0, .min = 25.0, .coeff = 0.68750},                                                                                              \
-                {.max = 50.0, .min = 0.0, .coeff = 1.03125},                                                                                               \
-                {.max = 100.0, .min = 75.0, .coeff = 0.40625},                                                                                             \
-                {.max = 75.0, .min = 50.0, .coeff = 0.29700},                                                                                              \
-                {.max = 62.5, .min = 37.5, .coeff = 0.28125},                                                                                              \
-                {.max = 50.0, .min = 25.0, .coeff = 0.62500},                                                                                              \
-                {.max = 25.0, .min = 0.0, .coeff = 1.00000},                                                                                               \
-                },                                                                                                                                           \
-    .kde = NULL,                                                                                                                                     \
+    .nominal_cycles    = 1000,                                                                                                                       \
+    .nominal_final_soh = 0.8,                                                                                                                        \
+    .nominal_sr        = 100.0,                                                                                                                      \
+    .eq_final_soh      = 0.8,                                                                                                                        \
+    .eq_sr             = 100.0,                                                                                                                      \
+    .x_table =                                                                                                                                       \
+        {{100.0, 0.0, 0.8},                                                                                                                          \
+                  {100.0, 25.0, 0.8},                                                                                                                         \
+                  {75.0, 0.0, 0.8},                                                                                                                           \
+                  {100.0, 50.0, 0.8},                                                                                                                         \
+                  {75.0, 25.0, 0.8},                                                                                                                          \
+                  {50.0, 0.0, 0.8},                                                                                                                           \
+                  {100.0, 75.0, 0.8},                                                                                                                         \
+                  {75.0, 50.0, 0.8},                                                                                                                          \
+                  {62.5, 37.5, 0.8},                                                                                                                          \
+                  {50.0, 25.0, 0.8},                                                                                                                          \
+                  {25.0, 0.0, 0.8}                                                                                         },                                                                                                                          \
+    .y_table = {              1.0, 0.7875, 1.12525, 0.4375, 0.68750, 1.03125, 0.40625, 0.29700, 0.28125, 0.62500, 1.00000},                                        \
   }
 
 #define LION_PARAMS_DEFAULT_SOH                                                                                                                      \
@@ -198,6 +213,12 @@ lion_params_soh_vendor_t lion_params_default_soh_vendor(void) {
 
 lion_params_soh_masserano_t lion_params_default_soh_masserano(void) {
   lion_params_soh_masserano_t out = LION_PARAMS_DEFAULT_SOH_MASSERANO;
+
+  // KDE
+  out.kde_params.bw_method = LION_GAUSSIAN_KDE_SCOTT;
+  out.kde.is_trained       = 0;
+
+  // kNN
   return out;
 }
 

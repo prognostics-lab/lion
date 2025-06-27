@@ -342,6 +342,43 @@ lion_status_t _init_ode_driver(lion_sim_t *sim) {
   return LION_STATUS_SUCCESS;
 }
 
+lion_status_t _init_parameters(lion_sim_t *sim) {
+  // Initialize SoH model
+  if (sim->params->soh.model == LION_SOH_MODEL_MASSERANO) {
+    logi_info("Initialzing Masserano model");
+    lion_params_soh_masserano_t *p = &sim->params->soh.params.masserano;
+
+    // Initialize KDE
+    logi_debug("Initializing KDE");
+    lion_vector_t *eta_values = &p->kde_params.eta_values;
+    LION_CALL_I(
+        lion_gaussian_kde_init(eta_values->data, eta_values->len, p->kde_params.bw_method, (unsigned long)time(NULL), &p->kde),
+        "Failed setting up KDE"
+    );
+
+    // Initialize kNN
+    logi_debug("Initializing kNN");
+    LION_CALL_I(lion_knn_regressor_init(sim, 3, &p->knn), "Failed to initialize kNN");
+    LION_CALL_I(lion_vector_from_array(sim, p->x_table, LION_SOH_TABLE_COUNT, 3 * sizeof(double), &p->knn_params.X), "Failed to create X vector");
+    LION_CALL_I(lion_vector_from_array(sim, p->y_table, LION_SOH_TABLE_COUNT, sizeof(double), &p->knn_params.y), "Failed to create y vector");
+    lion_knn_sample_t *dataset = lion_malloc(sim, LION_SOH_TABLE_COUNT * sizeof(lion_knn_sample_t));
+    for (size_t i = 0; i < LION_SOH_TABLE_COUNT; i++) {
+      double data[3] = {(p->x_table[i][0] + p->x_table[i][1]) / 2.0, p->x_table[i][0] - p->x_table[i][1], p->x_table[i][2]};
+      LION_CALL_I(lion_vector_from_array(sim, data, 3, sizeof(double), &dataset[i].X), "Failed to create X vector");
+      dataset[i].y = p->y_table[i];
+    }
+    LION_CALL_I(lion_knn_regressor_fit(sim, &p->knn, dataset, LION_SOH_TABLE_COUNT), "Failed to fit kNN");
+
+    // Standardize cycles
+    double normalized_cycles = (double)p->nominal_cycles * p->nominal_sr / p->eq_sr;
+    double eta               = pow(p->nominal_final_soh, 1.0 / normalized_cycles);
+    double eq_cycles         = log(p->eq_final_soh) / log(eta);
+    p->eq_cycles             = eq_cycles;
+  }
+
+  return LION_STATUS_SUCCESS;
+}
+
 lion_status_t lion_sim_init(lion_sim_t *sim) {
   logi_debug("Configuring simulation stepper");
   LION_CALL_I(_init_simulation_stepper(sim), "Failed initializing simulation stepper");
@@ -357,6 +394,9 @@ lion_status_t lion_sim_init(lion_sim_t *sim) {
 
   logi_info("Configuring simulation driver");
   LION_CALL_I(_init_ode_driver(sim), "Failed initializing ode driver");
+
+  logi_info("Configuring simulation parameters");
+  LION_CALL_I(_init_parameters(sim), "Failed initializing simulation parameters");
 
   logi_debug("Showing initialization information");
   LION_CALL_I(lion_sim_show_state_debug(sim), "Failed showing initialization information");
@@ -415,9 +455,14 @@ lion_status_t lion_sim_step(lion_sim_t *sim, double power, double ambient_temper
   sim->state._acc_discharge += GSL_MAX_DBL(sim->state.current * sim->conf->sim_step_seconds, 0.0);
   if (sim->state._acc_discharge >= sim->state.capacity_nominal) {
     // A cycle has been completed so we update the SoH
+    logi_debug("Old SoH: %lf", sim->state.soh);
+    logi_debug("ASSR: %lf", sim->state._soc_mean);
+    logi_debug("SR: %lf", sim->state._soc_max - sim->state._soc_min);
     sim->state._acc_discharge = fmod(sim->state._acc_discharge, sim->state.capacity_nominal);
-    sim->state.soh =
-        lion_soh_next(sim->state.soh, sim->state._soc_mean, sim->state._soc_max, sim->state._soc_min, sim->state.internal_temperature, sim->params);
+    sim->state.soh            = lion_soh_next(
+        sim, sim->state.soh, sim->state._soc_mean, sim->state._soc_max, sim->state._soc_min, sim->state.internal_temperature, sim->params
+    );
+    logi_debug("New SoH: %lf", sim->state.soh);
 
     // Restart placeholder values
     sim->state._soc_mean   = 0.0;
@@ -473,6 +518,13 @@ lion_status_t lion_sim_cleanup(lion_sim_t *sim) {
     gsl_min_fminimizer_free(sim->sys_min);
   } else {
     logi_warn("No GSL minimizer detected");
+  }
+
+  if (sim->params->soh.model == LION_SOH_MODEL_MASSERANO) {
+    logi_info("Detected Masserano's SoH model, freeing it");
+    lion_free(sim, sim->params->soh.params.masserano.knn._dataset);
+    lion_gaussian_kde_cleanup(&sim->params->soh.params.masserano.kde);
+    lion_knn_regressor_cleanup(sim, &sim->params->soh.params.masserano.knn);
   }
 
 #ifndef NDEBUG
