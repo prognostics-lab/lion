@@ -158,16 +158,13 @@ int main(int argc, char *argv[]) {
   // Metadata
   conf.log_dir           = "logs";
   conf.log_stdlvl        = LOG_DEBUG;
-  // Simulation parameters
+  // Simulation configuration
   conf.sim_stepper       = LION_STEPPER_RK8PD;
   conf.sim_time_seconds  = 7500.0;
   conf.sim_step_seconds  = 1.0;
   conf.sim_epsabs        = 1e-1;
   conf.sim_epsrel        = 1e-1;
   conf.sim_min_maxiter   = 10000;
-
-  // log_info("Setting up internal resistance parameters");
-  // lion_params_rint_polarization_t rint = lion_params_default_polarization();
 
   log_info("Setting up simulation parameters");
   lion_params_t params            = lion_params_default();
@@ -181,11 +178,9 @@ int main(int argc, char *argv[]) {
 
   params.soh.model            = LION_SOH_MODEL_MASSERANO;
   params.soh.params.masserano = lion_params_default_soh_masserano();
-  // lion_gaussian_kde_t kde;
   lion_vector_t eta_values;
   LION_CALL(lion_vector_from_csv(NULL, ETA_VALUES_FILENAME, sizeof(double), "%lf", &eta_values), "Failed reading eta values for KDE");
   params.soh.params.masserano.kde_params.eta_values = eta_values;
-  // params.soh.params.masserano.kde                   = &kde;
 
   log_info("Creating simulation");
   lion_sim_t sim;
