@@ -6,7 +6,6 @@ This file contains a list of the TODO tasks found within the source code.
 - **(`./cmake/Vcpkg.cmake`)** Analyze the proper way to handle this scenario
 - **(`./examples/python/lab_240716_hook.py`)** See how to remove the global variable
 - **(`./examples/lab_240716_cpp/main.cpp`)** Implement hooks in the C++ wrsimer
-- **(`./examples/lab_240716/main.c`)** Implement setting up the KDE from data
 - **(`./include/lion/vector.h`)** See what happens when `new_capacity` < `old_capacity`
 - **(`./pysrc/lion/vector.py`)** Fix the bug that happens when the first element is less general than the rest
 - **(`./pysrc/lion/vector.py`)** Determine a more efficient way of creating from numpy array
@@ -19,6 +18,7 @@ This file contains a list of the TODO tasks found within the source code.
 - **(`./setup.py`)** Fix the bug where it has to be installed twice to work
 - **(`./src/lion_sim/solver/jacobian_twopoint.c`)** Implement the calculation of the numerical Jacobian
 - **(`./src/lion_sim/vector.c`)** Implement saving vector to csv file
+- **(`./src/lion_sim/sim.c`)** Implement logging parameters from different models
 - **(`./src/lion_sim/sim.c`)** Evaluate implementation of concurrency
 - **(`./src/lion_sim/sim.c`)** Add some mechanism to avoid race conditions
 - **(`./src/lion_sim/sim.c`)** Add time update
