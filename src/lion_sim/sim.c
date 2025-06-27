@@ -223,8 +223,7 @@ static void lion_sim_log_startup_info(lion_sim_t *sim) {
   logi_info(" * Internal resistance model");
   logi_info(" |-> Model                        : %s", lion_params_rint_get_name(sim->params->rint.model));
   logi_info(" * Degradation model");
-  logi_info(" |-> Total cycles                 : %" PRIu64 " cycles", sim->params->soh.total_cycles);
-  logi_info(" |-> SoH at EoL                   : %f %%", 100.0 * sim->params->soh.final_soh);
+  logi_info(" |-> Model                        : %s", lion_params_soh_get_name(sim->params->soh.model));
   logi_info("+-------------------------------------------------------+");
   logi_info("|################# END OF INFORMATION ##################|");
   logi_info("+-------------------------------------------------------+");

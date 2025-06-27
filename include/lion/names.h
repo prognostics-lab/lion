@@ -25,4 +25,7 @@ const char *lion_jacobian_name(lion_jacobian_method_t jacobian);
 /// Get the name of the internal resistance model.
 const char *lion_params_rint_get_name(lion_rint_model_t model);
 
+/// Get the name of the degradation model.
+const char *lion_params_soh_get_name(lion_soh_model_t model);
+
 /// @}

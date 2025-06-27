@@ -88,17 +88,16 @@
               .a = 15.9494,                                                                                                                              \
               .c = 17.3438,                                                                                                                              \
               },                                                                                                                                           \
-    .poly =                                                                                                                                          \
-        {                                                                                                                                            \
-              {0.04172, 0.001688, -0.01526, 0.04006},                                                                                                    \
-              {0.04385, 0.01758, -0.04159, 0.05488},                                                                                                     \
-              {0.05166, 0.02408, -0.05132, 0.06101},                                                                                                     \
-              {0.07004, 0.03910, -0.05345, 0.05015},                                                                                                     \
-              {0.1317, -0.05083, -0.2579, 0.3084},                                                                                                       \
-              {0.0958, -0.05706, -0.07709, 0.1141},                                                                                                      \
-              {0.07868, -0.05782, -0.008633, 0.04612},                                                                                                   \
-              {0.07218, -0.07066, 0.04202, 0.0061},                                                                                                      \
-              },                                                                                                                                           \
+    .poly = {                                                                                                                                        \
+              {0.04172, 0.001688, -0.01526, 0.04006},                                                                                                        \
+              {0.04385, 0.01758, -0.04159, 0.05488},                                                                                                         \
+              {0.05166, 0.02408, -0.05132, 0.06101},                                                                                                         \
+              {0.07004, 0.03910, -0.05345, 0.05015},                                                                                                         \
+              {0.1317, -0.05083, -0.2579, 0.3084},                                                                                                           \
+              {0.0958, -0.05706, -0.07709, 0.1141},                                                                                                          \
+              {0.07868, -0.05782, -0.008633, 0.04612},                                                                                                       \
+              {0.07218, -0.07066, 0.04202, 0.0061},                                                                                                          \
+              },                                                                                                                                               \
 }
 
 #define LION_PARAMS_DEFAULT_RINT                                                                                                                     \
@@ -107,24 +106,35 @@
     .params.fixed = LION_PARAMS_DEFAULT_RINT_FIXED,                                                                                                  \
   }
 
-#define LION_PARAMS_DEFAULT_SOH                                                                                                                      \
+#define LION_PARAMS_DEFAULT_SOH_VENDOR                                                                                                               \
   {                                                                                                                                                  \
     .total_cycles = 1000,                                                                                                                            \
     .final_soh    = 0.7,                                                                                                                             \
-    .table =                                                                                                                                         \
-        {                                                                                                                                            \
-                {.max = 100.0, .min = 0.0, .coeff = 1.0},                                                                                                  \
-                {.max = 100.0, .min = 25.0, .coeff = 0.7875},                                                                                              \
-                {.max = 75.0, .min = 0.0, .coeff = 1.12525},                                                                                               \
-                {.max = 100.0, .min = 50.0, .coeff = 0.4375},                                                                                              \
-                {.max = 75.0, .min = 25.0, .coeff = 0.68750},                                                                                              \
-                {.max = 50.0, .min = 0.0, .coeff = 1.03125},                                                                                               \
-                {.max = 100.0, .min = 75.0, .coeff = 0.40625},                                                                                             \
-                {.max = 75.0, .min = 50.0, .coeff = 0.29700},                                                                                              \
-                {.max = 62.5, .min = 37.5, .coeff = 0.28125},                                                                                              \
-                {.max = 50.0, .min = 25.0, .coeff = 0.62500},                                                                                              \
-                {.max = 25.0, .min = 0.0, .coeff = 1.00000},                                                                                               \
-                },                                                                                                                                           \
+  }
+
+#define LION_PARAMS_DEFAULT_SOH_MASSERANO                                                                                                            \
+  {                                                                                                                                                  \
+    .total_cycles = 1000,                                                                                                                            \
+    .final_soh    = 0.7,                                                                                                                             \
+    .table        = {                                                                                                                                \
+                     {.max = 100.0, .min = 0.0, .coeff = 1.0},                                                                                               \
+                     {.max = 100.0, .min = 25.0, .coeff = 0.7875},                                                                                           \
+                     {.max = 75.0, .min = 0.0, .coeff = 1.12525},                                                                                            \
+                     {.max = 100.0, .min = 50.0, .coeff = 0.4375},                                                                                           \
+                     {.max = 75.0, .min = 25.0, .coeff = 0.68750},                                                                                           \
+                     {.max = 50.0, .min = 0.0, .coeff = 1.03125},                                                                                            \
+                     {.max = 100.0, .min = 75.0, .coeff = 0.40625},                                                                                          \
+                     {.max = 75.0, .min = 50.0, .coeff = 0.29700},                                                                                           \
+                     {.max = 62.5, .min = 37.5, .coeff = 0.28125},                                                                                           \
+                     {.max = 50.0, .min = 25.0, .coeff = 0.62500},                                                                                           \
+                     {.max = 25.0, .min = 0.0, .coeff = 1.00000},                                                                                            \
+                     },                                                                                                                                        \
+  }
+
+#define LION_PARAMS_DEFAULT_SOH                                                                                                                      \
+  {                                                                                                                                                  \
+    .model         = LION_SOH_MODEL_VENDOR,                                                                                                          \
+    .params.vendor = LION_PARAMS_DEFAULT_SOH_VENDOR,                                                                                                 \
   }
 
 #define LION_PARAMS_DEFAULT                                                                                                                          \
@@ -178,6 +188,16 @@ lion_params_rint_t lion_params_default_rint(void) {
   return out;
 }
 
+lion_params_soh_vendor_t lion_params_default_soh_vendor(void) {
+  lion_params_soh_vendor_t out = LION_PARAMS_DEFAULT_SOH_VENDOR;
+  return out;
+}
+
+lion_params_soh_masserano_t lion_params_default_soh_masserano(void) {
+  lion_params_soh_masserano_t out = LION_PARAMS_DEFAULT_SOH_MASSERANO;
+  return out;
+}
+
 lion_params_soh_t lion_params_default_soh(void) {
   lion_params_soh_t out = LION_PARAMS_DEFAULT_SOH;
   return out;
@@ -194,6 +214,17 @@ const char *lion_params_rint_get_name(lion_rint_model_t model) {
     return "LION_RINT_MODEL_FIXED";
   case LION_RINT_MODEL_POLARIZATION:
     return "LION_RINT_MODEL_POLARIZATION";
+  default:
+    return "N/A";
+  }
+}
+
+const char *lion_params_soh_get_name(lion_soh_model_t model) {
+  switch (model) {
+  case LION_SOH_MODEL_VENDOR:
+    return "LION_SOH_MODEL_VENDOR";
+  case LION_SOH_MODEL_MASSERANO:
+    return "LION_SOH_MODEL_MASSERANO";
   default:
     return "N/A";
   }
