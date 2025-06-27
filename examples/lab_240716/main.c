@@ -8,9 +8,11 @@
 #include <lionu/macros.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #define OUTCSV_FILENAME     "simdata/lab_240716/data.csv"
 #define OUTCURROPT_FILENAME "simdata/lab_240716/curropt.csv"
+#define ETA_VALES_FILENAME  "examples/lab_240716/eta_values.csv"
 
 FILE *csv_file;
 #ifndef NDEBUG
@@ -175,10 +177,16 @@ int main(int argc, char *argv[]) {
   params.init.current_guess       = 10.0;
   params.rint.model               = LION_RINT_MODEL_POLARIZATION;
   params.rint.params.polarization = lion_params_default_rint_polarization();
-  params.soh.model                = LION_SOH_MODEL_MASSERANO;
-  params.soh.params.masserano     = lion_params_default_soh_masserano();
 
-  // TODO: Implement setting up the KDE from data
+  params.soh.model            = LION_SOH_MODEL_MASSERANO;
+  params.soh.params.masserano = lion_params_default_soh_masserano();
+  lion_gaussian_kde_t kde;
+  lion_vector_t       eta_values;
+  LION_CALL(lion_vector_from_csv(NULL, ETA_VALES_FILENAME, sizeof(double), "%lf", &eta_values), "Failed reading eta values for KDE");
+  LION_CALL(
+      lion_gaussian_kde_init(eta_values.data, eta_values.len, LION_GAUSSIAN_KDE_SCOTT, (unsigned long)time(NULL), &kde), "Failed setting up KDE"
+  );
+  params.soh.params.masserano.kde = &kde;
 
   log_info("Creating simulation");
   lion_sim_t sim;
