@@ -1,6 +1,7 @@
 #include "soh.h"
 
 #include <lion_utils/vendor/log.h>
+#include <lionu/math.h>
 #include <math.h>
 
 double lion_soh_next_vendor(double soh, double soc_mean, double soc_max, double soc_min, double internal_temperature, lion_params_t *params) {
@@ -33,7 +34,18 @@ double lion_soh_next_masserano(double soh, double soc_mean, double soc_max, doub
   double temp_factor = temperature_factor(internal_temperature);
   total_cycles       = temp_factor * total_cycles;
 
-  double rate = exp(log(p->final_soh) / total_cycles);
+  double noise = 0.0;
+  if (p->kde != NULL) {
+    noise = lion_gaussian_kde_sample(p->kde) - p->kde->data[0];
+  }
+  double base_rate = exp(log(p->final_soh) / total_cycles);
+  double rate      = lion_clip_d(base_rate + noise, 0.0, 1.0);
+
+  logi_trace("Final SoH: %lf", p->final_soh);
+  logi_trace("Total cycles: %lf", total_cycles);
+  logi_trace("Base rate: %lf", base_rate);
+  logi_trace("Rate: %lf", rate);
+  logi_trace("Noise: %lf", noise);
 
   // TODO: Implement KDE to introduce noise into the rate
   return rate * soh;
@@ -44,6 +56,10 @@ double lion_soh_next(double soh, double soc_mean, double soc_max, double soc_min
   case LION_SOH_MODEL_VENDOR:
     return lion_soh_next_vendor(soh, soc_mean, soc_max, soc_min, internal_temperature, params);
   case LION_SOH_MODEL_MASSERANO:
+    if (params->soh.params.masserano.kde == NULL) {
+      logi_warn("Default Masserano model requires manually setting up the KDE");
+      logi_warn("Masserano model will skip sampling noise model");
+    }
     return lion_soh_next_masserano(soh, soc_mean, soc_max, soc_min, internal_temperature, params);
   default:
     logi_error("Degradation model not valid");
