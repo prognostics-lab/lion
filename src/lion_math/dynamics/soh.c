@@ -22,10 +22,7 @@ double degradation_factor(lion_sim_t *sim, double soc_mean, double soc_max, doub
   return lion_knn_regressor_predict(sim, knn, &input);
 }
 
-double temperature_factor(double temperature) {
-  // TODO: Implement temperature consideration model
-  return 1.0;
-}
+double temperature_factor(double temperature, double *poly_coeffs, uint32_t count) { return lion_polyval_d(temperature - 273.0, poly_coeffs, count); }
 
 double lion_soh_next_masserano(
     lion_sim_t *sim, double soh, double soc_mean, double soc_max, double soc_min, double internal_temperature, lion_params_t *params
@@ -39,7 +36,8 @@ double lion_soh_next_masserano(
   total_cycles = soc_factor * total_cycles;
 
   // Correct from temperature
-  double temp_factor = temperature_factor(internal_temperature);
+  double temp_factor = temperature_factor(internal_temperature, p->temp_poly, LION_SOH_TEMP_POLYCOUNT);
+  temp_factor        = lion_clip_d(temp_factor, 0.0, 1.0);
   logi_debug("Temperature factor : %lf", temp_factor);
   total_cycles = temp_factor * total_cycles;
 

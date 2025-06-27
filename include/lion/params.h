@@ -8,9 +8,10 @@
 #include <lionu/kde.h>
 #include <stdint.h>
 
-#define LION_FUZZY_SETS_COUNT  8
-#define LION_FUZZY_SETS_DEGREE 4
-#define LION_SOH_TABLE_COUNT   11
+#define LION_FUZZY_SETS_COUNT   8
+#define LION_FUZZY_SETS_DEGREE  4
+#define LION_SOH_TABLE_COUNT    11
+#define LION_SOH_TEMP_POLYCOUNT 7
 
 #ifdef __cplusplus
 extern "C" {
@@ -110,24 +111,25 @@ typedef struct lion_params_soh_vendor {
 
 /// @brief Temperature and subcycle aware model.
 typedef struct lion_params_soh_masserano {
-  uint64_t nominal_cycles; ///< Nominal number of cycles the cell has.
+  uint64_t nominal_cycles;    ///< Nominal number of cycles the cell has.
   double   nominal_sr;
-  double   nominal_final_soh;      ///< Nominal state of health after `total_cycles` (end of life).
+  double   nominal_final_soh; ///< Nominal state of health after `total_cycles` (end of life).
   double   eq_cycles;
   double   eq_final_soh;
   double   eq_sr;
-  double   x_table[LION_SOH_TABLE_COUNT][3]; ///< X values for the kNN regressor.
-  double   y_table[LION_SOH_TABLE_COUNT];    ///< y values for the kNN regressor.
+  double   temp_poly[LION_SOH_TEMP_POLYCOUNT]; ///< Polynomial coefficients for temperature.
+  double   x_table[LION_SOH_TABLE_COUNT][3];   ///< X values for the kNN regressor.
+  double   y_table[LION_SOH_TABLE_COUNT];      ///< y values for the kNN regressor.
   struct {
-    lion_vector_t                eta_values; ///< Values for the KDE.
-    lion_gaussian_kde_bwmethod_t bw_method;  ///< Method for bandwidth calculation.
-  } kde_params;                              ///< Parameters for the KDE.
+    lion_vector_t                eta_values;   ///< Values for the KDE.
+    lion_gaussian_kde_bwmethod_t bw_method;    ///< Method for bandwidth calculation.
+  } kde_params;                                ///< Parameters for the KDE.
   struct {
-    lion_vector_t X;                         ///< X values for the kNN.
-    lion_vector_t y;                         ///< y values for the kNN.
-  } knn_params;                              ///< Parameters for the kNN.
-  lion_gaussian_kde_t  kde;                  ///< KDE instance.
-  lion_knn_regressor_t knn;                  ///< kNN instance.
+    lion_vector_t X;                           ///< X values for the kNN.
+    lion_vector_t y;                           ///< y values for the kNN.
+  } knn_params;                                ///< Parameters for the kNN.
+  lion_gaussian_kde_t  kde;                    ///< KDE instance.
+  lion_knn_regressor_t knn;                    ///< kNN instance.
 } lion_params_soh_masserano_t;
 
 typedef struct lion_params_soh {
