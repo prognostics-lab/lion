@@ -1,6 +1,7 @@
 #pragma once
 
 #include <gsl/gsl_rng.h>
+#include <lion/status.h>
 #include <stddef.h>
 
 /* This implementation is based on a simplification of scipy's implementation */
@@ -18,7 +19,7 @@ typedef struct lion_gaussian_kde {
   gsl_rng *rng;
 } lion_gaussian_kde_t;
 
-void lion_gaussian_kde_init(double *data, size_t len, lion_gaussian_kde_bwmethod_t method, lion_gaussian_kde_t *out);
-void lion_gaussian_kde_cleanup(lion_gaussian_kde_t *kde);
+lion_status_t lion_gaussian_kde_init(double *data, size_t len, lion_gaussian_kde_bwmethod_t method, unsigned long seed, lion_gaussian_kde_t *out);
+lion_status_t lion_gaussian_kde_cleanup(lion_gaussian_kde_t *kde);
 
 double lion_gaussian_kde_sample(const lion_gaussian_kde_t *kde);
