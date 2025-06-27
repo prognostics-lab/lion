@@ -22,7 +22,6 @@ This file contains a list of the TODO tasks found within the source code.
 - **(`./src/lion_sim/sim.c`)** Add some mechanism to avoid race conditions
 - **(`./src/lion_sim/sim.c`)** Add time update
 - **(`./src/lion_math/lion_math.h`)** Double check implementation of each model
-- **(`./src/lion_math/dynamics/soh.c`)** Expand the model to include the different effects
 - **(`./src/lion_math/dynamics/soh.c`)** Implement kNN to estimate degradation factor
 - **(`./src/lion_math/dynamics/soh.c`)** Evaluate implementing kNN through an outside library
 - **(`./src/lion_math/dynamics/soh.c`)** Evaluate implementing temperature correction
