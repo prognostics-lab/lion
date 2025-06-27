@@ -117,7 +117,7 @@ typedef struct lion_params_soh_masserano {
   uint64_t                          total_cycles;                ///< Nominal number of cycles the cell has.
   double                            final_soh;                   ///< Nominal state of health after `total_cycles` (end of life)
   lion_params_degradation_element_t table[LION_SOH_TABLE_COUNT]; ///< Table of nominal degradation coefficients
-  lion_gaussian_kde_t               kde;
+  lion_gaussian_kde_t              *kde;
 } lion_params_soh_masserano_t;
 
 typedef struct lion_params_soh {

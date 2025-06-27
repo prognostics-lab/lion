@@ -227,6 +227,7 @@ static void lion_sim_log_startup_info(lion_sim_t *sim) {
   logi_info("+-------------------------------------------------------+");
   logi_info("|################# END OF INFORMATION ##################|");
   logi_info("+-------------------------------------------------------+");
+  // TODO: Implement logging parameters from different models
 }
 
 lion_status_t _init_simulation_stepper(lion_sim_t *sim) {
