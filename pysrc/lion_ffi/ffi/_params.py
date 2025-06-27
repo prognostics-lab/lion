@@ -71,6 +71,11 @@ typedef struct lion_params_rint {
   } params;
 } lion_params_rint_t;
 
+typedef enum lion_soh_model {
+  LION_SOH_MODEL_VENDOR,
+  LION_SOH_MODEL_MASSERANO,
+} lion_soh_model_t;
+
 typedef struct lion_params_degradation_element {
   double max;
   double min;
