@@ -1,6 +1,7 @@
 CTYPEDEF = """
 #define LION_FUZZY_SETS_COUNT 8
 #define LION_FUZZY_SETS_DEGREE 4
+#define LION_SOH_TABLE_COUNT   11
 
 typedef struct lion_params_init {
   double soc;
@@ -70,9 +71,29 @@ typedef struct lion_params_rint {
   } params;
 } lion_params_rint_t;
 
-typedef struct lion_params_soh {
+typedef struct lion_params_degradation_element {
+  double max;
+  double min;
+  double coeff;
+} lion_params_degradation_element_t;
+
+typedef struct lion_params_soh_vendor {
   uint64_t total_cycles;
   double   final_soh;
+} lion_params_soh_vendor_t;
+
+typedef struct lion_params_soh_masserano {
+  uint64_t                          total_cycles;
+  double                            final_soh;
+  lion_params_degradation_element_t table[LION_SOH_TABLE_COUNT];
+} lion_params_soh_masserano_t;
+
+typedef struct lion_params_soh {
+  lion_soh_model_t model;
+  union {
+    lion_params_soh_vendor_t    vendor;
+    lion_params_soh_masserano_t masserano;
+  } params;
 } lion_params_soh_t;
 
 typedef struct lion_params {
