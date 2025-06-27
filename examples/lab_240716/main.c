@@ -12,7 +12,7 @@
 
 #define OUTCSV_FILENAME     "simdata/lab_240716/data.csv"
 #define OUTCURROPT_FILENAME "simdata/lab_240716/curropt.csv"
-#define ETA_VALES_FILENAME  "examples/lab_240716/eta_values.csv"
+#define ETA_VALUES_FILENAME "examples/lab_240716/eta_values.csv"
 
 FILE *csv_file;
 #ifndef NDEBUG
@@ -32,7 +32,7 @@ lion_status_t init_hook(lion_sim_t *sim) {
       "time,step,power,ambient_temperature,voltage,current,"
       "open_circuit_voltage,internal_resistance,ehc,generated_heat,"
       "internal_temperature,surface_temperature,kappa,soc_nominal,"
-      "capacity_nominal,soc_use,capacity_use\n"
+      "capacity_nominal,soc_use,capacity_use,soh\n"
   );
 
 #ifndef NDEBUG
@@ -55,7 +55,7 @@ lion_status_t update_hook(lion_sim_t *sim) {
   // Store current state in csv file
   fprintf(
       csv_file,
-      "%lf,%lu,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf\n",
+      "%lf,%lu,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf\n",
       sim->state.time,
       sim->state.step,
       sim->state.power,
@@ -72,7 +72,8 @@ lion_status_t update_hook(lion_sim_t *sim) {
       sim->state.soc_nominal,
       sim->state.capacity_nominal,
       sim->state.soc_use,
-      sim->state.capacity_use
+      sim->state.capacity_use,
+      sim->state.soh
   );
 
 #ifndef NDEBUG
@@ -180,13 +181,11 @@ int main(int argc, char *argv[]) {
 
   params.soh.model            = LION_SOH_MODEL_MASSERANO;
   params.soh.params.masserano = lion_params_default_soh_masserano();
-  lion_gaussian_kde_t kde;
-  lion_vector_t       eta_values;
-  LION_CALL(lion_vector_from_csv(NULL, ETA_VALES_FILENAME, sizeof(double), "%lf", &eta_values), "Failed reading eta values for KDE");
-  LION_CALL(
-      lion_gaussian_kde_init(eta_values.data, eta_values.len, LION_GAUSSIAN_KDE_SCOTT, (unsigned long)time(NULL), &kde), "Failed setting up KDE"
-  );
-  params.soh.params.masserano.kde = &kde;
+  // lion_gaussian_kde_t kde;
+  lion_vector_t eta_values;
+  LION_CALL(lion_vector_from_csv(NULL, ETA_VALUES_FILENAME, sizeof(double), "%lf", &eta_values), "Failed reading eta values for KDE");
+  params.soh.params.masserano.kde_params.eta_values = eta_values;
+  // params.soh.params.masserano.kde                   = &kde;
 
   log_info("Creating simulation");
   lion_sim_t sim;
