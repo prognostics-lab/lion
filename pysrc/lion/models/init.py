@@ -19,11 +19,11 @@ class Initial(_BaseParams):
         self, soc=None, temp_in=None, soh=None, capacity=None, current_guess=None
     ):
         default = self._c_default()
-        self.soc = choose(soc, default.soc)
-        self.temp_in = choose(temp_in, default.temp_in)
-        self.soh = choose(soh, default.soh)
-        self.capacity = choose(capacity, default.capacity)
-        self.current_guess = choose(current_guess, default.current_guess)
+        self.soc = soc or default.soc
+        self.temp_in = temp_in or default.temp_in
+        self.soh = soh or default.soh
+        self.capacity = capacity or default.capacity
+        self.current_guess = current_guess or default.current_guess
 
     def set_parameters(self, target):
         target.soc = self.soc

@@ -18,12 +18,12 @@ class Ehc(_BaseParams):
 
     def __init__(self, a=None, b=None, mu=None, kappa=None, sigma=None, l=None):
         default = self._c_default()
-        self.a = choose(a, default.a)
-        self.b = choose(b, default.b)
-        self.mu = choose(mu, default.mu)
-        self.kappa = choose(kappa, default.kappa)
-        self.sigma = choose(sigma, default.sigma)
-        self.l = choose(l, default.l)
+        self.a = a or default.a
+        self.b = b or default.b
+        self.mu = mu or default.mu
+        self.kappa = kappa or default.kappa
+        self.sigma = sigma or default.sigma
+        self.l = l or default.l
 
     def set_parameters(self, target):
         target.a = self.a
@@ -36,4 +36,3 @@ class Ehc(_BaseParams):
     @staticmethod
     def _c_default():
         return _lionl.lion_params_default_ehc()
-

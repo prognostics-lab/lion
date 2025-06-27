@@ -19,9 +19,9 @@ class TemperatureSurface(Temperature):
 
     def __init__(self, cp=None, rin=None, rout=None):
         default = self._c_default()
-        self.cp = choose(cp, default.cp)
-        self.rin = choose(rin, default.rin)
-        self.rout = choose(rout, default.rout)
+        self.cp = cp or default.cp
+        self.rin = rin or default.rin
+        self.rout = rout or default.rout
 
     def set_parameters(self, target):
         target.cp = self.cp

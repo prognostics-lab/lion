@@ -25,7 +25,7 @@ class ResistanceFixed(Resistance):
 
     def __init__(self, internal_resistance=None):
         default = self._c_default()
-        self.internal_resistance = choose(internal_resistance, default.internal_resistance)
+        self.internal_resistance = internal_resistance or default.internal_resistance
 
     def set_parameters(self, target):
         target.model = _ResistanceModels.FIXED.value
@@ -63,15 +63,15 @@ class ResistancePolarization(Resistance):
     ):
         # TODO: Implement configuring the polynomial coefficients
         default = self._c_default()
-        self.c40 = choose(c40, default.c40)
-        self.c20 = choose(c20, default.c20)
-        self.c10 = choose(c10, default.c10)
-        self.c4 = choose(c4, default.c4)
-        self.d5 = choose(d5, default.d5)
-        self.d10 = choose(d10, default.d10)
-        self.d15 = choose(d15, default.d15)
-        self.d30 = choose(d30, default.d30)
-        self.poly = choose(poly, default.poly)
+        self.c40 = c40 or default.c40
+        self.c20 = c20 or default.c20
+        self.c10 = c10 or default.c10
+        self.c4 = c4 or default.c4
+        self.d5 = d5 or default.d5
+        self.d10 = d10 or default.d10
+        self.d15 = d15 or default.d15
+        self.d30 = d30 or default.d30
+        self.poly = poly or default.poly
 
     def set_parameters(self, target):
         target.model = _ResistanceModels.POLARIZATION.value

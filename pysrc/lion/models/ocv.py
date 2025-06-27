@@ -17,11 +17,11 @@ class Ocv(_BaseParams):
 
     def __init__(self, alpha=None, beta=None, gamma=None, v0=None, vl=None):
         default = self._c_default()
-        self.alpha = choose(alpha, default.alpha)
-        self.beta = choose(beta, default.beta)
-        self.gamma = choose(gamma, default.gamma)
-        self.v0 = choose(v0, default.v0)
-        self.vl = choose(vl, default.vl)
+        self.alpha = alpha or default.alpha
+        self.beta = beta or default.beta
+        self.gamma = gamma or default.gamma
+        self.v0 = v0 or default.v0
+        self.vl = vl or default.vl
 
     def set_parameters(self, target):
         target.alpha = self.alpha

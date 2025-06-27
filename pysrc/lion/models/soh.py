@@ -14,8 +14,8 @@ class Soh(_BaseParams):
 
     def __init__(self, total_cycles=None, final_soh=None):
         default = self._c_default()
-        self.total_cycles = choose(total_cycles, default.total_cycles)
-        self.final_soh = choose(final_soh, default.final_soh)
+        self.total_cycles = total_cycles or default.total_cycles
+        self.final_soh = final_soh or default.final_soh
 
     def set_parameters(self, target):
         target.total_cycles = self.total_cycles

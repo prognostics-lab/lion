@@ -15,9 +15,9 @@ class Vft(_BaseParams):
 
     def __init__(self, k1=None, k2=None, tref=None):
         default = self._c_default()
-        self.k1 = choose(k1, default.k1)
-        self.k2 = choose(k2, default.k2)
-        self.tref = choose(tref, default.tref)
+        self.k1 = k1 or default.k1
+        self.k2 = k2 or default.k2
+        self.tref = tref or default.tref
 
     def set_parameters(self, target):
         target.k1 = self.k1
