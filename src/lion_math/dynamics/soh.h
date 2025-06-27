@@ -6,7 +6,7 @@
 extern "C" {
 #endif
 
-double lion_soh_next(double soh, double soc_mean, double soc_max, double soc_min, lion_params_t *params);
+double lion_soh_next(double soh, double soc_mean, double soc_max, double soc_min, double internal_temperature, lion_params_t *params);
 
 #ifdef __cplusplus
 }

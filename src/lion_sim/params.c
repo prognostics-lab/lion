@@ -1,6 +1,7 @@
 #include "lion/params.h"
 
 #include <lion/lion.h>
+#include <lion_utils/vendor/log.h>
 
 #define LION_PARAMS_DEFAULT_INIT                                                                                                                     \
   {                                                                                                                                                  \
@@ -194,7 +195,9 @@ lion_params_soh_vendor_t lion_params_default_soh_vendor(void) {
 }
 
 lion_params_soh_masserano_t lion_params_default_soh_masserano(void) {
+  logi_warn("Default Masserano model requires manually setting up the KDE");
   lion_params_soh_masserano_t out = LION_PARAMS_DEFAULT_SOH_MASSERANO;
+
   return out;
 }
 

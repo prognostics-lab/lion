@@ -415,7 +415,8 @@ lion_status_t lion_sim_step(lion_sim_t *sim, double power, double ambient_temper
   if (sim->state._acc_discharge >= sim->state.capacity_nominal) {
     // A cycle has been completed so we update the SoH
     sim->state._acc_discharge = fmod(sim->state._acc_discharge, sim->state.capacity_nominal);
-    sim->state.soh            = lion_soh_next(sim->state.soh, sim->state._soc_mean, sim->state._soc_max, sim->state._soc_min, sim->params);
+    sim->state.soh =
+        lion_soh_next(sim->state.soh, sim->state._soc_mean, sim->state._soc_max, sim->state._soc_min, sim->state.internal_temperature, sim->params);
 
     // Restart placeholder values
     sim->state._soc_mean   = 0.0;
