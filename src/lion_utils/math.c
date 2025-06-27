@@ -15,6 +15,15 @@
   macro(float, f);                                                                                                                                   \
   macro(double, d);
 
+#define _CLIP_GENERATOR(T, S)                                                                                                                        \
+  T lion_clip_##S(T x, T low, T high) {                                                                                                              \
+    if (x < low)                                                                                                                                     \
+      return low;                                                                                                                                    \
+    if (x > high)                                                                                                                                    \
+      return high;                                                                                                                                   \
+    return x;                                                                                                                                        \
+  }
+
 #define _SUM_GENERATOR(T, S)                                                                                                                         \
   T lion_sum_##S(T *vals, size_t count) {                                                                                                            \
     T res = 0;                                                                                                                                       \
@@ -33,5 +42,6 @@
     return res;                                                                                                                                      \
   }
 
+__LION_GENERATOR_ALLTYPES(_CLIP_GENERATOR);
 __LION_GENERATOR_ALLTYPES(_SUM_GENERATOR);
 __LION_GENERATOR_ALLTYPES(_POLYVAL_GENERATOR);
