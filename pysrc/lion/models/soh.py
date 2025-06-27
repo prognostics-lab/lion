@@ -1,5 +1,3 @@
-from lion_utils.choose import choose
-
 import lion_ffi as _
 from lion._lion import ffi
 from lion._lion import lib as _lionl
