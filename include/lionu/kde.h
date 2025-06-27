@@ -17,6 +17,7 @@ typedef struct lion_gaussian_kde {
   double   variance;
   double   std;
   gsl_rng *rng;
+  int      is_trained;
 } lion_gaussian_kde_t;
 
 lion_status_t lion_gaussian_kde_init(double *data, size_t len, lion_gaussian_kde_bwmethod_t method, unsigned long seed, lion_gaussian_kde_t *out);

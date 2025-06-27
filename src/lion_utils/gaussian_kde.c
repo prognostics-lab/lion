@@ -38,7 +38,7 @@ lion_status_t lion_gaussian_kde_init(double *data, size_t len, lion_gaussian_kde
   gsl_rng *rng = gsl_rng_alloc(T);
   gsl_rng_set(rng, seed);
 
-  lion_gaussian_kde_t result = {.data = data, .len = len, .variance = variance, .std = std, .rng = rng};
+  lion_gaussian_kde_t result = {.data = data, .len = len, .variance = variance, .std = std, .rng = rng, .is_trained = 1};
 
   *out = result;
   return LION_STATUS_SUCCESS;
