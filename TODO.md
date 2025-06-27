@@ -6,6 +6,7 @@ This file contains a list of the TODO tasks found within the source code.
 - **(`./cmake/Vcpkg.cmake`)** Analyze the proper way to handle this scenario
 - **(`./examples/python/lab_240716_hook.py`)** See how to remove the global variable
 - **(`./examples/lab_240716_cpp/main.cpp`)** Implement hooks in the C++ wrsimer
+- **(`./examples/lab_240716/main.c`)** Implement setting up the KDE from data
 - **(`./include/lion/vector.h`)** See what happens when `new_capacity` < `old_capacity`
 - **(`./pysrc/lion/vector.py`)** Fix the bug that happens when the first element is less general than the rest
 - **(`./pysrc/lion/vector.py`)** Determine a more efficient way of creating from numpy array
@@ -24,9 +25,10 @@ This file contains a list of the TODO tasks found within the source code.
 - **(`./src/lion_math/lion_math.h`)** Double check implementation of each model
 - **(`./src/lion_math/dynamics/soh.c`)** Implement kNN to estimate degradation factor
 - **(`./src/lion_math/dynamics/soh.c`)** Evaluate implementing kNN through an outside library
-- **(`./src/lion_math/dynamics/soh.c`)** Evaluate implementing temperature correction
+- **(`./src/lion_math/dynamics/soh.c`)** Implement temperature consideration model
 - **(`./src/lion_math/dynamics/soh.c`)** Implement KDE to introduce noise into the rate
 - **(`./src/lion_math/capacity.h`)** Implement state of health
+- **(`./src/lion_utils/gaussian_kde.c`)** Properly implement Silverman's factor
 - **(`./tests/unittest/quick/test_math_algebraic.c`)** Add tests for algebraic equations
 - **(`./tests/unittest/quick/test_math_differential.c`)** Add tests for all calculations
 - **(`./tests/unittest/quick/test_math_differential.c`)** Add calculation of current
