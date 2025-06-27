@@ -16,6 +16,17 @@ typedef uint16_t u16;
 typedef uint32_t u32;
 typedef uint64_t u64;
 
+i8     lion_clip_i8(i8 x, i8 low, i8 high);
+i16    lion_clip_i16(i16 x, i16 low, i16 high);
+i32    lion_clip_i32(i32 x, i32 low, i32 high);
+i64    lion_clip_i64(i64 x, i64 low, i64 high);
+u8     lion_clip_u8(u8 x, u8 low, u8 high);
+u16    lion_clip_u16(u16 x, u16 low, u16 high);
+u32    lion_clip_u32(u32 x, u32 low, u32 high);
+u64    lion_clip_u64(u64 x, u64 low, u64 high);
+float  lion_clip_f(float x, float low, float high);
+double lion_clip_d(double x, double low, double high);
+
 i8     lion_sum_i8(i8 *vals, size_t count);
 i16    lion_sum_i16(i16 *vals, size_t count);
 i32    lion_sum_i32(i32 *vals, size_t count);
