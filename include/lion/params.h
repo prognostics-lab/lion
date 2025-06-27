@@ -2,6 +2,8 @@
 /// @brief Parameters for the simulation.
 #pragma once
 
+#include <lion/vector.h>
+#include <lion_utils/regression/knn.h>
 #include <lionu/fuzzy.h>
 #include <lionu/kde.h>
 #include <stdint.h>
@@ -100,12 +102,6 @@ typedef enum lion_soh_model {
   LION_SOH_MODEL_MASSERANO, ///< Temperature- and subcycle-aware model.
 } lion_soh_model_t;
 
-typedef struct lion_params_degradation_element {
-  double max;
-  double min;
-  double coeff;
-} lion_params_degradation_element_t;
-
 /// @brief Simple vendor model.
 typedef struct lion_params_soh_vendor {
   uint64_t total_cycles; ///< Nominal number of cycles the cell has.
@@ -114,10 +110,24 @@ typedef struct lion_params_soh_vendor {
 
 /// @brief Temperature and subcycle aware model.
 typedef struct lion_params_soh_masserano {
-  uint64_t                          total_cycles;                ///< Nominal number of cycles the cell has.
-  double                            final_soh;                   ///< Nominal state of health after `total_cycles` (end of life)
-  lion_params_degradation_element_t table[LION_SOH_TABLE_COUNT]; ///< Table of nominal degradation coefficients
-  lion_gaussian_kde_t              *kde;
+  uint64_t nominal_cycles; ///< Nominal number of cycles the cell has.
+  double   nominal_sr;
+  double   nominal_final_soh;      ///< Nominal state of health after `total_cycles` (end of life).
+  double   eq_cycles;
+  double   eq_final_soh;
+  double   eq_sr;
+  double   x_table[LION_SOH_TABLE_COUNT][3]; ///< X values for the kNN regressor.
+  double   y_table[LION_SOH_TABLE_COUNT];    ///< y values for the kNN regressor.
+  struct {
+    lion_vector_t                eta_values; ///< Values for the KDE.
+    lion_gaussian_kde_bwmethod_t bw_method;  ///< Method for bandwidth calculation.
+  } kde_params;                              ///< Parameters for the KDE.
+  struct {
+    lion_vector_t X;                         ///< X values for the kNN.
+    lion_vector_t y;                         ///< y values for the kNN.
+  } knn_params;                              ///< Parameters for the kNN.
+  lion_gaussian_kde_t  kde;                  ///< KDE instance.
+  lion_knn_regressor_t knn;                  ///< kNN instance.
 } lion_params_soh_masserano_t;
 
 typedef struct lion_params_soh {
