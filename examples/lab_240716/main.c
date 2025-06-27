@@ -3,6 +3,7 @@
 
 #include <lion/lion.h>
 #include <lion_math/current.h>
+#include <lionu/kde.h>
 #include <lionu/log.h>
 #include <lionu/macros.h>
 #include <stdlib.h>
@@ -174,6 +175,10 @@ int main(int argc, char *argv[]) {
   params.init.current_guess       = 10.0;
   params.rint.model               = LION_RINT_MODEL_POLARIZATION;
   params.rint.params.polarization = lion_params_default_rint_polarization();
+  params.soh.model                = LION_SOH_MODEL_MASSERANO;
+  params.soh.params.masserano     = lion_params_default_soh_masserano();
+
+  // TODO: Implement setting up the KDE from data
 
   log_info("Creating simulation");
   lion_sim_t sim;
