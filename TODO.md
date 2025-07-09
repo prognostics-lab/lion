@@ -23,7 +23,6 @@ This file contains a list of the TODO tasks found within the source code.
 - **(`./src/lion_sim/sim.c`)** Add some mechanism to avoid race conditions
 - **(`./src/lion_sim/sim.c`)** Add time update
 - **(`./src/lion_math/lion_math.h`)** Double check implementation of each model
-- **(`./src/lion_math/dynamics/soh.c`)** Implement temperature consideration model
 - **(`./src/lion_math/capacity.h`)** Implement state of health
 - **(`./src/lion_utils/gaussian_kde.c`)** Properly implement Silverman's factor
 - **(`./tests/unittest/quick/test_math_algebraic.c`)** Add tests for algebraic equations
