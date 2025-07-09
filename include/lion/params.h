@@ -3,7 +3,7 @@
 #pragma once
 
 #include <lion/vector.h>
-#include <lion_utils/regression/knn.h>
+#include <lionu/knn.h>
 #include <lionu/fuzzy.h>
 #include <lionu/kde.h>
 #include <stdint.h>

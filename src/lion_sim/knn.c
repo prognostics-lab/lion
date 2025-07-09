@@ -1,9 +1,8 @@
-#include "knn.h"
-
 #include <lion/sim.h>
 #include <lion/vector.h>
 #include <lion_sim/mem.h>
 #include <lion_utils/vendor/log.h>
+#include <lionu/knn.h>
 #include <math.h>
 
 double euclidean_distance(lion_sim_t *sim, const lion_vector_t *x, const lion_vector_t *y) {
